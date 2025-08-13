@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+# Targets
+TARGET_CLASS_NAME="ApifyContentCrawler"
+TARGET_PACKAGE_NAME="n8n-nodes-apify-content-crawler"
+
 # Variables
 ACTOR_ID="aYG0l9s7dbB7j3gbS"
 PACKAGE_NAME="renamed-package"
@@ -34,9 +38,6 @@ echo "Wrote .env with PACKAGE_NAME, CLASS_NAME, ACTOR_ID, headers, and display n
 #############################################
 # Bulk Edit All Files (skip certain paths)
 #############################################
-TARGET_CLASS_NAME="ApifyContentCrawler"
-TARGET_PACKAGE_NAME="n8n-nodes-apify-content-crawler"
-
 SCRIPT_NAME="init.sh"
 
 find . -type f \
@@ -53,28 +54,29 @@ find . -type f \
     echo "Edited: $FILE"
   fi
 done
+
 #############################################
 # Edit Project Structure (rename folder and files)
 #############################################
-OLD_DIR="./nodes/ApifyContentCrawler"
-NEW_DIR="./nodes/$CLASS_NAME"
+# OLD_DIR="./nodes/$TARGET_CLASS_NAME"
+# NEW_DIR="./nodes/$CLASS_NAME"
 
-if [[ -d "$OLD_DIR" ]]; then
-  if [[ -e "$NEW_DIR" ]]; then
-    echo "Target '$NEW_DIR' already exists — skipping dir rename."
-  else
-    git mv "$OLD_DIR" "$NEW_DIR" 2>/dev/null || mv "$OLD_DIR" "$NEW_DIR"
-    echo "Renamed folder: nodes/ApifyContentCrawler -> nodes/$CLASS_NAME"
-  fi
+# if [[ -d "$OLD_DIR" ]]; then
+#   if [[ -e "$NEW_DIR" ]]; then
+#     echo "Target '$NEW_DIR' already exists — skipping dir rename."
+#   else
+#     git mv "$OLD_DIR" "$NEW_DIR" 2>/dev/null || mv "$OLD_DIR" "$NEW_DIR"
+#     echo "Renamed folder: nodes/$TARGET_CLASS_NAME -> nodes/$CLASS_NAME"
+#   fi
 
-  # Rename files inside the new folder: ApifyContentCrawler.* -> $CLASS_NAME.*
-  for ext in methods.ts node.json node.ts properties.ts; do
-    if [[ -f "$NEW_DIR/ApifyContentCrawler.$ext" ]]; then
-      git mv "$NEW_DIR/ApifyContentCrawler.$ext" "$NEW_DIR/$CLASS_NAME.$ext" 2>/dev/null \
-        || mv "$NEW_DIR/ApifyContentCrawler.$ext" "$NEW_DIR/$CLASS_NAME.$ext"
-    fi
-  done
-  echo "Renamed files inside nodes/$CLASS_NAME"
-else
-  echo "Warning: $OLD_DIR not found (skipped)."
-fi
+#   # Rename files inside the new folder: <TARGET_CLASS_NAME>.* -> <CLASS_NAME>.*
+#   for ext in methods.ts node.json node.ts properties.ts; do
+#     if [[ -f "$NEW_DIR/$TARGET_CLASS_NAME.$ext" ]]; then
+#       git mv "$NEW_DIR/$TARGET_CLASS_NAME.$ext" "$NEW_DIR/$CLASS_NAME.$ext" 2>/dev/null \
+#         || mv "$NEW_DIR/$TARGET_CLASS_NAME.$ext" "$NEW_DIR/$CLASS_NAME.$ext"
+#     fi
+#   done
+#   echo "Renamed files inside nodes/$CLASS_NAME"
+# else
+#   echo "Warning: $OLD_DIR not found (skipped)."
+# fi

@@ -87,7 +87,7 @@ else
 fi
 
 #############################################
-# Edit Imports
+# Edit Imports and class names in various files
 #############################################
 
 # File 1 (Generic functions imports)
@@ -147,29 +147,62 @@ else
   echo "Warning: $F5 not found (skipped)."
 fi
 
+# File 6 (Class name in .node.ts)
+F6="./nodes/ApifyContentCrawler/ApifyContentCrawler.node.ts"
+if [[ -f "$F6" ]]; then
+  sed "${SED_INPLACE[@]}" "s#export class ApifyContentCrawler#export class $CLASS_NAME#" "$F6"
+  echo "Edited class name in: $F6"
+else
+  echo "Warning: $F6 not found (skipped)."
+fi
+
+# File 7 (Test spec updates)
+F7="./nodes/ApifyContentCrawler/__test__/Apify.node.spec.ts"
+if [[ -f "$F7" ]]; then
+  # Change import path
+  sed "${SED_INPLACE[@]}" "s#\\../ApifyContentCrawler\\.node#../$CLASS_NAME.node#" "$F7"
+  # Change class name in import and variable type
+  sed "${SED_INPLACE[@]}" "s#ApifyContentCrawler#$CLASS_NAME#g" "$F7"
+  echo "Edited imports and class name in: $F7"
+else
+  echo "Warning: $F7 not found (skipped)."
+fi
+
+# File 8 (utils/nodeTypesClass.ts updates)
+F8="./nodes/ApifyContentCrawler/__tests__/utils/nodeTypesClass.ts"
+if [[ -f "$F8" ]]; then
+  # Change import path
+  sed "${SED_INPLACE[@]}" "s#\\../../ApifyContentCrawler\\.node#../../$CLASS_NAME.node#" "$F8"
+  # Change class name in import and instantiation
+  sed "${SED_INPLACE[@]}" "s#ApifyContentCrawler#$CLASS_NAME#g" "$F8"
+  echo "Edited imports and class name in: $F8"
+else
+  echo "Warning: $F8 not found (skipped)."
+fi
+
 #############################################
 # Edit Project Structure (rename folder and files)
 #############################################
-OLD_DIR="./nodes/ApifyContentCrawler"
-NEW_DIR="./nodes/$CLASS_NAME"
+# OLD_DIR="./nodes/ApifyContentCrawler"
+# NEW_DIR="./nodes/$CLASS_NAME"
 
-if [[ -d "$OLD_DIR" ]]; then
-  if [[ -e "$NEW_DIR" ]]; then
-    echo "Error: target folder '$NEW_DIR' already exists. Remove it or choose a different CLASS_NAME." >&2
-    exit 1
-  fi
+# if [[ -d "$OLD_DIR" ]]; then
+#   if [[ -e "$NEW_DIR" ]]; then
+#     echo "Error: target folder '$NEW_DIR' already exists. Remove it or choose a different CLASS_NAME." >&2
+#     exit 1
+#   fi
 
-  # 1) Rename the folder first (atomic dir rename)
-  git mv "$OLD_DIR" "$NEW_DIR" 2>/dev/null || mv "$OLD_DIR" "$NEW_DIR"
-  echo "Renamed folder: nodes/ApifyContentCrawler -> nodes/$CLASS_NAME"
+#   # 1) Rename the folder first (atomic dir rename)
+#   git mv "$OLD_DIR" "$NEW_DIR" 2>/dev/null || mv "$OLD_DIR" "$NEW_DIR"
+#   echo "Renamed folder: nodes/ApifyContentCrawler -> nodes/$CLASS_NAME"
 
-  # 2) Rename files inside the renamed folder
-  git mv "$NEW_DIR/ApifyContentCrawler.methods.ts"    "$NEW_DIR/$CLASS_NAME.methods.ts"    2>/dev/null || mv "$NEW_DIR/ApifyContentCrawler.methods.ts"    "$NEW_DIR/$CLASS_NAME.methods.ts"
-  git mv "$NEW_DIR/ApifyContentCrawler.node.json"     "$NEW_DIR/$CLASS_NAME.node.json"     2>/dev/null || mv "$NEW_DIR/ApifyContentCrawler.node.json"     "$NEW_DIR/$CLASS_NAME.node.json"
-  git mv "$NEW_DIR/ApifyContentCrawler.node.ts"       "$NEW_DIR/$CLASS_NAME.node.ts"       2>/dev/null || mv "$NEW_DIR/ApifyContentCrawler.node.ts"       "$NEW_DIR/$CLASS_NAME.node.ts"
-  git mv "$NEW_DIR/ApifyContentCrawler.properties.ts" "$NEW_DIR/$CLASS_NAME.properties.ts" 2>/dev/null || mv "$NEW_DIR/ApifyContentCrawler.properties.ts" "$NEW_DIR/$CLASS_NAME.properties.ts"
+#   # 2) Rename files inside the renamed folder
+#   git mv "$NEW_DIR/ApifyContentCrawler.methods.ts"    "$NEW_DIR/$CLASS_NAME.methods.ts"    2>/dev/null || mv "$NEW_DIR/ApifyContentCrawler.methods.ts"    "$NEW_DIR/$CLASS_NAME.methods.ts"
+#   git mv "$NEW_DIR/ApifyContentCrawler.node.json"     "$NEW_DIR/$CLASS_NAME.node.json"     2>/dev/null || mv "$NEW_DIR/ApifyContentCrawler.node.json"     "$NEW_DIR/$CLASS_NAME.node.json"
+#   git mv "$NEW_DIR/ApifyContentCrawler.node.ts"       "$NEW_DIR/$CLASS_NAME.node.ts"       2>/dev/null || mv "$NEW_DIR/ApifyContentCrawler.node.ts"       "$NEW_DIR/$CLASS_NAME.node.ts"
+#   git mv "$NEW_DIR/ApifyContentCrawler.properties.ts" "$NEW_DIR/$CLASS_NAME.properties.ts" 2>/dev/null || mv "$NEW_DIR/ApifyContentCrawler.properties.ts" "$NEW_DIR/$CLASS_NAME.properties.ts"
 
-  echo "Renamed files inside nodes/$CLASS_NAME: ApifyContentCrawler.* -> $CLASS_NAME.*"
-else
-  echo "Warning: $OLD_DIR not found (skipped)."
-fi
+#   echo "Renamed files inside nodes/$CLASS_NAME: ApifyContentCrawler.* -> $CLASS_NAME.*"
+# else
+#   echo "Warning: $OLD_DIR not found (skipped)."
+# fi

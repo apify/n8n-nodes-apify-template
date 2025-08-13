@@ -58,25 +58,25 @@ done
 #############################################
 # Edit Project Structure (rename folder and files)
 #############################################
-# OLD_DIR="./nodes/$TARGET_CLASS_NAME"
-# NEW_DIR="./nodes/$CLASS_NAME"
+OLD_DIR="./nodes/$TARGET_CLASS_NAME"
+NEW_DIR="./nodes/$CLASS_NAME"
 
-# if [[ -d "$OLD_DIR" ]]; then
-#   if [[ -e "$NEW_DIR" ]]; then
-#     echo "Target '$NEW_DIR' already exists — skipping dir rename."
-#   else
-#     git mv "$OLD_DIR" "$NEW_DIR" 2>/dev/null || mv "$OLD_DIR" "$NEW_DIR"
-#     echo "Renamed folder: nodes/$TARGET_CLASS_NAME -> nodes/$CLASS_NAME"
-#   fi
+if [[ -d "$OLD_DIR" ]]; then
+  if [[ -e "$NEW_DIR" ]]; then
+    echo "Target '$NEW_DIR' already exists — skipping dir rename."
+  else
+    git mv "$OLD_DIR" "$NEW_DIR" 2>/dev/null || mv "$OLD_DIR" "$NEW_DIR"
+    echo "Renamed folder: nodes/$TARGET_CLASS_NAME -> nodes/$CLASS_NAME"
+  fi
 
-#   # Rename files inside the new folder: <TARGET_CLASS_NAME>.* -> <CLASS_NAME>.*
-#   for ext in methods.ts node.json node.ts properties.ts; do
-#     if [[ -f "$NEW_DIR/$TARGET_CLASS_NAME.$ext" ]]; then
-#       git mv "$NEW_DIR/$TARGET_CLASS_NAME.$ext" "$NEW_DIR/$CLASS_NAME.$ext" 2>/dev/null \
-#         || mv "$NEW_DIR/$TARGET_CLASS_NAME.$ext" "$NEW_DIR/$CLASS_NAME.$ext"
-#     fi
-#   done
-#   echo "Renamed files inside nodes/$CLASS_NAME"
-# else
-#   echo "Warning: $OLD_DIR not found (skipped)."
-# fi
+  # Rename files inside the new folder: <TARGET_CLASS_NAME>.* -> <CLASS_NAME>.*
+  for ext in methods.ts node.json node.ts properties.ts; do
+    if [[ -f "$NEW_DIR/$TARGET_CLASS_NAME.$ext" ]]; then
+      git mv "$NEW_DIR/$TARGET_CLASS_NAME.$ext" "$NEW_DIR/$CLASS_NAME.$ext" 2>/dev/null \
+        || mv "$NEW_DIR/$TARGET_CLASS_NAME.$ext" "$NEW_DIR/$CLASS_NAME.$ext"
+    fi
+  done
+  echo "Renamed files inside nodes/$CLASS_NAME"
+else
+  echo "Warning: $OLD_DIR not found (skipped)."
+fi

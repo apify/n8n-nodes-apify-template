@@ -56,26 +56,25 @@ done
 #############################################
 # Edit Project Structure (rename folder and files)
 #############################################
-# OLD_DIR="./nodes/RenamedPackage"
-# NEW_DIR="./nodes/$CLASS_NAME"
+OLD_DIR="./nodes/ApifyContentCrawler"
+NEW_DIR="./nodes/$CLASS_NAME"
 
-# if [[ -d "$OLD_DIR" ]]; then
-#   if [[ -e "$NEW_DIR" ]]; then
-#     echo "Error: target folder '$NEW_DIR' already exists. Remove it or choose a different CLASS_NAME." >&2
-#     exit 1
-#   fi
+if [[ -d "$OLD_DIR" ]]; then
+  if [[ -e "$NEW_DIR" ]]; then
+    echo "Target '$NEW_DIR' already exists — skipping dir rename."
+  else
+    git mv "$OLD_DIR" "$NEW_DIR" 2>/dev/null || mv "$OLD_DIR" "$NEW_DIR"
+    echo "Renamed folder: nodes/ApifyContentCrawler -> nodes/$CLASS_NAME"
+  fi
 
-#   # 1) Rename the folder first (atomic dir rename)
-#   git mv "$OLD_DIR" "$NEW_DIR" 2>/dev/null || mv "$OLD_DIR" "$NEW_DIR"
-#   echo "Renamed folder: nodes/RenamedPackage -> nodes/$CLASS_NAME"
-
-#   # 2) Rename files inside the renamed folder
-#   git mv "$NEW_DIR/RenamedPackage.methods.ts"    "$NEW_DIR/$CLASS_NAME.methods.ts"    2>/dev/null || mv "$NEW_DIR/RenamedPackage.methods.ts"    "$NEW_DIR/$CLASS_NAME.methods.ts"
-#   git mv "$NEW_DIR/RenamedPackage.node.json"     "$NEW_DIR/$CLASS_NAME.node.json"     2>/dev/null || mv "$NEW_DIR/RenamedPackage.node.json"     "$NEW_DIR/$CLASS_NAME.node.json"
-#   git mv "$NEW_DIR/RenamedPackage.node.ts"       "$NEW_DIR/$CLASS_NAME.node.ts"       2>/dev/null || mv "$NEW_DIR/RenamedPackage.node.ts"       "$NEW_DIR/$CLASS_NAME.node.ts"
-#   git mv "$NEW_DIR/RenamedPackage.properties.ts" "$NEW_DIR/$CLASS_NAME.properties.ts" 2>/dev/null || mv "$NEW_DIR/RenamedPackage.properties.ts" "$NEW_DIR/$CLASS_NAME.properties.ts"
-
-#   echo "Renamed files inside nodes/$CLASS_NAME: RenamedPackage.* -> $CLASS_NAME.*"
-# else
-#   echo "Warning: $OLD_DIR not found (skipped)."
-# fi
+  # Rename files inside the new folder: ApifyContentCrawler.* -> $CLASS_NAME.*
+  for ext in methods.ts node.json node.ts properties.ts; do
+    if [[ -f "$NEW_DIR/ApifyContentCrawler.$ext" ]]; then
+      git mv "$NEW_DIR/ApifyContentCrawler.$ext" "$NEW_DIR/$CLASS_NAME.$ext" 2>/dev/null \
+        || mv "$NEW_DIR/ApifyContentCrawler.$ext" "$NEW_DIR/$CLASS_NAME.$ext"
+    fi
+  done
+  echo "Renamed files inside nodes/$CLASS_NAME"
+else
+  echo "Warning: $OLD_DIR not found (skipped)."
+fi

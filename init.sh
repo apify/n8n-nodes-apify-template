@@ -27,11 +27,11 @@ OLD_DIR="./nodes/ApifyContentCrawler"
 NEW_DIR="./nodes/$CLASS_NAME"
 
 if [[ -d "$OLD_DIR" ]]; then
-  # Rename files inside the folder
-  for file in "$OLD_DIR"/ApifyContentCrawler.*; do
-    new_file="${file/ApifyContentCrawler/$CLASS_NAME}"
-    git mv "$file" "$new_file" 2>/dev/null || mv "$file" "$new_file"
-  done
+  # Rename each file explicitly
+  git mv "$OLD_DIR/ApifyContentCrawler.methods.ts"     "$OLD_DIR/$CLASS_NAME.methods.ts"     2>/dev/null || mv "$OLD_DIR/ApifyContentCrawler.methods.ts"     "$OLD_DIR/$CLASS_NAME.methods.ts"
+  git mv "$OLD_DIR/ApifyContentCrawler.node.json"      "$OLD_DIR/$CLASS_NAME.node.json"      2>/dev/null || mv "$OLD_DIR/ApifyContentCrawler.node.json"      "$OLD_DIR/$CLASS_NAME.node.json"
+  git mv "$OLD_DIR/ApifyContentCrawler.node.ts"        "$OLD_DIR/$CLASS_NAME.node.ts"        2>/dev/null || mv "$OLD_DIR/ApifyContentCrawler.node.ts"        "$OLD_DIR/$CLASS_NAME.node.ts"
+  git mv "$OLD_DIR/ApifyContentCrawler.properties.ts"  "$OLD_DIR/$CLASS_NAME.properties.ts"  2>/dev/null || mv "$OLD_DIR/ApifyContentCrawler.properties.ts"  "$OLD_DIR/$CLASS_NAME.properties.ts"
 
   # Rename the folder
   git mv "$OLD_DIR" "$NEW_DIR" 2>/dev/null || mv "$OLD_DIR" "$NEW_DIR"

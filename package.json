@@ -1,6 +1,6 @@
 {
 	"name": "@apify/n8n-nodes-apify-content-crawler",
-	"version": "0.0.1",
+	"version": "0.0.0",
 	"description": "n8n nodes for Apify",
 	"keywords": [
 		"n8n-community-node-package",

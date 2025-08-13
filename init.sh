@@ -46,15 +46,13 @@ find . -type f \
   ! -path "*/docs/*" \
   ! -path "*/credentials/*" \
   ! -path "*/.git/*" | while read -r FILE; do
-  # Only edit text files (skip binaries)
-  if file "$FILE" | grep -qE 'text|empty'; then
+  # Edit only text-ish files, including JSON
+  if file "$FILE" | grep -qE 'text|empty|JSON'; then
     sed "${SED_INPLACE[@]}" "s#$TARGET_CLASS_NAME#$CLASS_NAME#g" "$FILE"
     sed "${SED_INPLACE[@]}" "s#$TARGET_PACKAGE_NAME#$PACKAGE_NAME#g" "$FILE"
     echo "Edited: $FILE"
   fi
 done
-
-
 #############################################
 # Edit Project Structure (rename folder and files)
 #############################################

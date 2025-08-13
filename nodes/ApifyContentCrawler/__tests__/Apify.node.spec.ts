@@ -1,4 +1,4 @@
-import { ACTOR_ID, ApifyContentCrawler } from '../ApifyContentCrawler.node';
+import { ACTOR_ID, ApifyContentCrawler, ClassNameCamel } from '../ApifyContentCrawler.node';
 import { executeWorkflow } from './utils/executeWorkflow';
 import { CredentialsHelper } from './utils/credentialHelper';
 import { getRunTaskDataByNodeName, getTaskData } from './utils/getNodeResultData';
@@ -22,7 +22,7 @@ describe('Apify Node', () => {
 	describe('description', () => {
 		it('should have a name property', () => {
 			expect(apifyNode.description.name).toBeDefined();
-			expect(apifyNode.description.name).toEqual('apifyContentCrawler');
+			expect(apifyNode.description.name).toEqual(ClassNameCamel);
 		});
 
 		it('should have properties defined', () => {

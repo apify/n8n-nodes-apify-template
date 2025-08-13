@@ -1,7 +1,0 @@
-Rename ApifyContentCrawler:
-- folder name
-- file names
-- npm package
-
-- CI
-

@@ -8,6 +8,7 @@ import {
 	type ILoadOptionsFunctions,
 	type IRequestOptions,
 } from 'n8n-workflow';
+import { X_PLATFORM_APP_HEADER_ID, X_PLATFORM_HEADER_ID } from '../ApifyContentCrawler.node';
 
 type IApiRequestOptions = IRequestOptions & { uri?: string };
 
@@ -31,8 +32,8 @@ export async function apiRequest(
 		qs: query,
 		url: endpoint,
 		headers: {
-			'x-apify-integration-platform': 'n8n',
-			'x-apify-integration-app-id': 'website-content-crawler-app',
+			'x-apify-integration-platform': X_PLATFORM_HEADER_ID,
+			...(X_PLATFORM_APP_HEADER_ID && { 'x-apify-integration-app-id': X_PLATFORM_APP_HEADER_ID }),
 		},
 	};
 

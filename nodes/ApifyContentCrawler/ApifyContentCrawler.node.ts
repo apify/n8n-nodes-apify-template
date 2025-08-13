@@ -12,12 +12,21 @@ import { properties } from './ApifyContentCrawler.properties';
 import { methods } from './ApifyContentCrawler.methods';
 import { actorsRouter } from './resources/actors/router';
 
-export const ACTOR_ID = 'aYG0l9s7dbB7j3gbS';
+import { config as loadEnv } from 'dotenv';
+loadEnv();
+
+export const PACKAGE_NAME = process.env.PACKAGE_NAME as string;
+export const CLASS_NAME = process.env.CLASS_NAME as string;
+export const ClassNameCamel = CLASS_NAME.charAt(0).toLowerCase() + CLASS_NAME.slice(1); // make the first letter lowercase for name fields
+export const ACTOR_ID = process.env.ACTOR_ID as string;
+export const X_PLATFORM_HEADER_ID = process.env.X_PLATFORM_HEADER_ID as string;
+export const X_PLATFORM_APP_HEADER_ID = process.env.X_PLATFORM_APP_HEADER_ID as string;
+export const DISPLAY_NAME = process.env.DISPLAY_NAME as string;
 
 export class ApifyContentCrawler implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Apify Scraper for AI Crawling',
-		name: 'apifyContentCrawler',
+		displayName: DISPLAY_NAME,
+		name: ClassNameCamel,
 		icon: 'file:apify.svg',
 		group: ['transform'],
 		// Mismatched version and defaultVersion as a minor hack to hide "Custom API Call" resource
@@ -25,9 +34,9 @@ export class ApifyContentCrawler implements INodeType {
 		defaultVersion: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description:
-			'Crawl any website and extract text content to feed AI Workflows or LLM applications.',
+			'<EDIT> Crawl any website and extract text content to feed AI Workflows or LLM applications.',
 		defaults: {
-			name: 'Apify Scraper for AI Crawling',
+			name: DISPLAY_NAME,
 		},
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],

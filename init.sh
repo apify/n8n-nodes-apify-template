@@ -7,6 +7,7 @@ NEW_NAME="renamed-package"
 CLASS_NAME="RenamedPackage"
 X_PLATFORM_HEADER_ID="X-Platform-Header-ID"
 X_PLATFORM_APP_HEADER_ID="X-Platform-App-Header-ID"
+DISPLAY_NAME="Actor Display Name"
 
 #############################################
 # Create .env
@@ -18,6 +19,7 @@ tmp_env=".env.$$.tmp"
   printf 'ACTOR_ID=%s\n' "$ACTOR_ID"
   printf 'X_PLATFORM_HEADER_ID=%s\n' "$X_PLATFORM_HEADER_ID"
   printf 'X_PLATFORM_APP_HEADER_ID=%s\n' "$X_PLATFORM_APP_HEADER_ID"
+  printf 'DISPLAY_NAME=%s\n' "$DISPLAY_NAME"
 } > "$tmp_env"
 mv "$tmp_env" .env
 echo "Wrote .env with PACKAGE_NAME and CLASS_NAME."

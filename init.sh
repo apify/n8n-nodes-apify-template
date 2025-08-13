@@ -2,8 +2,25 @@
 set -e
 
 # Variables
+ACTOR_ID="aYG0l9s7dbB7j3gbS"
 NEW_NAME="renamed-package"
 CLASS_NAME="RenamedPackage"
+X_PLATFORM_HEADER_ID="X-Platform-Header-ID"
+X_PLATFORM_APP_HEADER_ID="X-Platform-App-Header-ID"
+
+#############################################
+# Create .env
+#############################################
+tmp_env=".env.$$.tmp"
+{
+  printf 'PACKAGE_NAME=%s\n' "$NEW_NAME"
+  printf 'CLASS_NAME=%s\n' "$CLASS_NAME"
+  printf 'ACTOR_ID=%s\n' "$ACTOR_ID"
+  printf 'X_PLATFORM_HEADER_ID=%s\n' "$X_PLATFORM_HEADER_ID"
+  printf 'X_PLATFORM_APP_HEADER_ID=%s\n' "$X_PLATFORM_APP_HEADER_ID"
+} > "$tmp_env"
+mv "$tmp_env" .env
+echo "Wrote .env with PACKAGE_NAME and CLASS_NAME."
 
 #############################################
 # Edit package.json fields

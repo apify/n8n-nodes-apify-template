@@ -35,7 +35,8 @@
 		"lintfix": "eslint nodes credentials package.json --fix",
 		"prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json",
 		"merge:api": "npx openapi-merge-cli --config ./openapi.config.json",
-		"test": "WEBHOOK_URL=https://localhost:5678 jest --config jest.config.js"
+		"test": "WEBHOOK_URL=https://localhost:5678 jest --config jest.config.js",
+		"create-actor-app": "node scripts/setupProject.ts"
 	},
 	"files": [
 		"dist"
@@ -62,6 +63,7 @@
 		"n8n-core": "1.83.0",
 		"n8n-workflow": "1.82.0",
 		"nock": "^14.0.5",
+		"glob": "^11.0.3",
 		"prettier": "^3.3.2",
 		"ts-jest": "^29.3.2",
 		"typescript": "5.5.3"

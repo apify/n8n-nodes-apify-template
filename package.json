@@ -36,7 +36,7 @@
 		"prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json",
 		"merge:api": "npx openapi-merge-cli --config ./openapi.config.json",
 		"test": "WEBHOOK_URL=https://localhost:5678 jest --config jest.config.js",
-		"create-actor-app": "node scripts/setupProject.ts"
+		"create-actor-app": "node scripts/cli.ts"
 	},
 	"files": [
 		"dist"

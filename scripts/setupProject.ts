@@ -3,7 +3,7 @@
 import fs from "fs";
 import path from "path";
 import { execSync } from "child_process";
-import glob from "glob";
+import { glob } from "glob";
 
 //
 // Targets

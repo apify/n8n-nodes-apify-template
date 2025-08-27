@@ -27,7 +27,7 @@ export async function setConfig(
         .split('-')
         .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
         .join(''); // ApifyWebsiteContentCrawler
-    const displayName = 'Apify' + rawName
+    const displayName = 'Apify ' + rawName
         .split('-')
         .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
         .join(' ');

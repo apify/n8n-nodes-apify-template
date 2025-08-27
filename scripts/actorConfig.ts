@@ -33,12 +33,12 @@ export async function setConfig(
         .join(' ');
 
     const values: PlaceholderValues = {
-        PACKAGE_NAME: `n8n-nodes-apify-${rawName}`, // n8n-nodes-apify-website-content-crawler
-        CLASS_NAME: className,                      // ApifyWebsiteContentCrawler
+        PACKAGE_NAME: `n8n-nodes-apify-${rawName}`,
+        CLASS_NAME: className,
         ACTOR_ID: actor.id,
         X_PLATFORM_HEADER_ID: xPlatformHeaderId,
-        X_PLATFORM_APP_HEADER_ID: `${rawName}-app`, // website-content-crawler-app
-        DISPLAY_NAME: displayName,                      // website-content-crawler
+        X_PLATFORM_APP_HEADER_ID: `${rawName}-app`,
+        DISPLAY_NAME: displayName,
         DESCRIPTION: actor.description || '',
     };
 

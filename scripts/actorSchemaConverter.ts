@@ -106,7 +106,7 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
             if (field.editor === 'requestListSources') {
                 return {
                     type: 'fixedCollection',
-                    multipleValues: true,
+                    typeOptions: { multipleValues: true },
                     default: {},
                     options: [
                         {
@@ -128,7 +128,7 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
                 return {
                     type: 'fixedCollection',
                     default: {},
-                    multipleValues: true,
+                    typeOptions: { multipleValues: true },
                     options: [
                         {
                             name: 'values',
@@ -163,7 +163,7 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
                 return {
                     type: 'fixedCollection',
                     default: {},
-                    multipleValues: true,
+                    typeOptions: { multipleValues: true },
                     options: [
                         {
                             name: 'pairs',

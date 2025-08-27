@@ -216,9 +216,27 @@ export async function generateActorResources(
         `export const properties: INodeProperties[] = ${JSON.stringify(properties, null, 2)};\n`;
 
     for (const filePath of propertiesPaths) {
-        fs.writeFileSync(filePath, newPropsContent, 'utf-8');
-        console.log(`✅ Updated properties in ${filePath}`);
-    }
+        // clone properties so we don’t mutate the shared array
+        const propsWithDisplayOptions = properties.map((prop) => ({
+            ...prop,
+            displayOptions: {
+                show: {
+                    operation: [
+                        filePath.includes('advanced')
+                            ? 'Run Actor Advanced'
+                            : 'Run Actor Standard',
+                    ],
+                },
+            },
+        }));
+
+    const newPropsContent =
+        `import { INodeProperties } from 'n8n-workflow';\n\n` +
+        `export const properties: INodeProperties[] = ${JSON.stringify(propsWithDisplayOptions, null, 2)};\n`;
+
+    fs.writeFileSync(filePath, newPropsContent, 'utf-8');
+    console.log(`✅ Updated properties in ${filePath}`);
+}
 
     // --- execute.ts ---
     const paramAssignments: string[] = [];

@@ -1,4 +1,5 @@
 import fs from 'fs';
+import type { ApifyClient, Actor } from 'apify-client';
 
 export interface PlaceholderValues {
     PACKAGE_NAME: string;
@@ -11,15 +12,45 @@ export interface PlaceholderValues {
 }
 
 /**
- * Replaces $$PLACEHOLDERS in the given node.ts file.
+ * Uses an existing ApifyClient to fetch actor info,
+ * generates placeholder values, replaces them in the node file,
+ * and returns the values.
  */
-export function setConfig(nodeFilePath: string, values: PlaceholderValues) {
-    let nodeFile = fs.readFileSync(nodeFilePath, 'utf-8');
-
-    for (const [key, val] of Object.entries(values)) {
-        nodeFile = nodeFile.replace(`$$${key}`, val);
+export async function setConfig(
+    client: ApifyClient,
+    nodeFilePath: string,
+    actorId: string,
+    xPlatformHeaderId: string,
+): Promise<PlaceholderValues> {
+    const actor = await client.actor(actorId).get();
+    if (!actor) {
+        throw new Error(`❌ Actor with id ${actorId} not found.`);
     }
 
+    const rawName = actor.name; // e.g. "website-content-crawler"
+    const className = 'Apify' + rawName
+        .split('-')
+        .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(''); // ApifyWebsiteContentCrawler
+
+    const values: PlaceholderValues = {
+        PACKAGE_NAME: `n8n-nodes-apify-${rawName}`, // n8n-nodes-apify-website-content-crawler
+        CLASS_NAME: className,                      // ApifyWebsiteContentCrawler
+        ACTOR_ID: actorId,
+        X_PLATFORM_HEADER_ID: xPlatformHeaderId,
+        X_PLATFORM_APP_HEADER_ID: `${rawName}-app`, // website-content-crawler-app
+        DISPLAY_NAME: rawName,                      // website-content-crawler
+        DESCRIPTION: actor.description || '',
+    };
+
+    // Replace placeholders in node file
+    let nodeFile = fs.readFileSync(nodeFilePath, 'utf-8');
+    for (const [key, val] of Object.entries(values)) {
+        const regex = new RegExp(`\\$\\$${key}`, 'g');
+        nodeFile = nodeFile.replace(regex, val);
+    }
     fs.writeFileSync(nodeFilePath, nodeFile, 'utf-8');
     console.log(`✅ Updated placeholders in ${nodeFilePath}`);
+
+    return values;
 }

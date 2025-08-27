@@ -34,8 +34,7 @@ export class ApifyContentCrawler implements INodeType {
 		version: [1],
 		defaultVersion: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description:
-			'<EDIT> Crawl any website and extract text content to feed AI Workflows or LLM applications.',
+		description: DESCRIPTION,
 		defaults: {
 			name: DISPLAY_NAME,
 		},

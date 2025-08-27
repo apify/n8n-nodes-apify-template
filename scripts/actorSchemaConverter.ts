@@ -2,17 +2,10 @@
 import chalk from 'chalk';
 import { type ApifyInputField, type ApifyInputSchema } from './types.ts';
 import type { INodeProperties } from 'n8n-workflow';
-import { ApifyClient } from 'apify-client';
+import type { Actor, ApifyClient } from 'apify-client';
 import fs from 'fs';
 
-const apifyClient = new ApifyClient();
-
-export async function createActorAppSchemaForN8n(actorId: string) {
-	// Get Actor
-	const actor = await apifyClient.actor(actorId).get();
-	if (!actor) {
-		throw new Error(`Actor with ID ${actorId} not found`);
-	}
+export async function createActorAppSchemaForN8n(client: ApifyClient, actor: Actor) {
 	console.log(`🚀 Creating n8n node for ${chalk.blueBright.bold(actor.title)}`);
 
 	// Get default build
@@ -24,7 +17,7 @@ export async function createActorAppSchemaForN8n(actorId: string) {
 	if (!buildId) {
 		throw new Error(`Build tag ${defaultBuild} does not have build ID`);
 	}
-	const build = await apifyClient.build(buildId).get();
+	const build = await client.build(buildId).get();
 	if (!build) {
 		throw new Error(`Build with ID ${buildId} not found`);
 	}
@@ -206,12 +199,14 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
  * Generate and write n8n integration files (properties.ts & execute.ts)
  */
 export async function generateActorResources(
+    client: ApifyClient,
+    actor: Actor,
     actorId: string,
     propertiesPaths: string[],
     executePaths: string[],
 ) {
     console.log('⚙️  Fetching properties from actor input schema...');
-    const properties = (await createActorAppSchemaForN8n(actorId)) as INodeProperties[];
+    const properties = (await createActorAppSchemaForN8n(client, actor)) as INodeProperties[];
 
     // --- properties.ts ---
     const newPropsContent =

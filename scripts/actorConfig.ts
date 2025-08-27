@@ -17,29 +17,28 @@ export interface PlaceholderValues {
  * and returns the values.
  */
 export async function setConfig(
-    client: ApifyClient,
+    actor: Actor,
     nodeFilePath: string,
-    actorId: string,
     xPlatformHeaderId: string,
 ): Promise<PlaceholderValues> {
-    const actor = await client.actor(actorId).get();
-    if (!actor) {
-        throw new Error(`❌ Actor with id ${actorId} not found.`);
-    }
 
     const rawName = actor.name; // e.g. "website-content-crawler"
     const className = 'Apify' + rawName
         .split('-')
         .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
         .join(''); // ApifyWebsiteContentCrawler
+    const displayName = rawName
+        .split('-')
+        .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
 
     const values: PlaceholderValues = {
         PACKAGE_NAME: `n8n-nodes-apify-${rawName}`, // n8n-nodes-apify-website-content-crawler
         CLASS_NAME: className,                      // ApifyWebsiteContentCrawler
-        ACTOR_ID: actorId,
+        ACTOR_ID: actor.id,
         X_PLATFORM_HEADER_ID: xPlatformHeaderId,
         X_PLATFORM_APP_HEADER_ID: `${rawName}-app`, // website-content-crawler-app
-        DISPLAY_NAME: rawName,                      // website-content-crawler
+        DISPLAY_NAME: displayName,                      // website-content-crawler
         DESCRIPTION: actor.description || '',
     };
 

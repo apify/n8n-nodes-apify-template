@@ -44,7 +44,7 @@ export async function setupProject() {
     }
 
     // Step 1: Fetch actor info & replace placeholders
-    const values = await setConfig(client, NODE_FILE_PATH, ACTOR_ID, X_PLATFORM_HEADER_ID);
+    const values = await setConfig(actor, NODE_FILE_PATH, X_PLATFORM_HEADER_ID);
 
     // Step 2: Generate n8n resources based on Actor input schema
     await generateActorResources(client, actor, values.ACTOR_ID, PROPERTIES_PATHS, EXECUTE_PATHS);

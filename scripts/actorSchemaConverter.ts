@@ -50,7 +50,9 @@ export function convertApifyToN8n(apifySchema: ApifyInputSchema): INodePropertie
             description: field.description || '',
             required: requiredFields.includes(key),
             // prefer explicit default from schema, else prefill, else ''
-            default: field.default ?? field.prefill ?? '',
+            default: typeProps.type === 'json'
+                ? (field.default ? JSON.stringify(field.default) : field.prefill ?? '')
+                : field.default ?? field.prefill ?? '',
             ...typeProps,
         };
 

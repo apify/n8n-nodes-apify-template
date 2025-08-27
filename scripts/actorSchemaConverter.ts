@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { type ApifyInputField, type ApifyInputSchema } from './types.ts';
 import type { INodeProperties } from 'n8n-workflow';
 import { ApifyClient } from 'apify-client';
+import fs from 'fs';
 
 const apifyClient = new ApifyClient();
 

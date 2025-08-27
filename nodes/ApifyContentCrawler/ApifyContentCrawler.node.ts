@@ -12,16 +12,17 @@ import { properties } from './ApifyContentCrawler.properties';
 import { methods } from './ApifyContentCrawler.methods';
 import { actorsRouter } from './resources/actors/router';
 
-import { config as loadEnv } from 'dotenv';
-loadEnv();
+export const ACTOR_ID = "$$ACTOR_ID" as string;
 
-export const PACKAGE_NAME = process.env.PACKAGE_NAME as string;
-export const CLASS_NAME = process.env.CLASS_NAME as string;
+export const PACKAGE_NAME = "$$PACKAGE_NAME" as string;
+export const CLASS_NAME = "$$CLASS_NAME" as string;
 export const ClassNameCamel = CLASS_NAME.charAt(0).toLowerCase() + CLASS_NAME.slice(1); // make the first letter lowercase for name fields
-export const ACTOR_ID = process.env.ACTOR_ID as string;
-export const X_PLATFORM_HEADER_ID = process.env.X_PLATFORM_HEADER_ID as string;
-export const X_PLATFORM_APP_HEADER_ID = process.env.X_PLATFORM_APP_HEADER_ID as string;
-export const DISPLAY_NAME = process.env.DISPLAY_NAME as string;
+
+export const X_PLATFORM_HEADER_ID = "$$X_PLATFORM_HEADER_ID" as string;
+export const X_PLATFORM_APP_HEADER_ID = "$$X_PLATFORM_APP_HEADER_ID" as string;
+
+export const DISPLAY_NAME = "$$DISPLAY_NAME" as string;
+export const DESCRIPTION = "$$DESCRIPTION" as string;
 
 export class ApifyContentCrawler implements INodeType {
 	description: INodeTypeDescription = {

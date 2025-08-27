@@ -6,7 +6,7 @@ import {
 	IVersionedNodeType,
 	NodeHelpers,
 } from 'n8n-workflow';
-import { ApifyContentCrawler, ClassNameCamel, PACKAGE_NAME } from '../../ApifyContentCrawler.node';
+import { ApifyRagWebBrowser, ClassNameCamel, PACKAGE_NAME } from '../../ApifyRagWebBrowser.node';
 
 export class NodeTypesClass implements INodeTypes {
 	nodeTypes: INodeTypeData = {};
@@ -41,6 +41,6 @@ export class NodeTypesClass implements INodeTypes {
 
 const nodeTypes = new NodeTypesClass();
 
-nodeTypes.addNode(`${PACKAGE_NAME}.${ClassNameCamel}`, new ApifyContentCrawler());
+nodeTypes.addNode(`${PACKAGE_NAME}.${ClassNameCamel}`, new ApifyRagWebBrowser());
 
 export { nodeTypes };

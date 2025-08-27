@@ -3,7 +3,7 @@
 	"nodes": [
 		{
 			"parameters": {
-				"operation": "Run Actor Advanced",
+				"operation": "Run Actor Standard",
 				"entries": {
 					"entry": [
 						{
@@ -12,11 +12,11 @@
 					]
 				}
 			},
-			"type": "n8n-nodes-apify-content-crawler.apifyContentCrawler",
+			"type": "n8n-nodes-apify-rag-web-browser.apifyContentCrawler",
 			"typeVersion": 1,
-			"position": [416, 0],
-			"id": "38879d7b-23b5-4e4f-a94d-625d19be90f0",
-			"name": "Crawl a Website (Advanced Settings)",
+			"position": [208, 0],
+			"id": "7291f536-58a7-4718-bdcb-86119d3631d9",
+			"name": "Crawl a Website (Standard Settings)",
 			"credentials": {
 				"apifyApi": {
 					"id": "1tlG9MyqRLFIPdyr",

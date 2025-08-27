@@ -23,7 +23,7 @@ module.exports = {
 		'**/*.js',
 		'**/node_modules/**',
 		'**/dist/**',
-		'nodes/ApifyContentCrawler/__tests__/**',
+		'nodes/ApifyRagWebBrowser/__tests__/**',
 	],
 
 	plugins: ['@stylistic'],

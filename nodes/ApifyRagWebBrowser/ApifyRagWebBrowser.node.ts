@@ -8,23 +8,23 @@ import {
 	INodeTypeDescription,
 	NodeConnectionType,
 } from 'n8n-workflow';
-import { properties } from './ApifyContentCrawler.properties';
-import { methods } from './ApifyContentCrawler.methods';
+import { properties } from './ApifyRagWebBrowser.properties';
+import { methods } from './ApifyRagWebBrowser.methods';
 import { actorsRouter } from './resources/actors/router';
 
-export const ACTOR_ID = '$$ACTOR_ID' as string;
+export const ACTOR_ID = '3ox4R101TgZz67sLr' as string;
 
-export const PACKAGE_NAME = '$$PACKAGE_NAME' as string;
-export const CLASS_NAME = '$$CLASS_NAME' as string;
+export const PACKAGE_NAME = 'n8n-nodes-apify-rag-web-browser' as string;
+export const CLASS_NAME = 'ApifyRagWebBrowser' as string;
 export const ClassNameCamel = CLASS_NAME.charAt(0).toLowerCase() + CLASS_NAME.slice(1); // make the first letter lowercase for name fields
 
-export const X_PLATFORM_HEADER_ID = '$$X_PLATFORM_HEADER_ID' as string;
-export const X_PLATFORM_APP_HEADER_ID = '$$X_PLATFORM_APP_HEADER_ID' as string;
+export const X_PLATFORM_HEADER_ID = 'n8n' as string;
+export const X_PLATFORM_APP_HEADER_ID = 'rag-web-browser-app' as string;
 
-export const DISPLAY_NAME = '$$DISPLAY_NAME' as string;
-export const DESCRIPTION = '$$DESCRIPTION' as string;
+export const DISPLAY_NAME = 'Apify Rag Web Browser' as string;
+export const DESCRIPTION = 'Web browser for OpenAI Assistants, RAG pipelines, or AI agents, similar to a web browser in ChatGPT. It queries Google Search, scrapes the top N pages, and returns their content as Markdown for further processing by an LLM. It can also scrape individual URLs. Supports Model Context Protocol (MCP).' as string;
 
-export class ApifyContentCrawler implements INodeType {
+export class ApifyRagWebBrowser implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: DISPLAY_NAME,
 		name: ClassNameCamel,

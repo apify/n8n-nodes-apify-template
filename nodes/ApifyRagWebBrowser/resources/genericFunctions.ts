@@ -8,7 +8,7 @@ import {
 	type ILoadOptionsFunctions,
 	type IRequestOptions,
 } from 'n8n-workflow';
-import { X_PLATFORM_APP_HEADER_ID, X_PLATFORM_HEADER_ID } from '../ApifyContentCrawler.node';
+import { X_PLATFORM_APP_HEADER_ID, X_PLATFORM_HEADER_ID } from '../ApifyRagWebBrowser.node';
 
 type IApiRequestOptions = IRequestOptions & { uri?: string };
 

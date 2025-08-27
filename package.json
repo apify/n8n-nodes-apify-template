@@ -1,5 +1,5 @@
 {
-	"name": "@apify/n8n-nodes-apify-content-crawler",
+	"name": "@apify/n8n-nodes-apify-rag-web-browser",
 	"version": "0.0.0",
 	"description": "n8n nodes for Apify",
 	"keywords": [
@@ -11,14 +11,14 @@
 		"apify-nodes"
 	],
 	"license": "MIT",
-	"homepage": "https://github.com/apify/n8n-nodes-apify-content-crawler",
+	"homepage": "https://github.com/apify/n8n-nodes-apify-rag-web-browser",
 	"author": {
 		"name": "Apify Team",
 		"email": "integrations@apify.com"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/apify/n8n-nodes-apify-content-crawler.git"
+		"url": "https://github.com/apify/n8n-nodes-apify-rag-web-browser.git"
 	},
 	"engines": {
 		"node": ">=18.10",
@@ -48,7 +48,7 @@
 			"dist/credentials/ApifyOAuth2Api.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/ApifyContentCrawler/ApifyContentCrawler.node.js"
+			"dist/nodes/ApifyRagWebBrowser/ApifyRagWebBrowser.node.js"
 		]
 	},
 	"devDependencies": {

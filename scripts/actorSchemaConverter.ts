@@ -200,3 +200,74 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
             return { type: 'string' };
     }
 }
+
+/**
+ * Generate and write n8n integration files (properties.ts & execute.ts)
+ */
+export async function generateActorResources(
+    actorId: string,
+    propertiesPaths: string[],
+    executePaths: string[],
+) {
+    console.log('⚙️  Fetching properties from actor input schema...');
+    const properties = (await createActorAppSchemaForN8n(actorId)) as INodeProperties[];
+
+    // --- properties.ts ---
+    const newPropsContent =
+        `import { INodeProperties } from 'n8n-workflow';\n\n` +
+        `export const properties: INodeProperties[] = ${JSON.stringify(properties, null, 2)};\n`;
+
+    for (const filePath of propertiesPaths) {
+        fs.writeFileSync(filePath, newPropsContent, 'utf-8');
+        console.log(`✅ Updated properties in ${filePath}`);
+    }
+
+    // --- execute.ts ---
+    const paramAssignments: string[] = [];
+    const specialCases: string[] = [];
+
+    for (const prop of properties) {
+        if (prop.type === 'fixedCollection' && prop.name === 'entries') {
+            specialCases.push(`
+  const entries = this.getNodeParameter('entries', i, {}) as { entry?: { value: string }[] };
+  if (entries?.entry?.length) {
+    mergedInput.startUrls = entries.entry.map((e) => ({
+      url: e.value,
+      method: 'GET',
+    }));
+  }`);
+        } else {
+            paramAssignments.push(
+                `  mergedInput["${prop.name}"] = this.getNodeParameter("${prop.name}", i);`
+            );
+        }
+    }
+
+    const newExecuteContent = `import { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
+import { ACTOR_ID } from '../../../ApifyContentCrawler.node';
+import {
+  getDefaultBuild,
+  getDefaultInputsFromBuild,
+  executeActorRunFlow,
+} from '../../executeActor';
+
+export async function runActor(this: IExecuteFunctions, i: number): Promise<INodeExecutionData> {
+  const build = await getDefaultBuild.call(this, ACTOR_ID);
+  const defaultInput = getDefaultInputsFromBuild(build);
+
+  const mergedInput: Record<string, any> = {
+    ...defaultInput,
+  };
+
+${paramAssignments.join('\n')}
+${specialCases.join('\n')}
+
+  return await executeActorRunFlow.call(this, ACTOR_ID, mergedInput);
+}
+`;
+
+    for (const filePath of executePaths) {
+        fs.writeFileSync(filePath, newExecuteContent, 'utf-8');
+        console.log(`✅ Updated execute function in ${filePath}`);
+    }
+}

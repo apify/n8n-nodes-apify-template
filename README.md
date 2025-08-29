@@ -20,7 +20,7 @@ This is an n8n community node that integrates [Apify](https://apify.com) with yo
 
 ### ⚙️ Prerequisites
 
-- Node.js (recommended: v18.10+)
+- Node.js (recommended: v23.11.1)
 - pnpm installed globally
 
 ---
@@ -49,7 +49,7 @@ Create the `custom` directory inside `~/.n8n` (if it doesn't exist), then symlin
 
 ```bash
 mkdir -p ~/.n8n/custom
-ln -s /full/path/to/n8n-nodes-apify-content-crawler ~/.n8n/custom/n8n-nodes-apify-content-crawler # replace full/path/to with the path to your n8n-nodes-apify-content-crawler directory
+ln -s /full/path/to/n8n-nodes-apify-youtube-comments-scraper ~/.n8n/custom/n8n-nodes-apify-youtube-comments-scraper # replace full/path/to with the path to your n8n-nodes-apify-youtube-comments-scraper directory
 ```
 
 > **Note:** Use the absolute path in the symlink for compatibility.
@@ -266,13 +266,13 @@ Regardless of how you create and publish the GitHub Release:
         3.  Build and test processes.
         4.  Update `package.json` and `pnpm-lock.yaml` to version `X.Y.Z`.
         5.  Commit these version changes back to the branch the release was targeted from with a message like `chore(release): set version to X.Y.Z [skip ci]`.
-        6.  Publish the package `@apify/n8n-nodes-apify-content-crawler@X.Y.Z` to npm.
+        6.  Publish the package `@apify/n8n-nodes-apify-youtube-comments-scraper@X.Y.Z` to npm.
 
 2.  **Verify the Package on npm:**
     After the workflow successfully completes (check the "Actions" tab in your GitHub repository):
     * Verify the new version on npm:
         ```bash
-        pnpm view @apify/n8n-nodes-apify-content-crawler version
+        pnpm view @apify/n8n-nodes-apify-youtube-comments-scraper version
         ```
         This should print `X.Y.Z`.
 
@@ -302,4 +302,4 @@ Track changes and updates to the node here.
 If you encounter issues:
 1. Check the [Apify API documentation](https://docs.apify.com)
 2. Review the [n8n Community Nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
-3. Open an issue in the [GitHub repository](https://github.com/apify/n8n-nodes-apify-content-crawler)
+3. Open an issue in the [GitHub repository](https://github.com/apify/n8n-nodes-apify-youtube-comments-scraper)

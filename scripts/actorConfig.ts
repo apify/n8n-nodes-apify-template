@@ -23,14 +23,16 @@ export async function setConfig(
 ): Promise<PlaceholderValues> {
 
     const rawName = actor.name; // e.g. "website-content-crawler"
+    const rawNameProcessed = rawName
+        .split('-')
+        .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+
     const className = 'Apify' + rawName
         .split('-')
         .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
         .join(''); // ApifyWebsiteContentCrawler
-    const displayName = 'Apify ' + rawName
-        .split('-')
-        .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
+    const displayName = 'Apify ' + `${actor.title ? actor.title : rawNameProcessed}`
 
     const values: PlaceholderValues = {
         PACKAGE_NAME: `n8n-nodes-apify-${rawName}`,

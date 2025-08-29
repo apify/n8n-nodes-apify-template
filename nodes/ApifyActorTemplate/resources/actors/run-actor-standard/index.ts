@@ -8,7 +8,7 @@ const option: INodePropertyOptions = {
 	name: 'Standard Settings',
 	value: 'Run Actor Standard',
 	action: 'Crawl a Website (Standard Settings)',
-	description: 'Crawl any website with our standard settings',
+	description: 'Use standard options for a simple setup',
 };
 
 export { option, properties };

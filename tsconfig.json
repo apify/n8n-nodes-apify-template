@@ -22,5 +22,5 @@
 		"outDir": "./dist/"
 	},
 	"include": ["credentials/**/*", "nodes/**/*", "nodes/**/*.json", "package.json"],
-	"exclude": ["nodes/ApifyContentCrawler/__tests__"]
+	"exclude": ["nodes/ApifyActorTemplate/__tests__"]
 }

@@ -12,7 +12,7 @@
 					]
 				}
 			},
-			"type": "n8n-nodes-apify-content-crawler.apifyContentCrawler",
+			"type": "n8n-nodes-apify-actor-template.apifyContentCrawler",
 			"typeVersion": 1,
 			"position": [208, 0],
 			"id": "7291f536-58a7-4718-bdcb-86119d3631d9",

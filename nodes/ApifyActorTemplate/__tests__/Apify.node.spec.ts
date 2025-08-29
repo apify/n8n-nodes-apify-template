@@ -1,4 +1,4 @@
-import { ACTOR_ID, ApifyContentCrawler, ClassNameCamel } from '../ApifyContentCrawler.node';
+import { ACTOR_ID, ApifyActorTemplate, ClassNameCamel } from '../ApifyActorTemplate.node';
 import { executeWorkflow } from './utils/executeWorkflow';
 import { CredentialsHelper } from './utils/credentialHelper';
 import { getRunTaskDataByNodeName, getTaskData } from './utils/getNodeResultData';
@@ -6,11 +6,11 @@ import nock from 'nock';
 import * as fixtures from './utils/fixtures';
 
 describe('Apify Node', () => {
-	let apifyNode: ApifyContentCrawler;
+	let apifyNode: ApifyActorTemplate;
 	let credentialsHelper: CredentialsHelper;
 
 	beforeEach(() => {
-		apifyNode = new ApifyContentCrawler();
+		apifyNode = new ApifyActorTemplate();
 		credentialsHelper = new CredentialsHelper({
 			apifyApi: {
 				apiToken: 'test-token',

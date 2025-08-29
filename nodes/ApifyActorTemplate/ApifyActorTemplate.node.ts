@@ -8,8 +8,8 @@ import {
 	INodeTypeDescription,
 	NodeConnectionType,
 } from 'n8n-workflow';
-import { properties } from './ApifyContentCrawler.properties';
-import { methods } from './ApifyContentCrawler.methods';
+import { properties } from './ApifyActorTemplate.properties';
+import { methods } from './ApifyActorTemplate.methods';
 import { actorsRouter } from './resources/actors/router';
 
 export const ACTOR_ID = '$$ACTOR_ID' as string;

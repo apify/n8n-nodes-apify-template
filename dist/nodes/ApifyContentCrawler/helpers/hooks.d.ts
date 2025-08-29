@@ -1,4 +1,0 @@
-import { IExecuteSingleFunctions, IHttpRequestOptions, IN8nHttpFullResponse, INodeExecutionData, IPostReceiveBinaryData, IPostReceiveFilter, IPostReceiveLimit, IPostReceiveRootProperty, IPostReceiveSet, IPostReceiveSetKeyValue, IPostReceiveSort } from 'n8n-workflow';
-export declare function preSendActionCustonBody(this: IExecuteSingleFunctions, requestOptions: IHttpRequestOptions): Promise<IHttpRequestOptions>;
-export type PostReceiveAction = ((this: IExecuteSingleFunctions, items: INodeExecutionData[], response: IN8nHttpFullResponse) => Promise<INodeExecutionData[]>) | IPostReceiveBinaryData | IPostReceiveFilter | IPostReceiveLimit | IPostReceiveRootProperty | IPostReceiveSet | IPostReceiveSetKeyValue | IPostReceiveSort;
-export declare const postReceiveActionBinaryData: PostReceiveAction;

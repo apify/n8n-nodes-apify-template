@@ -1,6 +1,0 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.methods = void 0;
-const resources_1 = require("./resources");
-Object.defineProperty(exports, "methods", { enumerable: true, get: function () { return resources_1.methods; } });
-//# sourceMappingURL=ApifyContentCrawler.methods.js.map

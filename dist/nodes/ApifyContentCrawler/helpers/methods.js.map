@@ -1,1 +1,0 @@
-{"version":3,"file":"methods.js","sourceRoot":"","sources":["../../../../nodes/ApifyContentCrawler/helpers/methods.ts"],"names":[],"mappings":";;AASA,oDAOC;AAPD,SAAgB,oBAAoB,CAAC,OAAwB;IAC5D,OAAO,OAAO,CAAC,MAAM,CAAC,CAAC,OAAO,EAAE,MAAM,EAAE,EAAE;QACzC,OAAO;YACN,GAAG,OAAO;YACV,GAAG,MAAM;SACT,CAAC;IACH,CAAC,EAAE,EAAE,CAAC,CAAC;AACR,CAAC"}

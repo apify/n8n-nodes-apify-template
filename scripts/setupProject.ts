@@ -6,8 +6,8 @@ import readline from 'readline/promises';
 import { stdin as input, stdout as output } from 'process';
 
 // Targets (old names)
-const TARGET_CLASS_NAME = 'ApifyContentCrawler';
-const TARGET_PACKAGE_NAME = 'n8n-nodes-apify-content-crawler';
+const TARGET_CLASS_NAME = 'ApifyActorTemplate';
+const TARGET_PACKAGE_NAME = 'n8n-nodes-apify-actor-template';
 
 // Minimal inputs
 const X_PLATFORM_HEADER_ID = 'n8n';

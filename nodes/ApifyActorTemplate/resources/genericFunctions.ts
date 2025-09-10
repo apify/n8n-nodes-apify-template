@@ -8,7 +8,7 @@ import {
 	type ILoadOptionsFunctions,
 	type IRequestOptions,
 } from 'n8n-workflow';
-import { X_PLATFORM_APP_HEADER_ID, X_PLATFORM_HEADER_ID } from '../ApifyContentCrawler.node';
+import { ClassNameCamel, X_PLATFORM_APP_HEADER_ID, X_PLATFORM_HEADER_ID } from '../ApifyActorTemplate.node';
 
 type IApiRequestOptions = IRequestOptions & { uri?: string };
 
@@ -123,7 +123,7 @@ export async function apiRequestAllItems(
 
 export function isUsedAsAiTool(nodeType: string): boolean {
 	const parts = nodeType.split('.');
-	return parts[parts.length - 1] === 'apifyContentCrawlerTool';
+	return parts[parts.length - 1] === `${ClassNameCamel}Tool`;
 }
 
 export async function pollRunStatus(

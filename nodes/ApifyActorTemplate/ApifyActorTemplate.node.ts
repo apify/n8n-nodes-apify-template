@@ -24,7 +24,7 @@ export const X_PLATFORM_APP_HEADER_ID = '$$X_PLATFORM_APP_HEADER_ID' as string;
 export const DISPLAY_NAME = '$$DISPLAY_NAME' as string;
 export const DESCRIPTION = '$$DESCRIPTION' as string;
 
-export class ApifyContentCrawler implements INodeType {
+export class ApifyActorTemplate implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: DISPLAY_NAME,
 		name: ClassNameCamel,

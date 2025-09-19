@@ -209,6 +209,7 @@ export async function generateActorResources(
     actorId: string,
     propertiesPaths: string[],
     executePaths: string[],
+    TARGET_CLASS_NAME: string
 ) {
     console.log('⚙️  Fetching properties from actor input schema...');
     const properties = (await createActorAppSchemaForN8n(client, actor)) as INodeProperties[];
@@ -263,7 +264,7 @@ export async function generateActorResources(
     }
 
     const newExecuteContent = `import { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
-import { ACTOR_ID } from '../../../ApifyContentCrawler.node';
+import { ACTOR_ID } from '../../../${TARGET_CLASS_NAME}.node';
 import {
   getDefaultBuild,
   getDefaultInputsFromBuild,

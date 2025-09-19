@@ -47,7 +47,7 @@ export async function setupProject() {
     const values = await setConfig(actor, NODE_FILE_PATH, X_PLATFORM_HEADER_ID);
 
     // Step 2: Generate n8n resources based on Actor input schema
-    await generateActorResources(client, actor, values.ACTOR_ID, PROPERTIES_PATHS, EXECUTE_PATHS);
+    await generateActorResources(client, actor, values.ACTOR_ID, PROPERTIES_PATHS, EXECUTE_PATHS, TARGET_CLASS_NAME);
 
     // Step 3: Rename files/folders and necessary code snippets
     refactorProject(TARGET_CLASS_NAME, values.CLASS_NAME, TARGET_PACKAGE_NAME, values.PACKAGE_NAME);

@@ -266,13 +266,13 @@ Regardless of how you create and publish the GitHub Release:
         3.  Build and test processes.
         4.  Update `package.json` and `pnpm-lock.yaml` to version `X.Y.Z`.
         5.  Commit these version changes back to the branch the release was targeted from with a message like `chore(release): set version to X.Y.Z [skip ci]`.
-        6.  Publish the package `@apify/n8n-nodes-apify-youtube-comments-scraper@X.Y.Z` to npm.
+        6.  Publish the package `@apify/n8n-nodes-apify-actor-template@X.Y.Z` to npm.
 
 2.  **Verify the Package on npm:**
     After the workflow successfully completes (check the "Actions" tab in your GitHub repository):
     * Verify the new version on npm:
         ```bash
-        pnpm view @apify/n8n-nodes-apify-youtube-comments-scraper version
+        pnpm view @apify/n8n-nodes-apify-actor-template version
         ```
         This should print `X.Y.Z`.
 
@@ -302,4 +302,4 @@ Track changes and updates to the node here.
 If you encounter issues:
 1. Check the [Apify API documentation](https://docs.apify.com)
 2. Review the [n8n Community Nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
-3. Open an issue in the [GitHub repository](https://github.com/apify/n8n-nodes-apify-youtube-comments-scraper)
+3. Open an issue in the [GitHub repository](https://github.com/apify/n8n-nodes-apify-actor-template)

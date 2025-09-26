@@ -1,5 +1,5 @@
 import fs from 'fs';
-import type { ApifyClient, Actor } from 'apify-client';
+import type { Actor } from 'apify-client';
 
 export interface PlaceholderValues {
     PACKAGE_NAME: string;
@@ -22,7 +22,7 @@ export async function setConfig(
     xPlatformHeaderId: string,
 ): Promise<PlaceholderValues> {
 
-    const rawName = actor.name; // e.g. "website-content-crawler"
+    const rawName = actor.name;
     const rawNameProcessed = rawName
         .split('-')
         .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
@@ -31,7 +31,7 @@ export async function setConfig(
     const className = 'Apify' + rawName
         .split('-')
         .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(''); // ApifyWebsiteContentCrawler
+        .join('');
     const displayName = 'Apify ' + `${actor.title ? actor.title : rawNameProcessed}`
 
     const values: PlaceholderValues = {

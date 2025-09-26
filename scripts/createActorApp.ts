@@ -1,4 +1,3 @@
-// createActorAppForN8n.ts
 import chalk from 'chalk';
 import { ApifyClient } from 'apify-client';
 import { convertApifyToN8n } from './actorSchemaConverter.ts';

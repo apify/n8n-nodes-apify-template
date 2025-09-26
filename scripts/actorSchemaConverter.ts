@@ -220,9 +220,14 @@ export async function generateActorResources(
         `export const properties: INodeProperties[] = ${JSON.stringify(properties, null, 2)};\n`;
 
     for (const filePath of propertiesPaths) {
+        // clone properties so we don’t mutate the shared array
+        const propsWithDisplayOptions = properties.map((prop) => ({
+            ...prop
+        }));
+
     const newPropsContent =
         `import { INodeProperties } from 'n8n-workflow';\n\n` +
-        `export const properties: INodeProperties[] = ${JSON.stringify(prop, null, 2)};\n`;
+        `export const properties: INodeProperties[] = ${JSON.stringify(propsWithDisplayOptions, null, 2)};\n`;
 
     fs.writeFileSync(filePath, newPropsContent, 'utf-8');
     console.log(`✅ Updated properties in ${filePath}`);
@@ -233,15 +238,15 @@ export async function generateActorResources(
     const specialCases: string[] = [];
 
     for (const prop of properties) {
-        if (prop.type === 'fixedCollection' && prop.name === 'entries') {
-            specialCases.push(`
-  const entries = this.getNodeParameter('entries', i, {}) as { entry?: { value: string }[] };
-  if (entries?.entry?.length) {
-    mergedInput.startUrls = entries.entry.map((e) => ({
-      url: e.value,
-      method: 'GET',
-    }));
-  }`);
+        if (prop.type === 'fixedCollection') {
+            // For lists (fixedCollection) we need to unpack the value.
+            for (const option of prop.options ?? []) {
+                specialCases.push(`
+    const ${prop.name} = this.getNodeParameter('${prop.name}', i, {}) as { ${option.name}?: { value: string }[] };
+    if (${prop.name}?.${option.name}?.length) {
+        mergedInput["${prop.name}"] = ${prop.name}.${option.name}.map(e => e.value);
+    }`);
+            }
         } else {
             paramAssignments.push(
                 `  mergedInput["${prop.name}"] = this.getNodeParameter("${prop.name}", i);`

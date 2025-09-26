@@ -1,10 +1,9 @@
 import { INodeProperties, INodePropertyOptions } from 'n8n-workflow';
 import { runHooks } from './hooks';
 
-import * as runActorStandard from './run-actor-standard';
-import * as runActorAdvanced from './run-actor-advanced';
+import * as runActor from './run-actor';
 
-const operations: INodePropertyOptions[] = [runActorStandard.option, runActorAdvanced.option];
+const operations: INodePropertyOptions[] = [runActor.option];
 
 export const name = 'Actors';
 
@@ -22,11 +21,7 @@ operationSelect.options = operations;
 // set the default operation
 operationSelect.default = operations.length > 0 ? operations[0].value : '';
 
-export const rawProperties: INodeProperties[] = [
-	operationSelect,
-	...runActorStandard.properties,
-	...runActorAdvanced.properties,
-];
+export const rawProperties: INodeProperties[] = [...runActor.properties];
 
 const { properties, methods } = runHooks(rawProperties);
 

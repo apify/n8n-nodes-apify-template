@@ -2,8 +2,7 @@ import { ApifyClient } from 'apify-client';
 import { refactorProject } from './refactorProject.ts';
 import { generateActorResources } from './actorSchemaConverter.ts';
 import { setConfig } from './actorConfig.ts';
-import readline from 'readline/promises';
-import { stdin as input, stdout as output } from 'process';
+import prompts from 'prompts';
 
 // Targets (old names)
 const TARGET_CLASS_NAME = 'ApifyActorTemplate';
@@ -27,28 +26,46 @@ const NODE_FILE_PATH = `./nodes/${TARGET_CLASS_NAME}/${TARGET_CLASS_NAME}.node.t
 
 export async function setupProject() {
     // Ask user for ACTOR_ID
-    const rl = readline.createInterface({ input, output });
-    const ACTOR_ID = await rl.question('👉 Please enter the ACTOR_ID: ');
-    rl.close();
+    const { actorId } = await prompts({
+        type: 'text',
+        name: 'actorId',
+        message: '👉 Please enter the ACTOR_ID:',
+    });
+
+    if (!actorId) {
+        throw new Error('❌ ACTOR_ID is required.');
+    }
 
     // Create ApifyClient (token optional, required for private actors)
     const client = new ApifyClient({
         token: process.env.APIFY_TOKEN,
     });
 
-    const actor = await client.actor(ACTOR_ID).get();
+    const actor = await client.actor(actorId).get();
     if (!actor) {
-        throw new Error(`❌ Actor with id ${ACTOR_ID} not found.`);
+        throw new Error(`❌ Actor with id ${actorId} not found.`);
     }
 
     // Step 1: Fetch actor info & replace placeholders
     const values = await setConfig(actor, NODE_FILE_PATH, X_PLATFORM_HEADER_ID);
 
     // Step 2: Generate n8n resources based on Actor input schema
-    await generateActorResources(client, actor, values.ACTOR_ID, PROPERTIES_PATHS, EXECUTE_PATHS, TARGET_CLASS_NAME);
+    await generateActorResources(
+        client,
+        actor,
+        values.ACTOR_ID,
+        PROPERTIES_PATHS,
+        EXECUTE_PATHS,
+        TARGET_CLASS_NAME,
+    );
 
     // Step 3: Rename files/folders and necessary code snippets
-    refactorProject(TARGET_CLASS_NAME, values.CLASS_NAME, TARGET_PACKAGE_NAME, values.PACKAGE_NAME);
+    refactorProject(
+        TARGET_CLASS_NAME,
+        values.CLASS_NAME,
+        TARGET_PACKAGE_NAME,
+        values.PACKAGE_NAME,
+    );
 
     console.log('🎉 Project setup complete!');
 }

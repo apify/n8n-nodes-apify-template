@@ -53,6 +53,9 @@ importers:
       prettier:
         specifier: ^3.3.2
         version: 3.3.2
+      prompts:
+        specifier: ^2.4.2
+        version: 2.4.2
       ts-jest:
         specifier: ^29.3.2
         version: 29.3.2(@babel/core@7.27.1)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.27.1))(jest@29.7.0(@types/node@24.0.1))(typescript@5.5.3)

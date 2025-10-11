@@ -58,7 +58,7 @@ export async function apiRequest(
 		 * using `error instanceof NodeApiError` results in `false`
 		 * because it's thrown by a different instance of n8n-workflow
 		 */
-		if (error.constructor?.name === 'NodeApiError') {
+		if (error instanceof NodeApiError) {
 			throw error;
 		}
 

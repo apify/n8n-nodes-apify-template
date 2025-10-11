@@ -27,7 +27,6 @@
 	"packageManager": "pnpm@9.1.4",
 	"main": "index.js",
 	"scripts": {
-		"preinstall": "npx only-allow pnpm",
 		"build": "tsc && gulp build:icons",
 		"dev": "tsc --watch",
 		"format": "prettier nodes credentials --write",
@@ -51,6 +50,9 @@
 			"dist/nodes/ApifyActorTemplate/ApifyActorTemplate.node.js"
 		]
 	},
+	"peerDependencies": {
+		"n8n-workflow": "1.82.0"
+	},
 	"devDependencies": {
 		"@stylistic/eslint-plugin": "^4.2.0",
 		"@types/jest": "^29.5.14",
@@ -63,8 +65,6 @@
 		"glob": "^11.0.3",
 		"gulp": "^4.0.2",
 		"jest": "^29.7.0",
-		"n8n-core": "1.83.0",
-		"n8n-workflow": "1.82.0",
 		"nock": "^14.0.5",
 		"prettier": "^3.3.2",
 		"prompts": "^2.4.2",

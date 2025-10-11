@@ -69,17 +69,33 @@ export class ApifyActorTemplate implements INodeType {
 
 	methods = methods;
 
-	async execute(this: IExecuteFunctions) {
+	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
 		for (let i = 0; i < items.length; i++) {
-			const data = await actorsRouter.call(this, i);
-			// `data` may be an array of items or a single item, so we either push the spreaded array or the single item
-			if (Array.isArray(data)) {
-				returnData.push(...data);
-			} else {
-				returnData.push(data);
+			try {
+				const data = await actorsRouter.call(this, i);
+
+				const addPairedItem = (item: INodeExecutionData) => ({
+					...item,
+					pairedItem: { item: i },
+				});
+
+				if (Array.isArray(data)) {
+					returnData.push(...data.map(addPairedItem));
+				} else {
+					returnData.push(addPairedItem(data));
+				}
+			} catch (error) {
+				if (this.continueOnFail()) {
+					returnData.push({
+						json: { error: error.message },
+						pairedItem: { item: i },
+					});
+					continue;
+				}
+				throw error;
 			}
 		}
 

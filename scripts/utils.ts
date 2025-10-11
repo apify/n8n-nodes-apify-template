@@ -32,6 +32,11 @@ export async function packageNameCheck(initialName: string): Promise<string> {
             },
         });
 
+        // Handle CTRL + C
+        if (!response.userValue) {
+            process.exit(0);
+        }
+
         packageName = response.userValue; // already formatted with prefix
         console.log(`👉 Trying package name: ${packageName}`);
     }

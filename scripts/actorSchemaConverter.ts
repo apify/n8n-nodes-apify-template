@@ -1,9 +1,11 @@
 // @ts-nocheck
 import chalk from 'chalk';
+import path from 'path';
 import { type ApifyInputField, type ApifyInputSchema } from './types.ts';
 import type { INodeProperties } from 'n8n-workflow';
 import type { Actor, ApifyClient } from 'apify-client';
 import fs from 'fs';
+
 
 export async function createActorAppSchemaForN8n(client: ApifyClient, actor: Actor) {
 	console.log(`🚀 Creating n8n node for ${chalk.blueBright.bold(actor.title)}`);
@@ -214,32 +216,27 @@ export async function generateActorResources(
     console.log('⚙️  Fetching properties from actor input schema...');
     const properties = (await createActorAppSchemaForN8n(client, actor)) as INodeProperties[];
 
-    // --- properties.ts ---
-    const newPropsContent =
-        `import { INodeProperties } from 'n8n-workflow';\n\n` +
-        `export const properties: INodeProperties[] = ${JSON.stringify(properties, null, 2)};\n`;
+    // --- Load templates ---
+    const templatesDir = path.resolve('./scripts/functionTemplates');
+    const propertiesTemplate = fs.readFileSync(path.join(templatesDir, 'properties.ts.tpl'), 'utf-8');
+    const executeTemplate = fs.readFileSync(path.join(templatesDir, 'execute.ts.tpl'), 'utf-8');
+
+    // --- Generate properties.ts ---
+    const propsWithDisplayOptions = properties.map((prop) => ({ ...prop }));
+    const propsJson = JSON.stringify(propsWithDisplayOptions, null, 2);
+    const newPropsContent = propertiesTemplate.replace('{{PROPERTIES_JSON}}', propsJson);
 
     for (const filePath of propertiesPaths) {
-        // clone properties so we don’t mutate the shared array
-        const propsWithDisplayOptions = properties.map((prop) => ({
-            ...prop
-        }));
+        fs.writeFileSync(filePath, newPropsContent, 'utf-8');
+        console.log(`✅ Updated properties in ${filePath}`);
+    }
 
-    const newPropsContent =
-        `import { INodeProperties } from 'n8n-workflow';\n\n` +
-        `export const properties: INodeProperties[] = ${JSON.stringify(propsWithDisplayOptions, null, 2)};\n`;
-
-    fs.writeFileSync(filePath, newPropsContent, 'utf-8');
-    console.log(`✅ Updated properties in ${filePath}`);
-}
-
-    // --- execute.ts ---
+    // --- Generate execute.ts ---
     const paramAssignments: string[] = [];
     const specialCases: string[] = [];
 
     for (const prop of properties) {
         if (prop.type === 'fixedCollection') {
-            // For lists (fixedCollection) we need to unpack the value.
             for (const option of prop.options ?? []) {
                 specialCases.push(`
     const ${prop.name} = this.getNodeParameter('${prop.name}', i, {}) as { ${option.name}?: { value: string }[] };
@@ -254,28 +251,10 @@ export async function generateActorResources(
         }
     }
 
-    const newExecuteContent = `import { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
-import { ACTOR_ID } from '../../../${TARGET_CLASS_NAME}.node';
-import {
-  getDefaultBuild,
-  getDefaultInputsFromBuild,
-  executeActorRunFlow,
-} from '../../executeActor';
-
-export async function runActor(this: IExecuteFunctions, i: number): Promise<INodeExecutionData> {
-  const build = await getDefaultBuild.call(this, ACTOR_ID);
-  const defaultInput = getDefaultInputsFromBuild(build);
-
-  const mergedInput: Record<string, any> = {
-    ...defaultInput,
-  };
-
-${paramAssignments.join('\n')}
-${specialCases.join('\n')}
-
-  return await executeActorRunFlow.call(this, ACTOR_ID, mergedInput);
-}
-`;
+    const newExecuteContent = executeTemplate
+        .replace(/{{TARGET_CLASS_NAME}}/g, TARGET_CLASS_NAME)
+        .replace('{{PARAM_ASSIGNMENTS}}', paramAssignments.join('\n'))
+        .replace('{{SPECIAL_CASES}}', specialCases.join('\n'));
 
     for (const filePath of executePaths) {
         fs.writeFileSync(filePath, newExecuteContent, 'utf-8');

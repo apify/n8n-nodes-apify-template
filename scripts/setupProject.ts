@@ -69,9 +69,3 @@ export async function setupProject() {
 
     console.log('🎉 Project setup complete!');
 }
-
-// Run immediately if called directly
-setupProject().catch((err) => {
-    console.error(err);
-    process.exit(1);
-});

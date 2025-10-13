@@ -1,5 +1,6 @@
 import fs from 'fs';
 import type { Actor } from 'apify-client';
+import { PACKAGE_NAME_PREFIX, packageNameCheck } from './utils.ts';
 
 export interface PlaceholderValues {
     PACKAGE_NAME: string;
@@ -35,7 +36,7 @@ export async function setConfig(
     const displayName = 'Apify ' + `${actor.title ? actor.title : rawNameProcessed}`
 
     const values: PlaceholderValues = {
-        PACKAGE_NAME: `n8n-nodes-apify-${rawName}`,
+        PACKAGE_NAME: `${PACKAGE_NAME_PREFIX}-${rawName}`,
         CLASS_NAME: className,
         ACTOR_ID: actor.id,
         X_PLATFORM_HEADER_ID: xPlatformHeaderId,
@@ -43,6 +44,9 @@ export async function setConfig(
         DISPLAY_NAME: displayName,
         DESCRIPTION: actor.description || '',
     };
+
+    // Check for package name availability on npm registry
+    values.PACKAGE_NAME = await packageNameCheck(values.PACKAGE_NAME);
 
     // Replace placeholders in node file
     let nodeFile = fs.readFileSync(nodeFilePath, 'utf-8');

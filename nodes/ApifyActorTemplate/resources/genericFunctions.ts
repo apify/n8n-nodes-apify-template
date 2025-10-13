@@ -7,6 +7,7 @@ import {
 	type IHookFunctions,
 	type ILoadOptionsFunctions,
 	type IRequestOptions,
+	type IHttpRequestOptions
 } from 'n8n-workflow';
 import { ClassNameCamel, X_PLATFORM_APP_HEADER_ID, X_PLATFORM_HEADER_ID } from '../ApifyActorTemplate.node';
 
@@ -25,7 +26,8 @@ export async function apiRequest(
 	const query = qs || {};
 	const endpoint = `https://api.apify.com${uri}`;
 
-	const options: IRequestOptions = {
+	// @ts-ignore
+	const options: IHttpRequestOptions = {
 		json: true,
 		...rest,
 		method,
@@ -52,7 +54,7 @@ export async function apiRequest(
 			);
 		}
 
-		return await this.helpers.requestWithAuthentication.call(this, authenticationMethod, options);
+		return await this.helpers.httpRequestWithAuthentication.call(this, authenticationMethod, options);
 	} catch (error) {
 		/**
 		 * using `error instanceof NodeApiError` results in `false`

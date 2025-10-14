@@ -203,6 +203,44 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
 }
 
 /**
+ * Build parameter and special-case assignments for n8n execute template
+ */
+function buildParameterAssignments(properties: INodeProperties[]): {
+    paramAssignments: string[];
+    specialCases: string[];
+} {
+    const paramAssignments: string[] = [];
+    const specialCases: string[] = [];
+
+    for (const prop of properties) {
+        if (prop.type === 'fixedCollection') {
+            for (const option of prop.options ?? []) {
+                specialCases.push(`
+    const ${prop.name} = this.getNodeParameter('${prop.name}', i, {}) as { ${option.name}?: { value: string }[] };
+    if (${prop.name}?.${option.name}?.length) {
+        mergedInput["${prop.name}"] = ${prop.name}.${option.name}.map(e => e.value);
+    }`);
+            }
+        } else if (prop.type === 'json') {
+            paramAssignments.push(`
+  try {
+    const rawValue = this.getNodeParameter("${prop.name}", i);
+    mergedInput["${prop.name}"] = typeof rawValue === "string" ? JSON.parse(rawValue) : rawValue;
+  } catch (error) {
+    throw new Error(\`Invalid JSON in parameter "${prop.name}": \${(error as Error).message}\`);
+  }`);
+        } else {
+            paramAssignments.push(
+                `  mergedInput["${prop.name}"] = this.getNodeParameter("${prop.name}", i);`
+            );
+        }
+    }
+
+    return { paramAssignments, specialCases };
+}
+
+
+/**
  * Generate and write n8n integration files (properties.ts & execute.ts)
  */
 export async function generateActorResources(
@@ -232,24 +270,7 @@ export async function generateActorResources(
     }
 
     // --- Generate execute.ts ---
-    const paramAssignments: string[] = [];
-    const specialCases: string[] = [];
-
-    for (const prop of properties) {
-        if (prop.type === 'fixedCollection') {
-            for (const option of prop.options ?? []) {
-                specialCases.push(`
-    const ${prop.name} = this.getNodeParameter('${prop.name}', i, {}) as { ${option.name}?: { value: string }[] };
-    if (${prop.name}?.${option.name}?.length) {
-        mergedInput["${prop.name}"] = ${prop.name}.${option.name}.map(e => e.value);
-    }`);
-            }
-        } else {
-            paramAssignments.push(
-                `  mergedInput["${prop.name}"] = this.getNodeParameter("${prop.name}", i);`
-            );
-        }
-    }
+    const { paramAssignments, specialCases } = buildParameterAssignments(properties);
 
     const newExecuteContent = executeTemplate
         .replace(/{{TARGET_CLASS_NAME}}/g, TARGET_CLASS_NAME)

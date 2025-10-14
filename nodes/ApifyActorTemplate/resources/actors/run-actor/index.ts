@@ -8,8 +8,7 @@ const option: INodePropertyOptions = {
 	name: 'Advanced Settings',
 	value: 'Run Actor Advanced',
 	action: 'Crawl a Website (Advanced Settings)',
-	description:
-		'Use advanced options for more control',
+	description: 'Use advanced options for more control',
 };
 
 export { option, properties };

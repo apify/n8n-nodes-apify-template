@@ -8,7 +8,11 @@ import {
 	type ILoadOptionsFunctions,
 	type IRequestOptions,
 } from 'n8n-workflow';
-import { ClassNameCamel, X_PLATFORM_APP_HEADER_ID, X_PLATFORM_HEADER_ID } from '../ApifyActorTemplate.node';
+import {
+	ClassNameCamel,
+	X_PLATFORM_APP_HEADER_ID,
+	X_PLATFORM_HEADER_ID,
+} from '../ApifyActorTemplate.node';
 
 type IApiRequestOptions = IRequestOptions & { uri?: string };
 
@@ -25,16 +29,22 @@ export async function apiRequest(
 	const query = qs || {};
 	const endpoint = `https://api.apify.com${uri}`;
 
+	const headers: Record<string, string> = {
+		'x-apify-integration-platform': X_PLATFORM_HEADER_ID,
+		...(X_PLATFORM_APP_HEADER_ID && { 'x-apify-integration-app-id': X_PLATFORM_APP_HEADER_ID }),
+	};
+
+	if (isUsedAsAiTool(this.getNode().type)) {
+		headers['x-apify-integration-ai-tool'] = 'true';
+	}
+
 	const options: IRequestOptions = {
 		json: true,
 		...rest,
 		method,
 		qs: query,
 		url: endpoint,
-		headers: {
-			'x-apify-integration-platform': X_PLATFORM_HEADER_ID,
-			...(X_PLATFORM_APP_HEADER_ID && { 'x-apify-integration-app-id': X_PLATFORM_APP_HEADER_ID }),
-		},
+		headers: headers,
 	};
 
 	if (method === 'GET') {

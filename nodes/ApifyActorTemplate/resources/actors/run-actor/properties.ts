@@ -4,7 +4,7 @@ export const properties: INodeProperties[] = [
 	{
 		displayName: 'Urls',
 		name: 'categoryUrls',
-		description: 'Enter urls. You can also use specific product URLs directly.',
+		description: 'Enter URLs. You can also use specific product URLs directly.',
 		required: true,
 		default: {},
 		type: 'fixedCollection',
@@ -14,10 +14,10 @@ export const properties: INodeProperties[] = [
 		options: [
 			{
 				name: 'items',
-				displayName: 'items',
+				displayName: 'Items',
 				values: [
 					{
-						displayName: 'item',
+						displayName: 'Item',
 						name: 'url',
 						type: 'string',
 						default: '',

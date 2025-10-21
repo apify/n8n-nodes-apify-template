@@ -1,5 +1,5 @@
-/* eslint-disable n8n-nodes-base/node-class-description-outputs-wrong */
-/* eslint-disable n8n-nodes-base/node-class-description-inputs-wrong-regular-node */
+ 
+ 
 
 import {
 	IExecuteFunctions,

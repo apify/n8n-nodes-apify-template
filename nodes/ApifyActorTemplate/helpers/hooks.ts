@@ -34,7 +34,7 @@ export async function preSendActionCustonBody(
 	return Promise.resolve(requestOptions);
 }
 
-/* eslint-disable indent */
+ 
 /* tslint:disable:indent */
 export type PostReceiveAction =
 	| ((
@@ -49,7 +49,7 @@ export type PostReceiveAction =
 	| IPostReceiveSet
 	| IPostReceiveSetKeyValue
 	| IPostReceiveSort;
-/* eslint-enable indent */
+ 
 /* tslint:enable:indent */
 
 function getResponseContentType(response: IN8nHttpFullResponse): string {

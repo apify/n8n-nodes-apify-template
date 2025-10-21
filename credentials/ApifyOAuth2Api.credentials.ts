@@ -60,6 +60,7 @@ export class ApifyOAuth2Api implements ICredentialType {
 			name: 'clientSecret',
 			type: 'hidden',
 			default: '',
+			typeOptions: { password: true },
 		},
 	];
 }

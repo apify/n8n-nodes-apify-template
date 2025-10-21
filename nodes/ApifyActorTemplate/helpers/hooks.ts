@@ -22,12 +22,11 @@ export async function preSendActionCustonBody(
 	const { customBody } = requestOptions.body as IDataObject;
 
 	if (typeof requestOptions.body === 'object' && typeof customBody === 'object') {
-		// @ts-ignore
 		requestOptions.body = {
 			...requestOptions.body,
 			...customBody,
 		};
-		// @ts-ignore
+		// @ts-expect-error safe type
 		delete requestOptions.body.customBody;
 	}
 
@@ -109,7 +108,7 @@ export const postReceiveActionBinaryData: PostReceiveAction =
 			const data = binary.data as IBinaryData;
 
 			// convert response body base64 to binary
-			// @ts-ignore
+			// @ts-expect-error safe type
 			data.data = Buffer.from(response.body as string, 'binary');
 
 			data.mimeType = contentType;

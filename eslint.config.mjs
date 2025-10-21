@@ -6,7 +6,11 @@ export default [
 
 	// completely ignore all __tests__ folders
 	{
-		ignores: ['**/__tests__/**', 'nodes/ApifyContentCrawler/__tests__/**'],
+		ignores: [
+			'**/__tests__/**', 
+			'nodes/ApifyContentCrawler/__tests__/**', 
+			'scripts/**'
+		],
 	},
 
 	// disable any-type rules everywhere

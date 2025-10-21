@@ -1,4 +1,4 @@
-import type { ICredentialType, INodeProperties } from 'n8n-workflow';
+import type { Icon, ICredentialType, INodeProperties } from 'n8n-workflow';
 
 const scopes = ['profile', 'full_api_access'];
 
@@ -8,6 +8,11 @@ export class ApifyOAuth2Api implements ICredentialType {
 	extends = ['oAuth2Api'];
 
 	displayName = 'Apify OAuth2 API';
+
+	icon: Icon = {
+		dark: 'file:../nodes/ApifyActorTemplate/apifyDark.svg',
+		light: 'file:../nodes/ApifyActorTemplate/apify.svg'
+	}
 
 	// TODO: documentation URL for Apify OAuth2 API missing
 	documentationUrl = 'https://docs.apify.com/api/v2';

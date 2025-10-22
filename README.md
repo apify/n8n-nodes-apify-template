@@ -26,7 +26,7 @@ This is an n8n community node that integrates [Apify](https://apify.com) with yo
 
 ### 1. Initialize n8n locally
 
-You can just call the following commands and have the local development started. It also includes hot reloding.
+You can just call the following commands and have the local development started. It also includes hot reloading.
 
 ```bash
 npm install

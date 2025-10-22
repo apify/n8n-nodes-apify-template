@@ -1,8 +1,9 @@
-# n8n Nodes - Apify integration
+# n8n Nodes - Apify Actor Template
 
-This is an n8n community node that integrates [Apify](https://apify.com) with your n8n workflows, so you can run Apify Actors, extract structured data from websites, and automate complex web scraping tasks.
+This project is an **n8n Apify Actor template** that lets you **create your own n8n nodes directly from any Apify Actor**.
+The script generates a functional n8n community node package using your Actor’s input schema.
 
-[Apify](https://apify.com) is a platform for developers to build, deploy, and publish web automation tools, while [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) tool for AI workflow automation that allows you to connect various services.
+[Apify](https://apify.com) is a platform for developers to build, deploy, and publish web automation tools called Actors, while [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) tool for AI workflow automation that allows you to connect various services.
 
 ## Table of contents
 
@@ -16,7 +17,7 @@ This is an n8n community node that integrates [Apify](https://apify.com) with yo
 - [Version History](#version-history)
 - [Troubleshooting](#troubleshooting)
 
-## Installation
+## Setup
 
 ### ⚙️ Prerequisites
 
@@ -24,7 +25,36 @@ This is an n8n community node that integrates [Apify](https://apify.com) with yo
 
 ---
 
-### 1. Initialize n8n locally
+### 1. Run the Script
+
+After installing dependencies with:
+
+```bash
+npm i
+```
+
+run the following command to generate your n8n node:
+
+```bash
+npm run create-actor-app
+```
+
+When prompted, **enter the Actor ID** of the Apify Actor you want to convert.
+Visit your Actor’s page on the [Apify Store](https://apify.com/store) to copy its Actor ID from the URL
+
+### 2. Check out the TODO list
+
+We have outlined parts of code you might want to edit.
+
+- **TODO 1:** Adjust the logo of your node, <___> logo is the default value.
+    You can also use 2 different logos for `dark` and `light` mode.
+- **TODO 2:**
+- **TODO 3:** Adjust the description of your node, the Actor description is the default value.
+    Make sure the description is maximum 1 sentence long. It will appear on the n8n node search.
+    ![Apify Node Description](./docs/node-description.png)
+    
+
+### 2. Initialize n8n locally
 
 You can just call the following commands and have the local development started. It also includes hot reloading.
 

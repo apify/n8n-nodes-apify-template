@@ -27,7 +27,10 @@ export class ApifyActorTemplate implements INodeType {
 		name: ClassNameCamel,
 
 		// TODO 1: Adjust the icon of your app
-		icon: 'file:apify.svg',
+		icon: {
+			light: 'file:apify.svg',
+			dark: 'file:apifyDark.svg'
+		},
 		group: ['transform'],
 		// Mismatched version and defaultVersion as a minor hack to hide "Custom API Call" resource
 		version: [1],

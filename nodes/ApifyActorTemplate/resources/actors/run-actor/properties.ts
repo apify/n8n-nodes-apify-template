@@ -27,7 +27,7 @@ export const properties: INodeProperties[] = [
 		],
 		displayOptions: {
 			show: {
-				operation: ['Run Actor'],
+				operation: ['Run'],
 			},
 		},
 	},

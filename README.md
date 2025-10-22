@@ -121,6 +121,30 @@ Keep it **short and clear — ideally one sentence**, as it appears in the n8n n
 If your Actor is used by an **AI Agent** in n8n, you can optimize its output here.
 Consider cleaning or simplifying the results to reduce unnecessary context.
 
+
+### Development Guide
+
+This section will go through how you can further develop your node.
+
+#### Run n8n Locally
+
+Run the following command to start your local development server with hot reloading.
+```bash
+npm install
+npm run dev
+```
+
+#### Repository Structure
+This section covers each file you are most likely going to work with. While some files are mostly for setup and you dont need to edit them in most cases.
+
+
+All the code for your Actor node is under `nodes/ApifyActorTemplate` folder
+
+
+**ApifyActorTemplate.node.ts:** This is the general configuration file of your node.
+**** 
+
+
 ### 2. Initialize n8n locally
 
 You can just call the following commands and have the local development started. It also includes hot reloading.

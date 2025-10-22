@@ -1,4 +1,4 @@
-import type { IAuthenticateGeneric, ICredentialType, INodeProperties } from 'n8n-workflow';
+import type { IAuthenticateGeneric, Icon, ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow';
 
 export class ApifyApi implements ICredentialType {
 	name = 'apifyApi';
@@ -6,6 +6,11 @@ export class ApifyApi implements ICredentialType {
 	displayName = 'Apify API';
 
 	documentationUrl = 'https://docs.apify.com/platform/integrations/api#api-token';
+
+	icon: Icon = {
+		dark: 'file:../nodes/ApifyActorTemplate/apifyDark.svg',
+		light: 'file:../nodes/ApifyActorTemplate/apify.svg'
+	}
 
 	properties: INodeProperties[] = [
 		{
@@ -23,6 +28,16 @@ export class ApifyApi implements ICredentialType {
 			headers: {
 				Authorization: '=Bearer {{$credentials.apiKey}}',
 			},
+		},
+	};
+
+		/**
+	 * Simple credential test to verify Apify API key
+	 */
+	test: ICredentialTestRequest = {
+		request: {
+			method: 'GET',
+			url: 'https://api.apify.com/v2/me',
 		},
 	};
 }

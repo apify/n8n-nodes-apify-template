@@ -2,32 +2,32 @@ import {
 	NodeApiError,
 	NodeOperationError,
 	sleep,
-	type IDataObject,
 	type IExecuteFunctions,
 	type IHookFunctions,
 	type ILoadOptionsFunctions,
-	type IRequestOptions,
+	type IHttpRequestOptions,
 } from 'n8n-workflow';
-import {
-	ClassNameCamel,
-	X_PLATFORM_APP_HEADER_ID,
-	X_PLATFORM_HEADER_ID,
-} from '../ApifyActorTemplate.node';
-
-type IApiRequestOptions = IRequestOptions & { uri?: string };
+import { ClassNameCamel, X_PLATFORM_APP_HEADER_ID, X_PLATFORM_HEADER_ID } from '../ApifyActorTemplate.node';
 
 /**
- * Make an API request to Apify
- *
+ * Extended request options for Apify API calls
+ */
+type IApiRequestOptions = Omit<IHttpRequestOptions, 'url'> & {
+	uri?: string;
+	url?: string; // make optional to satisfy the interface
+};
+
+/**
+ * Make an API request to Apify (modern version using IHttpRequestOptions)
  */
 export async function apiRequest(
 	this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions,
 	requestOptions: IApiRequestOptions,
 ): Promise<any> {
-	const { method, qs, uri, ...rest } = requestOptions;
+	const { method = 'GET', qs, uri, ...rest } = requestOptions;
 
 	const query = qs || {};
-	const endpoint = `https://api.apify.com${uri}`;
+	const endpoint = `https://api.apify.com${uri ?? ''}`;
 
 	const headers: Record<string, string> = {
 		'x-apify-integration-platform': X_PLATFORM_HEADER_ID,
@@ -38,21 +38,24 @@ export async function apiRequest(
 		headers['x-apify-integration-ai-tool'] = 'true';
 	}
 
-	const options: IRequestOptions = {
-		json: true,
+	// Final merged options with proper IHttpRequestOptions shape
+	const options: IHttpRequestOptions = {
 		...rest,
 		method,
 		qs: query,
 		url: endpoint,
-		headers: headers,
+		headers,
+		json: true,
 	};
 
-	if (method === 'GET') {
+	// Remove body if GET
+	if (method === 'GET' && 'body' in options) {
 		delete options.body;
 	}
 
 	try {
 		const authenticationMethod = this.getNodeParameter('authentication', 0) as string;
+
 		try {
 			await this.getCredentials(authenticationMethod);
 		} catch {
@@ -62,17 +65,15 @@ export async function apiRequest(
 			);
 		}
 
-		return await this.helpers.requestWithAuthentication.call(this, authenticationMethod, options);
+		return await this.helpers.httpRequestWithAuthentication.call(
+			this,
+			authenticationMethod,
+			options,
+		);
 	} catch (error) {
-		/**
-		 * using `error instanceof NodeApiError` results in `false`
-		 * because it's thrown by a different instance of n8n-workflow
-		 */
-		if (error instanceof NodeApiError) {
-			throw error;
-		}
+		if (error instanceof NodeApiError) throw error;
 
-		if (error.response && error.response.body) {
+		if (error.response?.body) {
 			throw new NodeApiError(this.getNode(), error, {
 				message: error.response.body,
 				description: error.message,
@@ -83,59 +84,17 @@ export async function apiRequest(
 	}
 }
 
-export async function apiRequestAllItems(
-	this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions,
-	requestOptions: IApiRequestOptions,
-): Promise<any> {
-	const returnData: IDataObject[] = [];
-	if (!requestOptions.qs) requestOptions.qs = {};
-	requestOptions.qs.limit = requestOptions.qs.limit || 999;
-
-	let responseData;
-
-	do {
-		responseData = await apiRequest.call(this, requestOptions);
-		returnData.push(responseData);
-	} while (requestOptions.qs.limit <= responseData.length);
-
-	const combinedData = {
-		data: {
-			total: 0,
-			count: 0,
-			offset: 0,
-			limit: 0,
-			desc: false,
-			items: [] as IDataObject[],
-		},
-	};
-
-	for (const result of returnData) {
-		combinedData.data.total += typeof result.total === 'number' ? result.total : 0;
-		combinedData.data.count += typeof result.count === 'number' ? result.count : 0;
-		combinedData.data.offset += typeof result.offset === 'number' ? result.offset : 0;
-		combinedData.data.limit += typeof result.limit === 'number' ? result.limit : 0;
-
-		if (
-			result.data &&
-			typeof result.data === 'object' &&
-			'items' in result.data &&
-			Array.isArray((result.data as IDataObject).items)
-		) {
-			combinedData.data.items = [
-				...combinedData.data.items,
-				...(result.data.items as IDataObject[]),
-			];
-		}
-	}
-
-	return combinedData;
-}
-
+/**
+ * Detect if used from an AI Agent tool
+ */
 export function isUsedAsAiTool(nodeType: string): boolean {
 	const parts = nodeType.split('.');
 	return parts[parts.length - 1] === `${ClassNameCamel}Tool`;
 }
 
+/**
+ * Poll the Apify run until completion
+ */
 export async function pollRunStatus(
 	this: IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions,
 	runId: string,
@@ -147,11 +106,10 @@ export async function pollRunStatus(
 				method: 'GET',
 				uri: `/v2/actor-runs/${runId}`,
 			});
+
 			const status = pollResult?.data?.status;
 			lastRunData = pollResult?.data;
-			if (['SUCCEEDED', 'FAILED', 'TIMED-OUT', 'ABORTED'].includes(status)) {
-				break;
-			}
+			if (['SUCCEEDED', 'FAILED', 'TIMED-OUT', 'ABORTED'].includes(status)) break;
 		} catch (err) {
 			throw new NodeApiError(this.getNode(), {
 				message: `Error polling run status: ${err}`,
@@ -162,8 +120,11 @@ export async function pollRunStatus(
 	return lastRunData;
 }
 
+/**
+ * Fetch dataset results and optionally trim to markdown for AI tool usage
+ */
 export async function getResults(this: IExecuteFunctions, datasetId: string): Promise<any> {
-	let results = await apiRequest.call(this, {
+	const results = await apiRequest.call(this, {
 		method: 'GET',
 		uri: `/v2/datasets/${datasetId}/items`,
 	});
@@ -177,3 +138,4 @@ export async function getResults(this: IExecuteFunctions, datasetId: string): Pr
 
 	return this.helpers.returnJsonArray(results);
 }
+

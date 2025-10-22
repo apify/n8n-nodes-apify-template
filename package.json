@@ -21,18 +21,16 @@
 		"url": "https://github.com/apify/n8n-nodes-apify-actor-template.git"
 	},
 	"engines": {
-		"node": ">=18.10",
-		"pnpm": ">=9.1"
+		"node": ">=18.10"
 	},
-	"packageManager": "pnpm@9.1.4",
+	"packageManager": "npm@10.8.2",
 	"main": "index.js",
 	"scripts": {
 		"build": "tsc && gulp build:icons",
-		"dev": "tsc --watch",
-		"format": "prettier nodes credentials --write",
-		"lint": "eslint nodes credentials package.json",
-		"lintfix": "eslint nodes credentials package.json --fix",
-		"prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"prepublishOnly": "npm run build && npm run lint",
 		"merge:api": "npx openapi-merge-cli --config ./openapi.config.json",
 		"test": "WEBHOOK_URL=https://localhost:5678 jest --config jest.config.js",
 		"create-actor-app": "node scripts/cli.ts"
@@ -54,21 +52,19 @@
 		"n8n-workflow": "1.82.0"
 	},
 	"devDependencies": {
-		"@stylistic/eslint-plugin": "^4.2.0",
+		"@n8n/node-cli": "*",
 		"@types/jest": "^29.5.14",
 		"@types/node": "^24.0.1",
-		"@typescript-eslint/parser": "^7.15.0",
 		"apify-client": "^2.16.0",
 		"chalk": "^5.6.0",
-		"eslint": "^8.56.0",
-		"eslint-plugin-n8n-nodes-base": "^1.16.1",
+		"eslint": "^9.32.0",
 		"glob": "^11.0.3",
 		"gulp": "^4.0.2",
 		"jest": "^29.7.0",
 		"nock": "^14.0.5",
-		"prettier": "^3.3.2",
+		"prettier": "^3.6.2",
 		"prompts": "^2.4.2",
 		"ts-jest": "^29.3.2",
-		"typescript": "5.5.3"
+		"typescript": "5.9.2"
 	}
 }

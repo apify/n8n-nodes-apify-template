@@ -56,7 +56,9 @@ You can locate them quickly by searching for the keyword (e.g. `SNIPPET 1`) in y
 #### 🧩 **1. Actor Schema Constants**
 
 **Location:** Search for `SNIPPET 1` or open
-`/nodes/{YourActorName}/{YourActorName}.node.ts`
+```bash
+/nodes/{YourActorName}/{YourActorName}.node.ts
+```
 
 These constants are automatically generated from your Actor’s schema and used throughout the node:
 
@@ -78,7 +80,9 @@ export const DESCRIPTION
 #### **2. Change Node Icon**
 
 **Location:** Search for `SNIPPET 2` or open
-`/nodes/{YourActorName}/{YourActorName}.node.ts`
+```bash
+/nodes/{YourActorName}/{YourActorName}.node.ts
+```
 
 Update the logo of your node. `<___>` is the default value.
 You can also define separate logos for **dark** and **light** modes.
@@ -88,7 +92,9 @@ You can also define separate logos for **dark** and **light** modes.
 #### **3. Edit Subtitle Text**
 
 **Location:** Search for `SNIPPET 3` or open
-`/nodes/{YourActorName}/{YourActorName}.node.ts`
+```bash
+/nodes/{YourActorName}/{YourActorName}.node.ts
+```
 
 Customize the subtitle displayed under your node in the n8n workflow view.
 
@@ -99,7 +105,9 @@ Customize the subtitle displayed under your node in the n8n workflow view.
 #### **4. Edit Description**
 
 **Location:** Search for `SNIPPET 4` or open
-`/nodes/{YourActorName}/{YourActorName}.node.ts`
+```bash
+/nodes/{YourActorName}/{YourActorName}.node.ts
+```
 
 Adjust the node description (defaults to your Actor’s description).
 Keep it **short and clear — ideally one sentence**, as it appears in the n8n node search.
@@ -111,7 +119,9 @@ Keep it **short and clear — ideally one sentence**, as it appears in the n8n n
 #### **5. AI Tool Optimizations**
 
 **Location:** Search for `SNIPPET 5` or open
-`/nodes/{YourActorName}/resources/genericFunctions.ts`
+```bash
+/nodes/{YourActorName}/resources/genericFunctions.ts
+```
 
 If your Actor is used by an **AI Agent** in n8n, you can optimize its output here.
 Consider cleaning or simplifying the results to reduce unnecessary context.

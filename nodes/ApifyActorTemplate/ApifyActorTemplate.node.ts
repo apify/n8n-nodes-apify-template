@@ -1,6 +1,3 @@
- 
- 
-
 import {
 	IExecuteFunctions,
 	INodeExecutionData,

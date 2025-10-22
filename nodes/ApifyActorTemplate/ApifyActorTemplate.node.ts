@@ -28,12 +28,18 @@ export class ApifyActorTemplate implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: DISPLAY_NAME,
 		name: ClassNameCamel,
+
+		// TODO 1: Adjust the icon of your app
 		icon: 'file:apify.svg',
 		group: ['transform'],
 		// Mismatched version and defaultVersion as a minor hack to hide "Custom API Call" resource
 		version: [1],
 		defaultVersion: 1,
+
+		// TODO 2: Adjust the subtitle for your Actor app.
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
+		
+		// TODO 3: Make sure the description is not too large, 1 sentence should be ideal.
 		description: DESCRIPTION,
 		defaults: {
 			name: DISPLAY_NAME,

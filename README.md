@@ -303,3 +303,29 @@ If you encounter issues:
 1. Check the [Apify API documentation](https://docs.apify.com)
 2. Review the [n8n Community Nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
 3. Open an issue in the [GitHub repository](https://github.com/apify/n8n-nodes-apify-actor-template)
+
+# TODOS:
+
+TODO 1
+TODO 2
+TODO 3
+### TODO 4: Edit ApifyActorTemplate.node.json
+
+This file has 2 important sections:
+- categories
+- alias
+
+Adjust the categories according to your Actor and add / remove alias' values which are keywords used by n8n on their node search engine
+
+### TODO 5: Adjust the node icon
+
+By default app uses the Apify logo with the community badge. You can change it
+TODO 6
+
+## Development Guide
+
+### Customize Node Parameters
+
+### Publishing Your Node
+
+### 

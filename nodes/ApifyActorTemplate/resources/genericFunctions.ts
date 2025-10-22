@@ -168,10 +168,11 @@ export async function getResults(this: IExecuteFunctions, datasetId: string): Pr
 		uri: `/v2/datasets/${datasetId}/items`,
 	});
 
-	// If used as a tool from an AI Agent, only return markdown results
-	// This reduces the token amount more than half
+	// TODO 6: AI Agent tool usage optimizations
+	// It might be beneficial to remove fields like run info etc. This helps with the context limits of LLM's
+	// EXAMPLE BELOW: Leaves only markdown result
 	if (isUsedAsAiTool(this.getNode().type)) {
-		results = results.map((item: any) => ({ markdown: item.markdown }));
+		// results = results.map((item: any) => ({ markdown: item.markdown }));
 	}
 
 	return this.helpers.returnJsonArray(results);

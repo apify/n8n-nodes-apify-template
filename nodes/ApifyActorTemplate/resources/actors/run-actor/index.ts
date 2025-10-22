@@ -1,14 +1,16 @@
 import { INodePropertyOptions } from 'n8n-workflow';
 
 import { properties } from './properties';
+import { DESCRIPTION } from '../../../ApifyActorTemplate.node';
 
-export const name = 'Run Actor Advanced';
+export const name = 'Run Actor';
 
+// TODO 2: Check that the options below are appropriate
 const option: INodePropertyOptions = {
-	name: 'Advanced Settings',
-	value: 'Run Actor Advanced',
-	action: 'Crawl a Website (Advanced Settings)',
-	description: 'Use advanced options for more control',
+	name: 'Run Scraper',
+	value: 'Run Actor',
+	action: 'Scrape a website',
+	description: DESCRIPTION,
 };
 
 export { option, properties };

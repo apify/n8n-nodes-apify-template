@@ -23,14 +23,14 @@
 	"engines": {
 		"node": ">=18.10"
 	},
-	"packageManager": "pnpm@9.1.4",
+	"packageManager": "npm@10.8.2",
 	"main": "index.js",
 	"scripts": {
 		"build": "tsc && gulp build:icons",
 		"dev": "n8n-node dev",
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
-		"prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json",
+		"prepublishOnly": "npm run build && npm run lint",
 		"merge:api": "npx openapi-merge-cli --config ./openapi.config.json",
 		"test": "WEBHOOK_URL=https://localhost:5678 jest --config jest.config.js",
 		"create-actor-app": "node scripts/cli.ts"

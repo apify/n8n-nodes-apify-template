@@ -51,9 +51,8 @@ Here’s a cleaner, more polished version of your section — keeping all contex
 We recommend reviewing the highlighted parts of the code you may want to customize.
 You can locate them quickly by searching for the keyword (e.g. `SNIPPET 1`) in your IDE.
 
----
 
-#### 🧩 **1. Actor Schema Constants**
+#### **1. Actor Schema Constants**
 
 **Location:** Search for `SNIPPET 1` or open
 ```bash
@@ -75,38 +74,35 @@ export const DISPLAY_NAME
 export const DESCRIPTION
 ```
 
----
 
 #### **2. Change Node Icon**
 
 **Location:** Search for `SNIPPET 2` or open
 ```bash
-/nodes/{YourActorName}/{YourActorName}.node.ts
+/nodes/ApifyActorTemplate/ApifyActorTemplate.node.ts
 ```
 
 Update the logo of your node. `<___>` is the default value.
 You can also define separate logos for **dark** and **light** modes.
 
----
 
 #### **3. Edit Subtitle Text**
 
 **Location:** Search for `SNIPPET 3` or open
 ```bash
-/nodes/{YourActorName}/{YourActorName}.node.ts
+/nodes/ApifyActorTemplate/ApifyActorTemplate.node.ts
 ```
 
 Customize the subtitle displayed under your node in the n8n workflow view.
 
 ![Actor Subtitle](./docs/actor-subtitle.png)
 
----
 
 #### **4. Edit Description**
 
 **Location:** Search for `SNIPPET 4` or open
 ```bash
-/nodes/{YourActorName}/{YourActorName}.node.ts
+/nodes/ApifyActorTemplate/ApifyActorTemplate.node.ts
 ```
 
 Adjust the node description (defaults to your Actor’s description).
@@ -114,13 +110,12 @@ Keep it **short and clear — ideally one sentence**, as it appears in the n8n n
 
 ![Apify Node Description](./docs/node-description.png)
 
----
 
 #### **5. AI Tool Optimizations**
 
 **Location:** Search for `SNIPPET 5` or open
 ```bash
-/nodes/{YourActorName}/resources/genericFunctions.ts
+/nodes/ApifyActorTemplate/resources/genericFunctions.ts
 ```
 
 If your Actor is used by an **AI Agent** in n8n, you can optimize its output here.

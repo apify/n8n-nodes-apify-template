@@ -9,6 +9,7 @@ import { properties } from './ApifyActorTemplate.properties';
 import { methods } from './ApifyActorTemplate.methods';
 import { actorsRouter } from './resources/actors/router';
 
+// SNIPPET 1: Make sure the constants are correct
 export const ACTOR_ID = '$$ACTOR_ID' as string;
 
 export const PACKAGE_NAME = '$$PACKAGE_NAME' as string;
@@ -26,7 +27,7 @@ export class ApifyActorTemplate implements INodeType {
 		displayName: DISPLAY_NAME,
 		name: ClassNameCamel,
 
-		// TODO 1: Adjust the icon of your app
+		// SNIPPET 2: Adjust the icon of your app
 		icon: {
 			light: 'file:apify.svg',
 			dark: 'file:apifyDark.svg'
@@ -36,10 +37,10 @@ export class ApifyActorTemplate implements INodeType {
 		version: [1],
 		defaultVersion: 1,
 
-		// TODO 2: Adjust the subtitle for your Actor app.
-		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
+		// SNIPPET 3: Adjust the subtitle for your Actor app.
+		subtitle: 'Run Scraper',
 		
-		// TODO 3: Make sure the description is not too large, 1 sentence should be ideal.
+		// SNIPPET 4: Make sure the description is not too large, 1 sentence should be ideal.
 		description: DESCRIPTION,
 		defaults: {
 			name: DISPLAY_NAME,

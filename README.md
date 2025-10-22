@@ -56,7 +56,7 @@ You can locate them quickly by searching for the keyword (e.g. `SNIPPET 1`) in y
 
 **Location:** Search for `SNIPPET 1` or open
 ```bash
-/nodes/{YourActorName}/{YourActorName}.node.ts
+/nodes/ApifyActorTemplate/ApifyActorTemplate.node.ts
 ```
 
 These constants are automatically generated from your Actor’s schema and used throughout the node:

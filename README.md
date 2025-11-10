@@ -160,8 +160,14 @@ if (isUsedAsAiTool(this.getNode().type)) {
 
 **Authentication** - [credentials/](credentials/)
 - Pre-configured for both API key and OAuth2 authentication
-- Users running n8n locally will need to provide their Apify API 
+- Users running n8n locally will need to provide their Apify API token
 - Users on n8n cloud can perform OAuth2 login
+
+---
+
+### 3. Understanding the Generated Code
+
+This section explains the key files and how they work together. This knowledge will help you make advanced customizations or debug issues.
 
 #### 🔧 Core Files Explained
 
@@ -305,6 +311,8 @@ This repository contains **two README files** with different purposes:
 
 **After running the script**, you can use `README_TEMPLATE.md` as the README for your generated node package.
 
+---
+
 ## Development Guide
 
 ### Run n8n Locally
@@ -323,6 +331,8 @@ This launches n8n with hot reloading enabled. Any changes to your node files wil
 ### Publishing Your Node
 
 // TODO: will add more details for publishing later, not certain yet.
+
+---
 
 ### Getting Help
 

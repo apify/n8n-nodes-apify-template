@@ -52,8 +52,6 @@ For example, if your Actor page URL is `https://console.apify.com/actors/aYG0l9s
 - Converts Actor input fields into n8n node parameters
 - Creates all necessary boilerplate code
 
-> **Note:** For private Actors, set your `APIFY_TOKEN` in a `.env` file before running the script. // TODO: discuss it (public/private Actors)?
-
 ---
 
 ### 2. Customize Your Node

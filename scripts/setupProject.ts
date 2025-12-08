@@ -2,7 +2,7 @@ import { ApifyClient } from 'apify-client';
 import { refactorProject } from './refactorProject.ts';
 import { generateActorResources } from './actorSchemaConverter.ts';
 import { setConfig } from './actorConfig.ts';
-import prompts from 'prompts';
+import * as readline from 'readline';
 
 // Targets (old names)
 const TARGET_CLASS_NAME = 'ApifyActorTemplate';
@@ -24,13 +24,23 @@ const EXECUTE_PATHS = [
 // Path where constants should be replaced
 const NODE_FILE_PATH = `./nodes/${TARGET_CLASS_NAME}/${TARGET_CLASS_NAME}.node.ts`;
 
+function askForActorId(): Promise<string> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    return new Promise((resolve) => {
+        rl.question('👉 Please enter the ACTOR_ID: ', (answer) => {
+            rl.close();
+            resolve(answer.trim());
+        });
+    });
+}
+
 export async function setupProject() {
     // Ask user for ACTOR_ID
-    const { actorId } = await prompts({
-        type: 'text',
-        name: 'actorId',
-        message: '👉 Please enter the ACTOR_ID:',
-    });
+    const actorId = await askForActorId();
 
     if (!actorId) {
         throw new Error('❌ ACTOR_ID is required.');

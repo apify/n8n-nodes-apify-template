@@ -1,5 +1,4 @@
 import { INodeProperties } from 'n8n-workflow';
-import { properties as resources } from './resources';
 
 const authenticationProperties: INodeProperties[] = [
 	{
@@ -21,4 +20,38 @@ const authenticationProperties: INodeProperties[] = [
 	},
 ];
 
-export const properties: INodeProperties[] = [...resources, ...authenticationProperties];
+export const actorProperties: INodeProperties[] = [
+	{
+		displayName: 'Urls',
+		name: 'categoryUrls',
+		description: 'Enter URLs. You can also use specific product URLs directly.',
+		required: true,
+		default: {},
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
+		options: [
+			{
+				name: 'items',
+				displayName: 'Items',
+				values: [
+					{
+						displayName: 'Item',
+						name: 'url',
+						type: 'string',
+						default: '',
+					},
+				],
+			},
+		],
+		displayOptions: {
+			show: {
+				operation: ['Run'],
+			},
+		},
+	},
+];
+
+
+export const properties: INodeProperties[] = [...actorProperties, ...authenticationProperties];

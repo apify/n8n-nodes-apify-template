@@ -1,5 +1,6 @@
 import { IExecuteFunctions, INodeExecutionData, NodeApiError } from 'n8n-workflow';
 import { apiRequest, getResults, isUsedAsAiTool, pollRunStatus } from './genericFunctions';
+import { ACTOR_ID } from '../ApifyActorTemplate.node';
 
 export async function getDefaultBuild(this: IExecuteFunctions, actorId: string) {
 	const defaultBuildResp = await apiRequest.call(this, {
@@ -70,3 +71,17 @@ export async function executeActorRunFlow(
 
 	return { json: { ...lastRunData, ...resultData } };
 }
+
+export async function runActor(this: IExecuteFunctions, i: number): Promise<INodeExecutionData> {
+	const build = await getDefaultBuild.call(this, ACTOR_ID);
+	const defaultInput = getDefaultInputsFromBuild(build);
+
+	const mergedInput: Record<string, any> = {
+		...defaultInput,
+	};
+
+	mergedInput['categoryUrls'] = this.getNodeParameter('categoryUrls', i);
+
+	return await executeActorRunFlow.call(this, ACTOR_ID, mergedInput);
+}
+

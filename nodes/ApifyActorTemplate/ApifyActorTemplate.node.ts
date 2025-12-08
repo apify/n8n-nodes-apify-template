@@ -6,8 +6,7 @@ import {
 	NodeConnectionType,
 } from 'n8n-workflow';
 import { properties } from './ApifyActorTemplate.properties';
-import { methods } from './ApifyActorTemplate.methods';
-import { actorsRouter } from './resources/actors/router';
+import { runActor } from './helpers/executeActor';
 
 // SNIPPET 1: Make sure the constants are correct
 export const ACTOR_ID = '$$ACTOR_ID' as string;
@@ -74,15 +73,13 @@ export class ApifyActorTemplate implements INodeType {
 		properties,
 	};
 
-	methods = methods;
-
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const data = await actorsRouter.call(this, i);
+				const data = await runActor.call(this, i);
 
 				const addPairedItem = (item: INodeExecutionData) => ({
 					...item,

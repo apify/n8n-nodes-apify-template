@@ -43,6 +43,12 @@ Run the generation script:
 npm run create-actor-app
 ```
 
+To test the node on n8n run the following commands:
+```bash
+npm run build
+npm run dev
+```
+
 When prompted, **enter the Actor ID** from your Actor's console URL.
 For example, if your Actor page URL is `https://console.apify.com/actors/aYG0l9s7dbB7j3gbS/input`, the Actor ID is `aYG0l9s7dbB7j3gbS`.
 

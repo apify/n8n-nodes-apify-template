@@ -1,4 +1,15 @@
-import { INodeProperties } from 'n8n-workflow';
+import { IExecuteFunctions, INodeProperties } from 'n8n-workflow';
+
+export function buildActorInput(
+	context: IExecuteFunctions,
+	itemIndex: number,
+	defaultInput: Record<string, any>,
+): Record<string, any> {
+	return {
+		...defaultInput,
+		categoryUrls: context.getNodeParameter('categoryUrls', itemIndex),
+	};
+}
 
 const authenticationProperties: INodeProperties[] = [
 	{

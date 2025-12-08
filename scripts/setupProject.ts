@@ -13,12 +13,12 @@ const X_PLATFORM_HEADER_ID = 'n8n';
 
 // Paths where properties should be updated
 const PROPERTIES_PATHS = [
-    `./nodes/${TARGET_CLASS_NAME}/resources/actors/run-actor/properties.ts`,
+    `./nodes/${TARGET_CLASS_NAME}/${TARGET_CLASS_NAME}.properties.ts`,
 ];
 
 // Paths where execute.ts should be updated
 const EXECUTE_PATHS = [
-    `./nodes/${TARGET_CLASS_NAME}/resources/actors/run-actor/execute.ts`,
+    `./nodes/${TARGET_CLASS_NAME}/helpers/executeActor.ts`,
 ];
 
 // Path where constants should be replaced

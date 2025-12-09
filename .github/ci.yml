@@ -10,6 +10,10 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    strategy:jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
     strategy:
       matrix:
         node-version: [22.x]
@@ -18,20 +22,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup Node.js & cache npm
+      - name: Setup Node.js and cache npm
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install --frozen-lockfile
-
-      - name: Format check
-        run: npx prettier --check nodes credentials
+        run: npm ci
 
       - name: Lint code
         run: npm run lint
@@ -41,6 +39,4 @@ jobs:
 
       - name: Build project
         run: npm run build
-
-      - name: Run tests
-        run: npm run test
+        

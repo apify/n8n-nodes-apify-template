@@ -1,6 +1,6 @@
 # n8n Nodes - Apify Actor Template
 
-This template **automatically converts any Apify Actor into a fully functional n8n node** with a single command.
+This template converts Apify Actors into n8n community nodes. The generation script reads your Actor's input schema and creates the node package structure, which you can then customize and publish.
 Simply provide an Actor ID, and the script generates a complete n8n community node package using your Actor's input schema—ready to customize and publish.
 
 [Apify](https://apify.com) is a platform for building, deploying, and publishing web automation tools called Actors, while [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform that connects various services and APIs.

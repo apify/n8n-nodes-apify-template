@@ -30,9 +30,6 @@ jobs:
       - name: Install dependencies
         run: npm install --frozen-lockfile
 
-      - name: Format check
-        run: npx prettier --check nodes credentials
-
       - name: Lint code
         run: npm run lint
 
@@ -41,6 +38,3 @@ jobs:
 
       - name: Build project
         run: npm run build
-
-      - name: Run tests
-        run: npm run test

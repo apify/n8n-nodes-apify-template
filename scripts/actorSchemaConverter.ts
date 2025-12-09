@@ -203,7 +203,7 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
 }
 
 /**
- * Build parameter and special-case assignments for n8n execute template
+ * Build parameter assignments for buildActorInput function in properties.ts template
  */
 function buildParameterAssignments(properties: INodeProperties[]): {
     paramAssignments: string[];
@@ -214,24 +214,29 @@ function buildParameterAssignments(properties: INodeProperties[]): {
 
     for (const prop of properties) {
         if (prop.type === 'fixedCollection') {
+            // Generate inline logic for fixedCollection types
             for (const option of prop.options ?? []) {
-                specialCases.push(`
-    const ${prop.name} = this.getNodeParameter('${prop.name}', i, {}) as { ${option.name}?: { value: string }[] };
-    if (${prop.name}?.${option.name}?.length) {
-        mergedInput["${prop.name}"] = ${prop.name}.${option.name}.map(e => e.value);
-    }`);
+                paramAssignments.push(`
+		...((() => {
+			const ${prop.name} = context.getNodeParameter('${prop.name}', itemIndex, {}) as { ${option.name}?: { value: string }[] };
+			return ${prop.name}?.${option.name}?.length ? { ${prop.name}: ${prop.name}.${option.name}.map(e => e.value) } : {};
+		})()),`);
             }
         } else if (prop.type === 'json') {
+            // Generate inline logic for JSON types with error handling
             paramAssignments.push(`
-  try {
-    const rawValue = this.getNodeParameter("${prop.name}", i);
-    mergedInput["${prop.name}"] = typeof rawValue === "string" ? JSON.parse(rawValue) : rawValue;
-  } catch (error) {
-    throw new Error(\`Invalid JSON in parameter "${prop.name}": \${(error as Error).message}\`);
-  }`);
+		...((() => {
+			try {
+				const rawValue = context.getNodeParameter("${prop.name}", itemIndex);
+				return { ${prop.name}: typeof rawValue === "string" ? JSON.parse(rawValue) : rawValue };
+			} catch (error) {
+				throw new Error(\`Invalid JSON in parameter "${prop.name}": \${(error as Error).message}\`);
+			}
+		})()),`);
         } else {
+            // Simple property assignment
             paramAssignments.push(
-                `  mergedInput["${prop.name}"] = this.getNodeParameter("${prop.name}", i);`
+                `		${prop.name}: context.getNodeParameter('${prop.name}', itemIndex),`
             );
         }
     }
@@ -259,10 +264,15 @@ export async function generateActorResources(
     const propertiesTemplate = fs.readFileSync(path.join(templatesDir, 'properties.ts.tpl'), 'utf-8');
     const executeTemplate = fs.readFileSync(path.join(templatesDir, 'execute.ts.tpl'), 'utf-8');
 
+    // --- Generate parameter assignments ---
+    const { paramAssignments } = buildParameterAssignments(properties);
+
     // --- Generate properties.ts ---
     const propsWithDisplayOptions = properties.map((prop) => ({ ...prop }));
     const propsJson = JSON.stringify(propsWithDisplayOptions, null, 2);
-    const newPropsContent = propertiesTemplate.replace('{{PROPERTIES_JSON}}', propsJson);
+    const newPropsContent = propertiesTemplate
+        .replace('{{PROPERTIES_JSON}}', propsJson)
+        .replace('{{PARAM_ASSIGNMENTS}}', paramAssignments.join('\n'));
 
     for (const filePath of propertiesPaths) {
         fs.writeFileSync(filePath, newPropsContent, 'utf-8');
@@ -270,12 +280,8 @@ export async function generateActorResources(
     }
 
     // --- Generate execute.ts ---
-    const { paramAssignments, specialCases } = buildParameterAssignments(properties);
-
     const newExecuteContent = executeTemplate
-        .replace(/{{TARGET_CLASS_NAME}}/g, TARGET_CLASS_NAME)
-        .replace('{{PARAM_ASSIGNMENTS}}', paramAssignments.join('\n'))
-        .replace('{{SPECIAL_CASES}}', specialCases.join('\n'));
+        .replace(/{{TARGET_CLASS_NAME}}/g, TARGET_CLASS_NAME);
 
     for (const filePath of executePaths) {
         fs.writeFileSync(filePath, newExecuteContent, 'utf-8');

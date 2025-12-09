@@ -2,7 +2,7 @@ import { ApifyClient } from 'apify-client';
 import { refactorProject } from './refactorProject.ts';
 import { generateActorResources } from './actorSchemaConverter.ts';
 import { setConfig } from './actorConfig.ts';
-import prompts from 'prompts';
+import * as readline from 'readline';
 
 // Targets (old names)
 const TARGET_CLASS_NAME = 'ApifyActorTemplate';
@@ -13,24 +13,34 @@ const X_PLATFORM_HEADER_ID = 'n8n';
 
 // Paths where properties should be updated
 const PROPERTIES_PATHS = [
-    `./nodes/${TARGET_CLASS_NAME}/resources/actors/run-actor/properties.ts`,
+    `./nodes/${TARGET_CLASS_NAME}/${TARGET_CLASS_NAME}.properties.ts`,
 ];
 
 // Paths where execute.ts should be updated
 const EXECUTE_PATHS = [
-    `./nodes/${TARGET_CLASS_NAME}/resources/actors/run-actor/execute.ts`,
+    `./nodes/${TARGET_CLASS_NAME}/helpers/executeActor.ts`,
 ];
 
 // Path where constants should be replaced
 const NODE_FILE_PATH = `./nodes/${TARGET_CLASS_NAME}/${TARGET_CLASS_NAME}.node.ts`;
 
+function askForActorId(): Promise<string> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    return new Promise((resolve) => {
+        rl.question('👉 Please enter the ACTOR_ID: ', (answer) => {
+            rl.close();
+            resolve(answer.trim());
+        });
+    });
+}
+
 export async function setupProject() {
     // Ask user for ACTOR_ID
-    const { actorId } = await prompts({
-        type: 'text',
-        name: 'actorId',
-        message: '👉 Please enter the ACTOR_ID:',
-    });
+    const actorId = await askForActorId();
 
     if (!actorId) {
         throw new Error('❌ ACTOR_ID is required.');

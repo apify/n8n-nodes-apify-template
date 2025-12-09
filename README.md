@@ -43,6 +43,12 @@ Run the generation script:
 npm run create-actor-app
 ```
 
+To test the node on n8n run the following commands:
+```bash
+npm run build
+npm run dev
+```
+
 When prompted, **enter the Actor ID** from your Actor's console URL.
 For example, if your Actor page URL is `https://console.apify.com/actors/aYG0l9s7dbB7j3gbS/input`, the Actor ID is `aYG0l9s7dbB7j3gbS`.
 
@@ -111,6 +117,10 @@ Replace the SVG files in the node directory with your own branding.
 
 The subtitle appears beneath your node in n8n workflows:
 
+```typescript
+subtitle: 'Run Scraper',
+```
+
 ![Actor Subtitle](./docs/actor-subtitle.png)
 
 ---
@@ -122,7 +132,7 @@ The subtitle appears beneath your node in n8n workflows:
 This description shows up in n8n's node browser:
 
 ```typescript
-description: DESCRIPTION // Keep it concise (1-2 sentences max)
+description: DESCRIPTION,
 ```
 
 ![Apify Node Description](./docs/node-description.png)
@@ -131,18 +141,13 @@ description: DESCRIPTION // Keep it concise (1-2 sentences max)
 
 #### **SNIPPET 5: AI Tool Result Filtering**
 
-**Location:** [nodes/Apify{YourActorName}/resources/genericFunctions.ts](nodes/Apify{YourActorName}/resources/genericFunctions.ts)
+**Location:** [nodes/Apify{YourActorName}/helpers/genericFunctions.ts](nodes/Apify{YourActorName}/helpers/genericFunctions.ts)
 
 If your node is used with AI agents, optimize the returned data to reduce token usage:
 
 ```typescript
 if (isUsedAsAiTool(this.getNode().type)) {
-  // Example: Return only essential fields
-  results = results.map((item: any) => ({
-    name: item.name,
-    address: item.address,
-    rating: item.rating
-  }));
+  results = results.map((item: any) => ({ markdown: item.markdown }));
 }
 ```
 
@@ -169,6 +174,22 @@ This section explains the key files and how they work together. This knowledge w
 
 #### 🔧 Core Files Explained
 
+The template uses a simplified, flat structure for easier understanding and maintenance:
+
+```
+nodes/Apify{YourActorName}/
+├── Apify{YourActorName}.node.ts          # Main node definition
+├── Apify{YourActorName}.properties.ts     # Input parameters & buildActorInput()
+├── Apify{YourActorName}.node.json         # Node metadata
+├── apify.svg / apifyDark.svg              # Icons
+└── helpers/
+    ├── executeActor.ts                     # Actor execution logic
+    ├── genericFunctions.ts                 # API utilities
+    └── hooks.ts                            # Lifecycle hooks
+```
+
+---
+
 ##### **1. Main Node Class** - `Apify{YourActorName}.node.ts`
 
 **Purpose:** Defines the n8n node itself—its display name, icon, properties, and execution method.
@@ -176,7 +197,7 @@ This section explains the key files and how they work together. This knowledge w
 **Key sections:**
 - **Node metadata** - Name, description, icon, version
 - **Properties import** - Loads input parameters from `properties.ts`
-- **Execute method** - Calls `actorsRouter` to handle the actual execution
+- **Execute method** - Calls `runActor()` to handle the actual execution
 
 **When to edit:**
 - Change visual appearance (icon, subtitle, description)
@@ -185,19 +206,33 @@ This section explains the key files and how they work together. This knowledge w
 
 ---
 
-##### **2. Input Parameters** - `resources/actors/run-actor/properties.ts`
+##### **2. Input Parameters** - `Apify{YourActorName}.properties.ts`
 
-**Purpose:** Defines all input fields shown in the n8n UI (auto-generated from your Actor's input schema).
+**Purpose:** Defines all input fields shown in the n8n UI (auto-generated from your Actor's input schema) and contains the `buildActorInput()` function.
 
 **Example generated property:**
 ```typescript
-{
-  displayName: 'Start URLs',
-  name: 'startUrls',
-  type: 'string',
-  default: '',
-  required: true,
-  description: 'One or more URLs to start crawling from'
+export const actorProperties: INodeProperties[] = [
+  {
+    displayName: 'Start URLs',
+    name: 'startUrls',
+    type: 'string',
+    default: '',
+    required: true,
+    description: 'One or more URLs to start crawling from'
+  }
+];
+
+export function buildActorInput(
+  context: IExecuteFunctions,
+  itemIndex: number,
+  defaultInput: Record<string, any>,
+): Record<string, any> {
+  return {
+    ...defaultInput,
+    startUrls: context.getNodeParameter('startUrls', itemIndex),
+    maxCrawlDepth: context.getNodeParameter('maxCrawlDepth', itemIndex),
+  };
 }
 ```
 
@@ -205,45 +240,40 @@ This section explains the key files and how they work together. This knowledge w
 - Refine field labels or descriptions after generation
 - Add field validation rules
 - Adjust default values
+- Modify how inputs are transformed in `buildActorInput()`
 
 ---
 
-##### **3. Execution Logic** - `resources/actors/run-actor/execute.ts`
+##### **3. Execution Logic** - `helpers/executeActor.ts`
 
-**Purpose:** Maps n8n node parameters to Actor inputs and triggers the Actor run.
+**Purpose:** Orchestrates the complete Actor run lifecycle (start → poll → fetch results).
 
-**Auto-generated code:**
+**Main function:**
 ```typescript
-export async function runActor(this: IExecuteFunctions, i: number) {
-  // Fetch Actor's default input values
-  const defaultInput = await getActorDefaultInput.call(this, ACTOR_ID);
+export async function runActor(this: IExecuteFunctions, i: number): Promise<INodeExecutionData> {
+  // Get default input values from Actor's build
+  const build = await getDefaultBuild.call(this, ACTOR_ID);
+  const defaultInput = getDefaultInputsFromBuild(build);
 
-  // Merge user inputs with defaults
-  const mergedInput = { ...defaultInput };
-  mergedInput['startUrls'] = this.getNodeParameter('startUrls', i);
-  mergedInput['maxCrawlDepth'] = this.getNodeParameter('maxCrawlDepth', i);
+  // Build the Actor input using values from n8n node
+  const mergedInput = buildActorInput(this, i, defaultInput);
 
-  // Execute the Actor and wait for results
-  return await executeActorRunFlow.call(this, ACTOR_ID, mergedInput);
+  // Start the Actor run
+  const run = await runActorApi.call(this, ACTOR_ID, mergedInput, { waitForFinish: 0 });
+
+  // Poll until completion
+  const lastRunData = await pollRunStatus.call(this, run.data.id);
+
+  // Fetch results
+  const resultData = await getResults.call(this, run.data.defaultDatasetId);
+
+  // Return results (optionally filtered for AI tools)
+  if (isUsedAsAiTool(this.getNode().type)) {
+    return { json: { ...resultData } };
+  }
+  return { json: { ...lastRunData, ...resultData } };
 }
 ```
-
-**When to edit:**
-- Add custom input processing (e.g., transforming data before sending to Actor)
-- Add or remove input options
-
----
-
-##### **4. Actor Execution Flow** - `resources/executeActor.ts`
-
-**Purpose:** Handles the complete Actor run lifecycle (start → poll → fetch results).
-
-**Flow:**
-1. `runActorApi()` - Starts the Actor via Apify API
-2. `pollRunStatus()` - Waits for the Actor to finish (polls every 2-3 seconds)
-3. `getResults()` - Fetches the dataset items
-4. Applies AI tool filtering (if applicable)
-5. Returns results to n8n
 
 **When to edit:**
 - Customize polling intervals or timeout behavior
@@ -252,13 +282,15 @@ export async function runActor(this: IExecuteFunctions, i: number) {
 
 ---
 
-##### **5. API Utilities** - `resources/genericFunctions.ts`
+##### **4. API Utilities** - `helpers/genericFunctions.ts`
 
 **Purpose:** Provides helper functions for making authenticated Apify API requests.
 
 **Key functions:**
-- `apifyApiRequest()` - Makes authenticated HTTP requests to Apify API
+- `apiRequest()` - Makes authenticated HTTP requests to Apify API
 - `isUsedAsAiTool()` - Detects if the node is being used by an AI agent
+- `pollRunStatus()` - Polls Actor run until completion
+- `getResults()` - Fetches dataset items with optional AI tool filtering
 
 **Auto-added headers:**
 ```typescript
@@ -274,7 +306,7 @@ export async function runActor(this: IExecuteFunctions, i: number) {
 
 ---
 
-##### **6. Node Metadata** - `Apify{YourActorName}.node.json`
+##### **5. Node Metadata** - `Apify{YourActorName}.node.json`
 
 **Purpose:** Tells n8n where to categorize your node and what keywords to search for.
 
@@ -300,7 +332,7 @@ export async function runActor(this: IExecuteFunctions, i: number) {
 
 ---
 
-##### **7. Readme Template** - `README_TEMPLATE.md`
+##### **6. Readme Template** - `README_TEMPLATE.md`
 
 This repository contains **two README files** with different purposes:
 

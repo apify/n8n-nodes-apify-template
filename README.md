@@ -32,31 +32,23 @@ Simply provide an Actor ID, and the script generates a complete n8n community no
 ### 1. Generate Your Node
 
 Install dependencies:
-
-```bash
-npm install
-```
-
-Run the generation script:
-
-```bash
-npm run create-actor-app
-```
-
-To test the node on n8n run the following commands:
-```bash
-npm run build
-npm run dev
-```
-
-When prompted, **enter the Actor ID** from your Actor's console URL.
-For example, if your Actor page URL is `https://console.apify.com/actors/aYG0l9s7dbB7j3gbS/input`, the Actor ID is `aYG0l9s7dbB7j3gbS`.
-
-**What happens next:**
-- The script fetches your Actor's metadata and input schema
-- Generates node files with proper naming (e.g., `ApifyWebsiteContentCrawler`)
-- Converts Actor input fields into n8n node parameters
-- Creates all necessary boilerplate code
+	```bash
+	npm install
+	```
+	
+	Run the generation script:
+	```bash
+	npm run create-actor-app
+	```
+	
+When prompted, enter your Actor ID. Find this in your Actor's console URL, for example, if your Actor page is `https://console.apify.com/actors/aYG0l9s7dbB7j3gbS/input`, the Actor ID is `aYG0l9s7dbB7j3gbS`.
+	
+The script fetches your Actor's metadata and input schema, generates node files with proper naming, converts Actor input fields into n8n node parameters, and creates all necessary boilerplate code.
+Test the generated node:
+	```bash
+	npm run build
+	npm run dev
+	```
 
 ---
 
@@ -72,99 +64,66 @@ For example, if you converted the **Website Content Crawler** Actor, the folder 
 nodes/ApifyWebsiteContentCrawler/
 ```
 
-#### Key Customization Points
-
-The generated code includes **5 labeled snippets** you'll likely want to customize. Search for `SNIPPET` in your IDE to jump directly to each section:
-
-
-#### **SNIPPET 1: Actor Schema Constants**
-
-**Location:** [nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts](nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts)
-
-Auto-generated constants derived from your Actor's metadata:
-
-```typescript
-export const ACTOR_ID = 'aYG0l9s7dbB7j3gbS'
-export const CLASS_NAME = 'ApifyWebsiteContentCrawler'
-export const DISPLAY_NAME = 'Apify Website Content Crawler'
-export const DESCRIPTION = '<Actor description>'
-```
-
-> **Tip:** Usually no changes needed here, but you can adjust `DISPLAY_NAME` or `DESCRIPTION` if desired.
-
+#### Customization
+The generated code includes five sections labeled with `SNIPPET` comments. Search for `SNIPPET` in your IDE to locate them quickly.
+##### Actor schema constants
+Location: `nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts`
+The script generates these constants from your Actor's metadata:
+	```typescript
+	export const ACTOR_ID = 'aYG0l9s7dbB7j3gbS'
+	export const CLASS_NAME = 'ApifyWebsiteContentCrawler'
+	export const DISPLAY_NAME = 'Apify Website Content Crawler'
+	export const DESCRIPTION = ''
+	```
+> **Tip:** Change `DISPLAY_NAME` or `DESCRIPTION` to adjust how your node appears in the n8n interface.
 ---
-
-#### **SNIPPET 2: Node Icon**
-
-**Location:** [nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts](nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts)
-
-Customize your node's visual icon. By default, it uses the Apify logo:
-
-```typescript
-icon: {
-  light: 'file:apify.svg',
-  dark: 'file:apifyDark.svg'
-}
-```
-
+##### Node icon
+Location: `nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts`
+The default configuration uses the Apify logo:
+	```typescript
+	icon: {
+	  light: 'file:apify.svg',
+	  dark: 'file:apifyDark.svg'
+	}
+	```
 Replace the SVG files in the node directory with your own branding.
-
 ---
-
-#### **SNIPPET 3: Subtitle Text**
-
-**Location:** [nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts](nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts)
-
+##### Subtitle
+Location: `nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts`
 The subtitle appears beneath your node in n8n workflows:
-
-```typescript
-subtitle: 'Run Scraper',
-```
-
+	```typescript
+	subtitle: 'Run Scraper',
+	```
 ![Actor Subtitle](./docs/actor-subtitle.png)
-
 ---
-
-#### **SNIPPET 4: Node Description**
-
-**Location:** [nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts](nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts)
-
-This description shows up in n8n's node browser:
-
-```typescript
-description: DESCRIPTION,
-```
-
+##### Node description
+Location: `nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts`
+This description appears in n8n's node browser:
+	```typescript
+	description: DESCRIPTION,
+	```
 ![Apify Node Description](./docs/node-description.png)
-
 ---
-
-#### **SNIPPET 5: AI Tool Result Filtering**
-
-**Location:** [nodes/Apify{YourActorName}/helpers/genericFunctions.ts](nodes/Apify{YourActorName}/helpers/genericFunctions.ts)
-
-If your node is used with AI agents, optimize the returned data to reduce token usage:
-
-```typescript
-if (isUsedAsAiTool(this.getNode().type)) {
-  results = results.map((item: any) => ({ markdown: item.markdown }));
-}
-```
-
-**Why?** AI agents work better with clean data which take up less context.
-
+### AI tool result filtering
+Location: `nodes/Apify{YourActorName}/helpers/genericFunctions.ts`
+When your node runs in AI agent workflows, reduce token usage by filtering the returned data:
+	```typescript
+	if (isUsedAsAiTool(this.getNode().type)) {
+	  results = results.map((item: any) => ({ markdown: item.markdown }));
+	}
+	```
+AI agents perform better with clean, focused data that takes up less context.
 ---
-
-#### Additional Customizations
-
-**Node Metadata** - [nodes/Apify{YourActorName}/Apify{YourActorName}.node.json](nodes/Apify{YourActorName}/Apify{YourActorName}.node.json)
-- `categories`: Where the node appears in n8n's node browser (e.g., `["Data & Storage", "Marketing & Content"]`)
-- `alias`: Keywords for n8n's search (e.g., `["crawler", "scraper", "website", "content"]`)
-
-**Authentication** - [credentials/](credentials/)
-- Pre-configured for both API key and OAuth2 authentication
-- Users running n8n locally will need to provide their Apify API token
-- Users on n8n cloud can perform OAuth2 login
+#### Additional customization
+The `Apify{YourActorName}.node.json` file controls where your node appears in n8n:
+	```json
+	{
+	  "categories": ["Data & Storage", "Marketing & Content"],
+	  "alias": ["crawler", "scraper", "website", "content"]
+	}
+	```
+Adjust `categories` to match your Actor's purpose and add relevant search keywords to `alias`.
+The template includes pre-configured authentication in the `credentials/` directory. Users running n8n locally provide their Apify API token. Users on n8n cloud can authenticate via OAuth2.
 
 ---
 

@@ -24,8 +24,8 @@ Simply provide an Actor ID, and the script generates a complete n8n community no
 
 ### ⚙️ Prerequisites
 
-- **Node.js** (recommended: v23.11.1 or higher)
-- A valid Apify Actor ID (find yours at [Apify Store](https://apify.com/store))
+- Node.js v23.11.1 or higher
+- A valid Apify Actor ID from the [Apify Store](https://apify.com/store)
 
 ---
 

@@ -16,7 +16,6 @@ Simply provide an Actor ID, and the script generates a complete n8n community no
   - [3. Understanding the Generated Code](#3-understanding-the-generated-code)
 - [Development Guide](#development-guide)
   - [Run n8n Locally](#run-n8n-locally)
-  - [Testing Your Node](#testing-your-node)
   - [Publishing Your Node](#publishing-your-node)
 - [Getting Help](#getting-help)
 

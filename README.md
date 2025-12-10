@@ -13,11 +13,17 @@ Simply provide an Actor ID, and the script generates a complete n8n community no
   - [Prerequisites](#️-prerequisites)
   - [1. Generate Your Node](#1-generate-your-node)
   - [2. Customize Your Node](#2-customize-your-node)
-  - [3. Understanding the Generated Code](#3-understanding-the-generated-code)
-- [Development Guide](#development-guide)
-  - [Run n8n Locally](#run-n8n-locally)
-  - [Publishing Your Node](#publishing-your-node)
-- [Getting Help](#getting-help)
+    - [Actor schema constants](#actor-schema-constants)
+    - [Node icon](#node-icon)
+    - [Subtitle](#subtitle)
+    - [Node description](#node-description)
+    - [AI tool result filtering](#ai-tool-result-filtering)
+    - [Additional customization](#additional-customization)
+    - [API utilities](#api-utilities)
+    - [Node metadata](#node-metadata)
+    - [README template](#readme-template)
+- [Development](#development)
+- [Getting help](#getting-help)
 
 ## Setup
 
@@ -64,8 +70,11 @@ nodes/ApifyWebsiteContentCrawler/
 ```
 
 #### Customization
+
 The generated code includes five sections labeled with `SNIPPET` comments. Search for `SNIPPET` in your IDE to locate them quickly.
+
 ##### Actor schema constants
+
 Location: `nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts`
 The script generates these constants from your Actor's metadata:
 	```typescript
@@ -75,8 +84,11 @@ The script generates these constants from your Actor's metadata:
 	export const DESCRIPTION = ''
 	```
 > **Tip:** Change `DISPLAY_NAME` or `DESCRIPTION` to adjust how your node appears in the n8n interface.
+
 ---
+
 ##### Node icon
+
 Location: `nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts`
 The default configuration uses the Apify logo:
 	```typescript
@@ -86,24 +98,33 @@ The default configuration uses the Apify logo:
 	}
 	```
 Replace the SVG files in the node directory with your own branding.
+
 ---
+
 ##### Subtitle
+
 Location: `nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts`
 The subtitle appears beneath your node in n8n workflows:
 	```typescript
 	subtitle: 'Run Scraper',
 	```
 ![Actor Subtitle](./docs/actor-subtitle.png)
+
 ---
+
 ##### Node description
+
 Location: `nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts`
 This description appears in n8n's node browser:
 	```typescript
 	description: DESCRIPTION,
 	```
 ![Apify Node Description](./docs/node-description.png)
+
 ---
+
 ### AI tool result filtering
+
 Location: `nodes/Apify{YourActorName}/helpers/genericFunctions.ts`
 When your node runs in AI agent workflows, reduce token usage by filtering the returned data:
 	```typescript
@@ -114,6 +135,7 @@ When your node runs in AI agent workflows, reduce token usage by filtering the r
 AI agents perform better with clean, focused data that takes up less context.
 ---
 #### Additional customization
+
 The `Apify{YourActorName}.node.json` file controls where your node appears in n8n:
 	```json
 	{
@@ -126,206 +148,97 @@ The template includes pre-configured authentication in the `credentials/` direct
 
 ---
 
-### 3. Understanding the Generated Code
+##### API utilities
 
-This section explains the key files and how they work together. This knowledge will help you make advanced customizations or debug issues.
+File: `helpers/genericFunctions.ts`
+This file provides helper functions for authenticated Apify API requests. The `apiRequest()` function makes authenticated HTTP requests to the Apify API. The `isUsedAsAiTool()` function detects if the node runs in an AI agent workflow. The `pollRunStatus()` function polls an Actor run until completion. The `getResults()` function fetches dataset items with optional AI tool filtering.
+The template adds these headers automatically:
+	```typescript
+	'x-apify-integration-platform': 'n8n'
+	'x-apify-integration-app-id': 'website-content-crawler-app'
+	'x-apify-integration-ai-tool': 'true' // when used with AI
+	```
+Add custom request headers, implement retry logic, or filter results for AI tools in this file.
+---
 
-#### 🔧 Core Files Explained
+##### Node metadata
 
-The template uses a simplified, flat structure for easier understanding and maintenance:
-
-```
-nodes/Apify{YourActorName}/
-├── Apify{YourActorName}.node.ts          # Main node definition
-├── Apify{YourActorName}.properties.ts     # Input parameters & buildActorInput()
-├── Apify{YourActorName}.node.json         # Node metadata
-├── apify.svg / apifyDark.svg              # Icons
-└── helpers/
-    ├── executeActor.ts                     # Actor execution logic
-    ├── genericFunctions.ts                 # API utilities
-    └── hooks.ts                            # Lifecycle hooks
-```
+File: `Apify{YourActorName}.node.json`
+This file tells n8n where to categorize your node and what keywords to search for:
+	```json
+	{
+	  "categories": ["Data & Storage", "Marketing & Content"],
+	  "alias": ["apify", "crawler", "scraper", "website", "content"],
+	  "resources": {
+	    "credentialDocumentation": [
+	      { "url": "https://docs.apify.com/platform/integrations/api#api-token" }
+	    ],
+	    "primaryDocumentation": [
+	      { "url": "https://apify.com/apify/website-content-crawler" }
+	    ]
+	  }
+	}
+	```
+Adjust categories, add search keywords to `alias`, and update documentation links.
 
 ---
 
-##### **1. Main Node Class** - `Apify{YourActorName}.node.ts`
+##### README template
 
-**Purpose:** Defines the n8n node itself—its display name, icon, properties, and execution method.
-
-**Key sections:**
-- **Node metadata** - Name, description, icon, version
-- **Properties import** - Loads input parameters from `properties.ts`
-- **Execute method** - Calls `runActor()` to handle the actual execution
-
-**When to edit:**
-- Change visual appearance (icon, subtitle, description)
-- Modify node metadata or version
-- Add custom error handling
+This repository contains two README files. This file (`README.md`) provides instructions for developers using this template to generate n8n nodes from Apify Actors. The `README_TEMPLATE.md` file provides template documentation for the generated node package that you publish to npm.
+After running the generation script, uses `README_TEMPLATE.md` as the README for your generated node package.
 
 ---
 
-##### **2. Input Parameters** - `Apify{YourActorName}.properties.ts`
+##### API utilities
 
-**Purpose:** Defines all input fields shown in the n8n UI (auto-generated from your Actor's input schema) and contains the `buildActorInput()` function.
+File: `helpers/genericFunctions.ts`
+This file provides helper functions for authenticated Apify API requests. The `apiRequest()` function makes authenticated HTTP requests to the Apify API. The `isUsedAsAiTool()` function detects if the node runs in an AI agent workflow. The `pollRunStatus()` function polls an Actor run until completion. The `getResults()` function fetches dataset items with optional AI tool filtering.
+The template adds these headers automatically:
+	```typescript
+	'x-apify-integration-platform': 'n8n'
+	'x-apify-integration-app-id': 'website-content-crawler-app'
+	'x-apify-integration-ai-tool': 'true' // when used with AI
+	```
+Add custom request headers, implement retry logic, or filter results for AI tools in this file.
+---
+##### Node metadata
 
-**Example generated property:**
-```typescript
-export const actorProperties: INodeProperties[] = [
-  {
-    displayName: 'Start URLs',
-    name: 'startUrls',
-    type: 'string',
-    default: '',
-    required: true,
-    description: 'One or more URLs to start crawling from'
-  }
-];
+File: `Apify{YourActorName}.node.json`
+This file tells n8n where to categorize your node and what keywords to search for:
+	```json
+	{
+	  "categories": ["Data & Storage", "Marketing & Content"],
+	  "alias": ["apify", "crawler", "scraper", "website", "content"],
+	  "resources": {
+	    "credentialDocumentation": [
+	      { "url": "https://docs.apify.com/platform/integrations/api#api-token" }
+	    ],
+	    "primaryDocumentation": [
+	      { "url": "https://apify.com/apify/website-content-crawler" }
+	    ]
+	  }
+	}
+	```
+Adjust categories, add search keywords to `alias`, and update documentation links.
+---
+##### README template
 
-export function buildActorInput(
-  context: IExecuteFunctions,
-  itemIndex: number,
-  defaultInput: Record<string, any>,
-): Record<string, any> {
-  return {
-    ...defaultInput,
-    startUrls: context.getNodeParameter('startUrls', itemIndex),
-    maxCrawlDepth: context.getNodeParameter('maxCrawlDepth', itemIndex),
-  };
-}
-```
-
-**When to edit:**
-- Refine field labels or descriptions after generation
-- Add field validation rules
-- Adjust default values
-- Modify how inputs are transformed in `buildActorInput()`
-
+This repository contains two README files. This file (`README.md`) provides instructions for developers using this template to generate n8n nodes from Apify Actors. The `README_TEMPLATE.md` file provides template documentation for the generated node package that you publish to npm.
+After running the generation script, uses `README_TEMPLATE.md` as the README for your generated node package.
 ---
 
-##### **3. Execution Logic** - `helpers/executeActor.ts`
+## Development
 
-**Purpose:** Orchestrates the complete Actor run lifecycle (start → poll → fetch results).
+Start n8n with your custom node:
+	```bash
+	npm run dev
+	```
+This launches n8n at `http://localhost:5678` with hot reloading enabled. Changes to your node files automatically refresh.
 
-**Main function:**
-```typescript
-export async function runActor(this: IExecuteFunctions, i: number): Promise<INodeExecutionData> {
-  // Get default input values from Actor's build
-  const build = await getDefaultBuild.call(this, ACTOR_ID);
-  const defaultInput = getDefaultInputsFromBuild(build);
+## Getting help
 
-  // Build the Actor input using values from n8n node
-  const mergedInput = buildActorInput(this, i, defaultInput);
-
-  // Start the Actor run
-  const run = await runActorApi.call(this, ACTOR_ID, mergedInput, { waitForFinish: 0 });
-
-  // Poll until completion
-  const lastRunData = await pollRunStatus.call(this, run.data.id);
-
-  // Fetch results
-  const resultData = await getResults.call(this, run.data.defaultDatasetId);
-
-  // Return results (optionally filtered for AI tools)
-  if (isUsedAsAiTool(this.getNode().type)) {
-    return { json: { ...resultData } };
-  }
-  return { json: { ...lastRunData, ...resultData } };
-}
-```
-
-**When to edit:**
-- Customize polling intervals or timeout behavior
-- Modify result transformation logic
-- Add custom status handling (e.g., partial results on timeout)
-
----
-
-##### **4. API Utilities** - `helpers/genericFunctions.ts`
-
-**Purpose:** Provides helper functions for making authenticated Apify API requests.
-
-**Key functions:**
-- `apiRequest()` - Makes authenticated HTTP requests to Apify API
-- `isUsedAsAiTool()` - Detects if the node is being used by an AI agent
-- `pollRunStatus()` - Polls Actor run until completion
-- `getResults()` - Fetches dataset items with optional AI tool filtering
-
-**Auto-added headers:**
-```typescript
-'x-apify-integration-platform': 'n8n'
-'x-apify-integration-app-id': 'website-content-crawler-app'
-'x-apify-integration-ai-tool': 'true' // (if used with AI)
-```
-
-**When to edit:**
-- Add custom request headers
-- Implement retry logic
-- Filter results for AI tools (SNIPPET 5)
-
----
-
-##### **5. Node Metadata** - `Apify{YourActorName}.node.json`
-
-**Purpose:** Tells n8n where to categorize your node and what keywords to search for.
-
-```json
-{
-  "categories": ["Data & Storage", "Marketing & Content"],
-  "alias": ["apify", "crawler", "scraper", "website", "content"],
-  "resources": {
-    "credentialDocumentation": [
-      { "url": "https://docs.apify.com/platform/integrations/api#api-token" }
-    ],
-    "primaryDocumentation": [
-      { "url": "https://apify.com/apify/website-content-crawler" }
-    ]
-  }
-}
-```
-
-**When to edit:**
-- Adjust categories to match your Actor's purpose
-- Add relevant search keywords to `alias`
-- Update documentation links
-
----
-
-##### **6. Readme Template** - `README_TEMPLATE.md`
-
-This repository contains **two README files** with different purposes:
-
-- **`README.md`** (this file) - Instructions for **developers using this template** to generate n8n nodes from Apify Actors
-- **[`README_TEMPLATE.md`](README_TEMPLATE.md)** - Template for the **generated node's documentation** that will be published with your npm package
-
-**After running the script**, you can use `README_TEMPLATE.md` as the README for your generated node package.
-
----
-
-## Development Guide
-
-### Run n8n Locally
-
-Start n8n with your custom node for local development:
-
-```bash
-npm run dev
-```
-
-This launches n8n with hot reloading enabled. Any changes to your node files will automatically refresh.
-
-**Access n8n:**
-- Open `http://localhost:5678` in your browser
-
-### Publishing Your Node
-
-// TODO: will add more details for publishing later, not certain yet.
-
----
-
-### Getting Help
-
-If you encounter issues:
-1. **Apify API** - Check the [Apify API documentation](https://docs.apify.com)
-2. **n8n Community Nodes** - Review the [n8n Community Nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
-3. **Template Issues** - Open an issue in the [GitHub repository](https://github.com/apify/n8n-nodes-apify-instagram-scraper)
-4. **n8n Community** - Ask questions in the [n8n forum](https://community.n8n.io/)
+- [Apify API documentation](https://docs.apify.com)
+- [n8n Community Nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
+- [n8n community](https://community.n8n.io/)
+- Template issues - Open an issue in the [GitHub repository](https://github.com/apify/n8n-nodes-apify-instagram-scraper)

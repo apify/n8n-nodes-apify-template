@@ -142,39 +142,25 @@ This project uses a GitHub Actions workflow to automate the release process, inc
 
 Prerequisites (for all methods):
 
-* Ensure your target branch on GitHub is up-to-date with all changes you want to include in the release.
-* Decide on the new version number, following semantic versioning (e.g., `vX.Y.Z`).
-* Prepare your release notes detailing the changes.
-* If you're using CLI to release, make sure you have the [GitHub CLI (`gh`)](https://cli.github.com/) installed and authenticated (`gh auth login`).
-
----
-
 ## Method 1: Using the GitHub Web UI (Recommended for ease of use)
 
 1.  Navigate to GitHub Releases:
     * Go to your repository’s**Releases** tab
-
 2.  Draft a New Release:
     * Select the **Draft a new release** button.
-
 3.  Create or Choose a Tag:
     * In the **Choose a tag** dropdown:
         * Type your new tag name (e.g., `v1.2.3`).
         * If the tag doesn't exist, GitHub prompts you to create it.
         * Ensure the **target branch** selected for creating the new tag is correct. This tag will point to the latest commit on this target branch.
-
 4.  Set Release Title and Notes:
     * Set the "Release title" (e.g., `vX.Y.Z` or a more descriptive title).
     * For the release notes in the description field, you have a few options:
         * Write your prepared release notes.
         * Select the **Generate release notes** button: GitHub will attempt to automatically create release notes based on merged pull requests since the last release. You can then review and edit these auto-generated notes.
-
 5.  Publish the Release:
     * Select the **Publish release** button.
 
-    *Upon publishing, GitHub creates the tag from your specified branch and then creates the release. This "published" release event triggers the automated workflow.*
-
----
 
 ## Method 2: Fully CLI-Driven Release
 
@@ -185,10 +171,8 @@ This method uses the GitHub CLI (`gh`) for all steps, including tag creation.
     git checkout master
     git pull origin master
     ```
-
 2.  Create the Release (which also creates and pushes the tag):
     Replace `vX.Y.Z` with your desired tag/version. The command will create this tag from the latest commit of your specified `--target` branch (defaults to repository's default branch, if `--target` is omitted and the branch is up to date).
-
     ```bash
     gh release create vX.Y.Z \
         --target master \
@@ -196,13 +180,11 @@ This method uses the GitHub CLI (`gh`) for all steps, including tag creation.
         --notes "Your detailed release notes here.
         - Feature X
         - Bugfix Y"
-
     # Or, to use notes from a file:
     gh release create vX.Y.Z \
         --target master \
         --title "vX.Y.Z" \
         --notes-file ./RELEASE_NOTES.md
-
     # Or, to generate notes from pull requests (commits must follow conventional commit format for best results):
     gh release create vX.Y.Z \ 
         --target master \
@@ -214,7 +196,6 @@ This method uses the GitHub CLI (`gh`) for all steps, including tag creation.
     * `--target <branch>`: Specifies which branch the tag should be created from (e.g., `master`). If the tag `vX.Y.Z` doesn't exist, `gh` will create it based on the HEAD of this target branch and push it.
     * `--title "<title>"`: The title for your release.
     * `--notes "<notes>"` or `--notes-file <filepath>` or `--generate-notes`: Your release notes.
-
     *This command will create the tag, push it to GitHub, and then publish the release. This "published" release event triggers the automated workflow.*
 
 ---

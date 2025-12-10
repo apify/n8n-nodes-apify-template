@@ -49,13 +49,15 @@ This configuration is required for our service's trigger functionality to work c
 
 When running n8n locally, webhook URLs use `localhost` by default, which external services cannot reach. To enable trigger functionality, set a publicly accessible webhook URL:
 
-	```bash
-	export WEBHOOK_URL="https://your-tunnel.local"
-	```
+```bash
+export WEBHOOK_URL="https://your-tunnel.local"
+```
+
 and restart your local n8n instance:
 
-  ```bash
-  npm run dev
+```bash
+npm run dev
+```
 
 ## Operations
 
@@ -64,6 +66,7 @@ and restart your local n8n instance:
 This node supports a wide range of Apify operations, organized by resource type:
 
 ### Actors
+
 - **Run Actor**: Execute an Actor with optional input parameters
   - **Default behavior**: Uses predefined input values
   - **Custom input**: Provide JSON object to override any or all default parameters.
@@ -75,12 +78,14 @@ This node supports a wide range of Apify operations, organized by resource type:
 ![actor run](./docs/run-actor.png)
 
 ### Actor tasks
+
 - **Run Task**: Execute a predefined Actor task
   - Supports custom input JSON
   - Configurable timeout
   - Task-specific settings
 
 ### Actor runs
+
 - **Get User Runs List**: List all runs for a user
   - Pagination support
   - Sorting options
@@ -88,18 +93,22 @@ This node supports a wide range of Apify operations, organized by resource type:
 - **Get run**: Retrieve detailed information about a specific run
 
 ### Datasets
+
 - **Get Items**: Fetch items from a dataset
 
 ### Key-Value Stores
+
 - **Get Key-Value Store Record**: Retrieve a specific record by key
 
 ### Triggers
-  Automatically start an n8n workflow whenever an Actor or task finishes execution
-  - Can be configured to trigger on success, failure, abort, timeout or any combination of these states
-  - Includes run metadata in the output
-  - Available triggers: 
-    - **Actor Run Finished**: Start a workflow when an Actor run completes
-    - **Task Run Finished**: Start a workflow when a task run completes
+
+Automatically start an n8n workflow whenever an Actor or task finishes execution
+
+- Can be configured to trigger on success, failure, abort, timeout or any combination of these states
+- Includes run metadata in the output
+- Available triggers:
+  - **Actor Run Finished**: Start a workflow when an Actor run completes
+  - **Task Run Finished**: Start a workflow when a task run completes
 
 ![triggers](./docs/trigger.png)
 

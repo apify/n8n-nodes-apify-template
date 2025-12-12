@@ -139,3 +139,92 @@ export async function getResults(this: IExecuteFunctions, datasetId: string): Pr
 	return this.helpers.returnJsonArray(results);
 }
 
+/**
+ * Get the default build for an actor
+ */
+export async function getDefaultBuild(
+	this: IExecuteFunctions,
+	actorId: string,
+): Promise<any> {
+	const defaultBuildResp = await apiRequest.call(this, {
+		method: 'GET',
+		uri: `/v2/acts/${actorId}/builds/default`,
+	});
+	if (!defaultBuildResp?.data) {
+		throw new NodeApiError(this.getNode(), {
+			message: `Could not fetch default build for actor ${actorId}`,
+		});
+	}
+	return defaultBuildResp.data;
+}
+
+/**
+ * Extract default input values from actor build definition
+ */
+export function getDefaultInputsFromBuild(build: any): Record<string, any> {
+	const buildInputProperties = build?.actorDefinition?.input?.properties;
+	const defaultInput: Record<string, any> = {};
+	if (buildInputProperties && typeof buildInputProperties === 'object') {
+		for (const [key, property] of Object.entries(buildInputProperties)) {
+			if (
+				property &&
+				typeof property === 'object' &&
+				'prefill' in property &&
+				(property as any).prefill !== undefined &&
+				(property as any).prefill !== null
+			) {
+				defaultInput[key] = (property as any).prefill;
+			}
+		}
+	}
+	return defaultInput;
+}
+
+/**
+ * Run an actor with the given input
+ */
+export async function runActorApi(
+	this: IExecuteFunctions,
+	actorId: string,
+	mergedInput: Record<string, any>,
+	qs: Record<string, any>,
+): Promise<any> {
+	return await apiRequest.call(this, {
+		method: 'POST',
+		uri: `/v2/acts/${actorId}/runs`,
+		body: mergedInput,
+		qs,
+	});
+}
+
+/**
+ * Execute an actor run with the given input and wait for results
+ * This is the common execution pattern shared by all operations
+ */
+export async function executeActorRun(
+	this: IExecuteFunctions,
+	actorId: string,
+	actorInput: Record<string, any>,
+): Promise<any> {
+	const build = await getDefaultBuild.call(this, actorId);
+	const defaultInput = getDefaultInputsFromBuild(build);
+
+	const mergedInput = {
+		...defaultInput,
+		...actorInput,
+	};
+
+	const run = await runActorApi.call(this, actorId, mergedInput, { waitForFinish: 0 });
+	if (!run?.data?.id) {
+		throw new NodeApiError(this.getNode(), {
+			message: `Run ID not found after running the actor`,
+		});
+	}
+
+	const runId = run.data.id;
+	const datasetId = run.data.defaultDatasetId;
+
+	await pollRunStatus.call(this, runId);
+	return await getResults.call(this, datasetId);
+}
+

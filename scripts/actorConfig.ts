@@ -10,6 +10,7 @@ export interface PlaceholderValues {
     X_PLATFORM_APP_HEADER_ID: string;
     DISPLAY_NAME: string;
     DESCRIPTION: string;
+    RESOURCE_NAME: string;
 }
 
 /**
@@ -43,6 +44,7 @@ export async function setConfig(
         X_PLATFORM_APP_HEADER_ID: `${rawName}-app`,
         DISPLAY_NAME: displayName,
         DESCRIPTION: actor.description || '',
+        RESOURCE_NAME: actor.title || displayName,
     };
 
     // Check for package name availability on npm registry

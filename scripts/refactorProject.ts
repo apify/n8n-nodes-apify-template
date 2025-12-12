@@ -7,6 +7,7 @@ export function refactorProject(
 	newClass: string,
 	oldPackage: string,
 	newPackage: string,
+	useResourcesPattern?: boolean,
 ) {
 	// Rename folders and files
 	const oldDir = path.join("nodes", oldClass);
@@ -22,7 +23,12 @@ export function refactorProject(
 		console.log(`✅ Renamed folder: nodes/${oldClass} -> nodes/${newClass}`);
 		}
 
-		const exts = ["methods.ts", "node.json", "node.ts", "properties.ts"];
+		// Only rename properties.ts if NOT using resources pattern
+		const exts = ["methods.ts", "node.json", "node.ts"];
+		if (!useResourcesPattern) {
+			exts.push("properties.ts");
+		}
+
 		for (const ext of exts) {
 		const oldFile = path.join(newDir, `${oldClass}.${ext}`);
 		const newFile = path.join(newDir, `${newClass}.${ext}`);
@@ -35,6 +41,15 @@ export function refactorProject(
 			console.log(`Renamed: ${oldFile} -> ${newFile}`);
 		}
 		}
+
+		// Handle resources/ folder if using resources pattern
+		if (useResourcesPattern) {
+			const resourcesDir = path.join(newDir, 'resources');
+			if (fs.existsSync(resourcesDir)) {
+				updateResourcesImports(resourcesDir, oldClass, newClass);
+			}
+		}
+
 		console.log(`✅ Renamed files inside nodes/${newClass}`);
 	} else {
 		console.log(`⚠️ Warning: ${oldDir} not found (skipped).`);
@@ -81,6 +96,28 @@ export function refactorProject(
 		}
 		} catch {
 		// skip binary/unreadable files
+		}
+	}
+}
+
+/**
+ * Update imports in resources files
+ */
+function updateResourcesImports(resourcesDir: string, oldClass: string, newClass: string): void {
+	const resourcesFile = path.join(resourcesDir, 'resources.ts');
+	const propertiesDir = path.join(resourcesDir, 'properties');
+
+	const files = [resourcesFile];
+	if (fs.existsSync(propertiesDir)) {
+		files.push(...fs.readdirSync(propertiesDir).map(f => path.join(propertiesDir, f)));
+	}
+
+	for (const file of files) {
+		if (fs.existsSync(file)) {
+			let content = fs.readFileSync(file, 'utf-8');
+			content = content.replace(new RegExp(oldClass, 'g'), newClass);
+			fs.writeFileSync(file, content, 'utf-8');
+			console.log(`Updated imports in: ${file}`);
 		}
 	}
 }

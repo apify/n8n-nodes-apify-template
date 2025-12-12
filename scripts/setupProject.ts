@@ -38,6 +38,31 @@ function askForActorId(): Promise<string> {
     });
 }
 
+function askForOperationCount(): Promise<number> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    return new Promise((resolve) => {
+        rl.question('👉 How many operations? (1-10, default 1): ', (answer) => {
+            rl.close();
+            const trimmed = answer.trim();
+            if (!trimmed) {
+                resolve(1); // Default to 1
+                return;
+            }
+            const count = parseInt(trimmed, 10);
+            if (isNaN(count) || count < 1 || count > 10) {
+                console.log('⚠️  Invalid number. Defaulting to 1.');
+                resolve(1);
+            } else {
+                resolve(count);
+            }
+        });
+    });
+}
+
 export async function setupProject() {
     // Ask user for ACTOR_ID
     const actorId = await askForActorId();
@@ -45,6 +70,10 @@ export async function setupProject() {
     if (!actorId) {
         throw new Error('❌ ACTOR_ID is required.');
     }
+
+    // Ask for operation count
+    const operationCount = await askForOperationCount();
+    console.log(`📋 Generating ${operationCount} operation(s)...`);
 
     // Create ApifyClient (token optional, required for private actors)
     const client = new ApifyClient({
@@ -59,15 +88,27 @@ export async function setupProject() {
     // Step 1: Fetch actor info & replace placeholders
     const values = await setConfig(actor, NODE_FILE_PATH, X_PLATFORM_HEADER_ID);
 
-    // Step 2: Generate n8n resources based on Actor input schema
-    await generateActorResources(
-        client,
-        actor,
-        values.ACTOR_ID,
-        PROPERTIES_PATHS,
-        EXECUTE_PATHS,
-        TARGET_CLASS_NAME,
-    );
+    // Step 2: Conditional generation based on operationCount
+    if (operationCount > 1) {
+        // Use resources/operations pattern
+        const { generateOperationsStructure } = await import('./generateOperations.js');
+        await generateOperationsStructure(
+            operationCount,
+            TARGET_CLASS_NAME,
+            values.CLASS_NAME,
+            values.DISPLAY_NAME,
+        );
+    } else {
+        // Use traditional single-operation pattern (existing behavior)
+        await generateActorResources(
+            client,
+            actor,
+            values.ACTOR_ID,
+            PROPERTIES_PATHS,
+            EXECUTE_PATHS,
+            TARGET_CLASS_NAME,
+        );
+    }
 
     // Step 3: Rename files/folders and necessary code snippets
     refactorProject(
@@ -75,6 +116,7 @@ export async function setupProject() {
         values.CLASS_NAME,
         TARGET_PACKAGE_NAME,
         values.PACKAGE_NAME,
+        operationCount > 1, // Pass flag for resources pattern
     );
 
     console.log('🎉 Project setup complete!');

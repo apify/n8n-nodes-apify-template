@@ -41,12 +41,24 @@ import {
 	properties as sxProperties,
 	execute as executeSx,
 } from './operations/sx';
+import {
+	OPERATION_SCRAPE_SINGLE_URL_NAME,
+	option as scrapeSingleUrlOption,
+	properties as scrapeSingleUrlProperties,
+	execute as executeScrapeSingleUrl,
+} from './operations/scrapeSingleUrl';
+import {
+	OPERATION_AXAX_NAME,
+	option as axaxOption,
+	properties as axaxProperties,
+	execute as executeAxax,
+} from './operations/axax';
 
 // Resource name constant
 export const RESOURCE_NAME = '$$RESOURCE_NAME';
 
 // Collect all operations for this resource
-const operations: INodePropertyOptions[] = [operation1Option, operation2Option, ananzaaaaaOption, xsOption, aklsdlOption, sxOption];
+const operations: INodePropertyOptions[] = [operation1Option, operation2Option, ananzaaaaaOption, xsOption, aklsdlOption, sxOption, scrapeSingleUrlOption, axaxOption];
 
 // Resource option for the resource selector
 export const resourceOption: INodePropertyOptions = {
@@ -78,6 +90,8 @@ export const properties: INodeProperties[] = [
 	...xsProperties,
 	...aklsdlProperties,
 	...sxProperties,
+	...scrapeSingleUrlProperties,
+	...axaxProperties,
 ];
 
 // Router for this resource
@@ -100,6 +114,10 @@ export async function router(
 			return await executeAklsdl.call(this, i);
 				case OPERATION_SX_NAME:
 			return await executeSx.call(this, i);
+				case OPERATION_SCRAPE_SINGLE_URL_NAME:
+			return await executeScrapeSingleUrl.call(this, i);
+				case OPERATION_AXAX_NAME:
+			return await executeAxax.call(this, i);
 		default:
 			throw new NodeOperationError(
 				this.getNode(),

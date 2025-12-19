@@ -64,13 +64,13 @@ function generateActorInputProperties(functionNames: string[], requiredPropertyN
 }
 
 /**
- * Generate properties JSON from input schema
+ * Generate property function imports and calls
  * Only includes required properties by default
  */
-function generatePropertiesJson(
+function generatePropertyFunctions(
 	inputSchema: ApifyInputSchema,
 	operationConstName: string,
-): { propertiesContent: string; optionalCount: number; requiredCount: number; requiredPropertyNames: string[] } {
+): { propertyFunctionImports: string; propertyFunctionCalls: string; optionalCount: number; requiredCount: number; requiredPropertyNames: string[] } {
 	// Convert Apify schema to n8n properties
 	const n8nProperties = convertApifyToN8n(inputSchema);
 
@@ -81,31 +81,37 @@ function generatePropertiesJson(
 	// Get the names of required properties
 	const requiredPropertyNames = requiredProperties.map(prop => prop.name);
 
-	// Add displayOptions to each property
-	const propertiesWithDisplayOptions = requiredProperties.map((prop) => ({
-		...prop,
-		displayOptions: {
-			show: {
-				resource: ['RESOURCE_NAME_PLACEHOLDER'],
-				operation: ['OPERATION_NAME_CONST_PLACEHOLDER'],
-			},
-		},
-	}));
+	// Generate import statements
+	const importFunctions = requiredProperties.map(prop => {
+		const functionName = `get${capitalizeFirst(prop.name)}Property`;
+		return functionName;
+	});
 
-	// Generate properties as JSON string (without extra array wrapper)
-	const propertiesJson = JSON.stringify(propertiesWithDisplayOptions, null, '\t')
-		.replace(/"RESOURCE_NAME_PLACEHOLDER"/g, 'RESOURCE_NAME')
-		.replace(/"OPERATION_NAME_CONST_PLACEHOLDER"/g, operationConstName);
+	const propertyFunctionImports = importFunctions.length > 0
+		? `import {\n\t${importFunctions.join(',\n\t')}\n} from '../../../helpers/propertyFunctions';`
+		: '';
 
-	// Remove the outer array brackets to get the array contents
-	const propertiesContent = propertiesJson.slice(1, -1);
+	// Generate function calls
+	const propertyFunctionCalls = requiredProperties.map(prop => {
+		const functionName = `get${capitalizeFirst(prop.name)}Property`;
+		return `\t${functionName}(RESOURCE_NAME, ${operationConstName}),`;
+	}).join('\n');
 
 	return {
-		propertiesContent,
+		propertyFunctionImports,
+		propertyFunctionCalls,
 		optionalCount: optionalProperties.length,
 		requiredCount: requiredProperties.length,
 		requiredPropertyNames,
 	};
+}
+
+/**
+ * Capitalize first letter
+ */
+function capitalizeFirst(str: string): string {
+	if (!str) return '';
+	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 /**
@@ -138,8 +144,8 @@ export async function createOperationFile(
 	// Generate operation constant name (e.g., "OPERATION_SCRAPE_DATA_NAME")
 	const operationConstName = `OPERATION_${operationKey.replace(/([A-Z])/g, '_$1').toUpperCase()}_NAME`;
 
-	// Generate properties JSON and get required property names
-	const { propertiesContent, optionalCount, requiredCount, requiredPropertyNames } = generatePropertiesJson(inputSchema, operationConstName);
+	// Generate property functions and get required property names
+	const { propertyFunctionImports, propertyFunctionCalls, optionalCount, requiredCount, requiredPropertyNames } = generatePropertyFunctions(inputSchema, operationConstName);
 
 	// Generate the code sections (only for required properties)
 	const inputFunctionCalls = generateInputFunctionCalls(functionNames, requiredPropertyNames);
@@ -151,7 +157,8 @@ export async function createOperationFile(
 		.replace(/\{\{OPERATION_NAME\}\}/g, operationName)
 		.replace(/\{\{OPERATION_ACTION\}\}/g, operationName)
 		.replace(/\{\{OPERATION_DESCRIPTION\}\}/g, operationDescription)
-		.replace(/\{\{PROPERTIES\}\}/g, propertiesContent)
+		.replace(/\{\{PROPERTY_FUNCTION_IMPORTS\}\}/g, propertyFunctionImports)
+		.replace(/\{\{PROPERTY_FUNCTION_CALLS\}\}/g, propertyFunctionCalls)
 		.replace(/\{\{INPUT_FUNCTION_CALLS\}\}/g, inputFunctionCalls)
 		.replace(/\{\{ACTOR_INPUT_PROPERTIES\}\}/g, actorInputProperties);
 

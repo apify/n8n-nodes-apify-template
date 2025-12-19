@@ -1,8 +1,9 @@
 import { IExecuteFunctions, INodeExecutionData, INodeProperties, INodePropertyOptions } from 'n8n-workflow';
-import { executeActorRun } from '../../helpers/genericFunctions';
-import { ACTOR_ID } from '../../ApifyActorTemplate.node';
-import { RESOURCE_NAME, OPERATION_1_NAME } from '../resources';
+import { executeActorRun } from '../../../helpers/genericFunctions';
+import { ACTOR_ID } from '../../../ApifyActorTemplate.node';
+import { RESOURCE_NAME } from '../resource';
 
+export const OPERATION_1_NAME = 'Operation 1';
 export const name = OPERATION_1_NAME;
 
 export const option: INodePropertyOptions = {

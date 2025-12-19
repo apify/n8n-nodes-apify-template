@@ -5,7 +5,7 @@ import {
 	INodeTypeDescription,
 	NodeConnectionType,
 } from 'n8n-workflow';
-import { router, methods, properties } from './resources/resources';
+import { router, methods, properties } from './resources/router';
 
 // SNIPPET 1: Make sure the constants are correct
 export const ACTOR_ID = '$$ACTOR_ID' as string;
@@ -20,9 +20,9 @@ export const X_PLATFORM_APP_HEADER_ID = '$$X_PLATFORM_APP_HEADER_ID' as string;
 export const DISPLAY_NAME = '$$DISPLAY_NAME' as string;
 export const DESCRIPTION = '$$DESCRIPTION' as string;
 
-// SNIPPET 6: Resource and Operation name constants (edit in resources/resources.ts)
-// These are imported from resources/resources.ts - modify them there
-export { RESOURCE_NAME, OPERATION_1_NAME, OPERATION_2_NAME } from './resources/resources';
+// SNIPPET 6: Resource and Operation name constants (edit in resources/router.ts)
+// These are imported from resources/router.ts - modify them there
+export { RESOURCE_NAME, OPERATION_1_NAME, OPERATION_2_NAME } from './resources/router';
 
 export class ApifyActorTemplate implements INodeType {
 	description: INodeTypeDescription = {

@@ -368,6 +368,21 @@ function generateFixedCollectionGetter(prop: INodeProperties): string {
 	const collectionName = options[0].name;
 	const fields = options[0].values || [];
 
+	// Check if this is a stringList (single field named 'value')
+	const isStringList = fields.length === 1 && fields[0].name === 'value' && fields[0].type === 'string';
+
+	if (isStringList) {
+		// Use stringList template - extracts string values into simple array
+		const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'stringListGetter.ts.tpl');
+		let template = fs.readFileSync(templatePath, 'utf-8');
+		template = template.replace(/{{PARAM_NAME}}/g, paramName);
+		template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
+		template = template.replace(/{{COLLECTION_NAME}}/g, collectionName);
+		template = template.replace(/{{FIELD_NAME}}/g, 'value');
+		return template;
+	}
+
+	// For requestListSources, keyValue, and other object lists
 	const typeFields = fields.map((field: any) => {
 		const fieldType = mapFieldType(field.type);
 		return `${field.name}: ${fieldType}`;
@@ -376,7 +391,7 @@ function generateFixedCollectionGetter(prop: INodeProperties): string {
 	const entryType = typeFields.length > 0 ? `{ ${typeFields.join('; ')} }` : 'any';
 	const arrayReturnType = `${entryType}[]`;
 
-	// Use template
+	// Use fixedCollection template - returns array of objects
 	const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'fixedCollectionGetter.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace(/{{PARAM_NAME}}/g, paramName);

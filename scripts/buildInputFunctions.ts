@@ -130,6 +130,11 @@ function generateRegularGetter(prop: INodeProperties): string {
  *
  * n8n wraps lists in an object: { items?: { url: string }[] }
  * This function extracts the array directly for Apify API compatibility
+ *
+ * Handles three types:
+ * 1. stringList: { values: [{ value: "str" }] } → ["str"]
+ * 2. requestListSources: { items: [{ url: "..." }] } → [{ url: "..." }]
+ * 3. keyValue/objectList: { pairs: [{ key: "k", value: "v" }] } → [{ key: "k", value: "v" }]
  */
 function generateFixedCollectionGetter(prop: INodeProperties): string {
 	const paramName = prop.name;
@@ -143,9 +148,24 @@ function generateFixedCollectionGetter(prop: INodeProperties): string {
 	}
 
 	// Get collection details
-	const collectionName = options[0].name; // e.g., 'items', 'pairs'
+	const collectionName = options[0].name; // e.g., 'items', 'values', 'pairs'
 	const fields = options[0].values || [];
 
+	// Check if this is a stringList (single field named 'value')
+	const isStringList = fields.length === 1 && fields[0].name === 'value' && fields[0].type === 'string';
+
+	if (isStringList) {
+		// Use stringList template - extracts string values into simple array
+		const templatePath = path.join(__dirname, 'templates', 'functionTemplates', 'stringListGetter.ts.tpl');
+		let template = fs.readFileSync(templatePath, 'utf-8');
+		template = template.replace(/{{PARAM_NAME}}/g, paramName);
+		template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
+		template = template.replace(/{{COLLECTION_NAME}}/g, collectionName);
+		template = template.replace(/{{FIELD_NAME}}/g, 'value');
+		return template;
+	}
+
+	// For requestListSources, keyValue, and other object lists
 	// Build type for each field in the collection entry
 	const typeFields = fields.map((field: any) => {
 		const fieldType = mapFieldType(field.type);
@@ -155,7 +175,7 @@ function generateFixedCollectionGetter(prop: INodeProperties): string {
 	const entryType = typeFields.length > 0 ? `{ ${typeFields.join('; ')} }` : 'any';
 	const arrayReturnType = `${entryType}[]`;
 
-	// Use template
+	// Use fixedCollection template - returns array of objects
 	const templatePath = path.join(__dirname, 'templates', 'functionTemplates', 'fixedCollectionGetter.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace(/{{PARAM_NAME}}/g, paramName);

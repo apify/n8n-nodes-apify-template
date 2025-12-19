@@ -2,15 +2,16 @@ import { IExecuteFunctions } from 'n8n-workflow';
 
 /**
  * Get startUrls parameter (list)
+ * Transforms the fixedCollection format to an array format expected by Apify
  */
-export function getStartUrls(this: IExecuteFunctions, i: number): {
-	items?: { url: string }[];
-} {
+export function getStartUrls(this: IExecuteFunctions, i: number): { url: string }[] {
 	const startUrls = this.getNodeParameter('startUrls', i, {}) as {
-	items?: { url: string }[];
-};
-	return startUrls;
+		items?: { url: string }[];
+	};
+	// Transform from fixedCollection format { items: [...] } to array format [...]
+	return startUrls.items || [];
 }
+
 
 /**
  * Get useSitemaps parameter
@@ -20,6 +21,7 @@ export function getUseSitemaps(this: IExecuteFunctions, i: number): boolean {
 	return useSitemaps;
 }
 
+
 /**
  * Get useLlmsTxt parameter
  */
@@ -27,6 +29,7 @@ export function getUseLlmsTxt(this: IExecuteFunctions, i: number): boolean {
 	const useLlmsTxt = this.getNodeParameter('useLlmsTxt', i) as boolean;
 	return useLlmsTxt;
 }
+
 
 /**
  * Get respectRobotsTxtFile parameter
@@ -36,6 +39,7 @@ export function getRespectRobotsTxtFile(this: IExecuteFunctions, i: number): boo
 	return respectRobotsTxtFile;
 }
 
+
 /**
  * Get crawlerType parameter
  */
@@ -44,21 +48,42 @@ export function getCrawlerType(this: IExecuteFunctions, i: number): string {
 	return crawlerType;
 }
 
+
 /**
  * Get includeUrlGlobs parameter
+ * Parses JSON string if needed
  */
-export function getIncludeUrlGlobs(this: IExecuteFunctions, i: number): object | string {
+export function getIncludeUrlGlobs(this: IExecuteFunctions, i: number): object {
 	const includeUrlGlobs = this.getNodeParameter('includeUrlGlobs', i) as object | string;
+	// If it's a string (JSON), parse it to an object
+	if (typeof includeUrlGlobs === 'string') {
+		try {
+			return JSON.parse(includeUrlGlobs);
+		} catch (error) {
+			throw new Error(`Invalid JSON in includeUrlGlobs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		}
+	}
 	return includeUrlGlobs;
 }
 
+
 /**
  * Get excludeUrlGlobs parameter
+ * Parses JSON string if needed
  */
-export function getExcludeUrlGlobs(this: IExecuteFunctions, i: number): object | string {
+export function getExcludeUrlGlobs(this: IExecuteFunctions, i: number): object {
 	const excludeUrlGlobs = this.getNodeParameter('excludeUrlGlobs', i) as object | string;
+	// If it's a string (JSON), parse it to an object
+	if (typeof excludeUrlGlobs === 'string') {
+		try {
+			return JSON.parse(excludeUrlGlobs);
+		} catch (error) {
+			throw new Error(`Invalid JSON in excludeUrlGlobs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		}
+	}
 	return excludeUrlGlobs;
 }
+
 
 /**
  * Get keepUrlFragments parameter
@@ -68,6 +93,7 @@ export function getKeepUrlFragments(this: IExecuteFunctions, i: number): boolean
 	return keepUrlFragments;
 }
 
+
 /**
  * Get ignoreCanonicalUrl parameter
  */
@@ -75,6 +101,7 @@ export function getIgnoreCanonicalUrl(this: IExecuteFunctions, i: number): boole
 	const ignoreCanonicalUrl = this.getNodeParameter('ignoreCanonicalUrl', i) as boolean;
 	return ignoreCanonicalUrl;
 }
+
 
 /**
  * Get ignoreHttpsErrors parameter
@@ -84,6 +111,7 @@ export function getIgnoreHttpsErrors(this: IExecuteFunctions, i: number): boolea
 	return ignoreHttpsErrors;
 }
 
+
 /**
  * Get maxCrawlDepth parameter
  */
@@ -91,6 +119,7 @@ export function getMaxCrawlDepth(this: IExecuteFunctions, i: number): number {
 	const maxCrawlDepth = this.getNodeParameter('maxCrawlDepth', i) as number;
 	return maxCrawlDepth;
 }
+
 
 /**
  * Get maxCrawlPages parameter
@@ -100,6 +129,7 @@ export function getMaxCrawlPages(this: IExecuteFunctions, i: number): number {
 	return maxCrawlPages;
 }
 
+
 /**
  * Get initialConcurrency parameter
  */
@@ -107,6 +137,7 @@ export function getInitialConcurrency(this: IExecuteFunctions, i: number): numbe
 	const initialConcurrency = this.getNodeParameter('initialConcurrency', i) as number;
 	return initialConcurrency;
 }
+
 
 /**
  * Get maxConcurrency parameter
@@ -116,21 +147,42 @@ export function getMaxConcurrency(this: IExecuteFunctions, i: number): number {
 	return maxConcurrency;
 }
 
+
 /**
  * Get initialCookies parameter
+ * Parses JSON string if needed
  */
-export function getInitialCookies(this: IExecuteFunctions, i: number): object | string {
+export function getInitialCookies(this: IExecuteFunctions, i: number): object {
 	const initialCookies = this.getNodeParameter('initialCookies', i) as object | string;
+	// If it's a string (JSON), parse it to an object
+	if (typeof initialCookies === 'string') {
+		try {
+			return JSON.parse(initialCookies);
+		} catch (error) {
+			throw new Error(`Invalid JSON in initialCookies: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		}
+	}
 	return initialCookies;
 }
 
+
 /**
  * Get customHttpHeaders parameter
+ * Parses JSON string if needed
  */
-export function getCustomHttpHeaders(this: IExecuteFunctions, i: number): object | string {
+export function getCustomHttpHeaders(this: IExecuteFunctions, i: number): object {
 	const customHttpHeaders = this.getNodeParameter('customHttpHeaders', i) as object | string;
+	// If it's a string (JSON), parse it to an object
+	if (typeof customHttpHeaders === 'string') {
+		try {
+			return JSON.parse(customHttpHeaders);
+		} catch (error) {
+			throw new Error(`Invalid JSON in customHttpHeaders: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		}
+	}
 	return customHttpHeaders;
 }
+
 
 /**
  * Get signHttpRequests parameter
@@ -140,6 +192,7 @@ export function getSignHttpRequests(this: IExecuteFunctions, i: number): boolean
 	return signHttpRequests;
 }
 
+
 /**
  * Get pageFunction parameter
  */
@@ -148,13 +201,24 @@ export function getPageFunction(this: IExecuteFunctions, i: number): string {
 	return pageFunction;
 }
 
+
 /**
  * Get proxyConfiguration parameter
+ * Parses JSON string if needed
  */
-export function getProxyConfiguration(this: IExecuteFunctions, i: number): object | string {
+export function getProxyConfiguration(this: IExecuteFunctions, i: number): object {
 	const proxyConfiguration = this.getNodeParameter('proxyConfiguration', i) as object | string;
+	// If it's a string (JSON), parse it to an object
+	if (typeof proxyConfiguration === 'string') {
+		try {
+			return JSON.parse(proxyConfiguration);
+		} catch (error) {
+			throw new Error(`Invalid JSON in proxyConfiguration: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		}
+	}
 	return proxyConfiguration;
 }
+
 
 /**
  * Get maxSessionRotations parameter
@@ -164,6 +228,7 @@ export function getMaxSessionRotations(this: IExecuteFunctions, i: number): numb
 	return maxSessionRotations;
 }
 
+
 /**
  * Get maxRequestRetries parameter
  */
@@ -171,6 +236,7 @@ export function getMaxRequestRetries(this: IExecuteFunctions, i: number): number
 	const maxRequestRetries = this.getNodeParameter('maxRequestRetries', i) as number;
 	return maxRequestRetries;
 }
+
 
 /**
  * Get requestTimeoutSecs parameter
@@ -180,6 +246,7 @@ export function getRequestTimeoutSecs(this: IExecuteFunctions, i: number): numbe
 	return requestTimeoutSecs;
 }
 
+
 /**
  * Get minFileDownloadSpeedKBps parameter
  */
@@ -187,6 +254,7 @@ export function getMinFileDownloadSpeedKBps(this: IExecuteFunctions, i: number):
 	const minFileDownloadSpeedKBps = this.getNodeParameter('minFileDownloadSpeedKBps', i) as number;
 	return minFileDownloadSpeedKBps;
 }
+
 
 /**
  * Get dynamicContentWaitSecs parameter
@@ -196,6 +264,7 @@ export function getDynamicContentWaitSecs(this: IExecuteFunctions, i: number): n
 	return dynamicContentWaitSecs;
 }
 
+
 /**
  * Get waitForSelector parameter
  */
@@ -203,6 +272,7 @@ export function getWaitForSelector(this: IExecuteFunctions, i: number): string {
 	const waitForSelector = this.getNodeParameter('waitForSelector', i) as string;
 	return waitForSelector;
 }
+
 
 /**
  * Get softWaitForSelector parameter
@@ -212,6 +282,7 @@ export function getSoftWaitForSelector(this: IExecuteFunctions, i: number): stri
 	return softWaitForSelector;
 }
 
+
 /**
  * Get maxScrollHeightPixels parameter
  */
@@ -219,6 +290,7 @@ export function getMaxScrollHeightPixels(this: IExecuteFunctions, i: number): nu
 	const maxScrollHeightPixels = this.getNodeParameter('maxScrollHeightPixels', i) as number;
 	return maxScrollHeightPixels;
 }
+
 
 /**
  * Get keepElementsCssSelector parameter
@@ -228,6 +300,7 @@ export function getKeepElementsCssSelector(this: IExecuteFunctions, i: number): 
 	return keepElementsCssSelector;
 }
 
+
 /**
  * Get removeElementsCssSelector parameter
  */
@@ -235,6 +308,7 @@ export function getRemoveElementsCssSelector(this: IExecuteFunctions, i: number)
 	const removeElementsCssSelector = this.getNodeParameter('removeElementsCssSelector', i) as string;
 	return removeElementsCssSelector;
 }
+
 
 /**
  * Get removeCookieWarnings parameter
@@ -244,6 +318,7 @@ export function getRemoveCookieWarnings(this: IExecuteFunctions, i: number): boo
 	return removeCookieWarnings;
 }
 
+
 /**
  * Get blockMedia parameter
  */
@@ -251,6 +326,7 @@ export function getBlockMedia(this: IExecuteFunctions, i: number): boolean {
 	const blockMedia = this.getNodeParameter('blockMedia', i) as boolean;
 	return blockMedia;
 }
+
 
 /**
  * Get expandIframes parameter
@@ -260,6 +336,7 @@ export function getExpandIframes(this: IExecuteFunctions, i: number): boolean {
 	return expandIframes;
 }
 
+
 /**
  * Get clickElementsCssSelector parameter
  */
@@ -267,6 +344,7 @@ export function getClickElementsCssSelector(this: IExecuteFunctions, i: number):
 	const clickElementsCssSelector = this.getNodeParameter('clickElementsCssSelector', i) as string;
 	return clickElementsCssSelector;
 }
+
 
 /**
  * Get stickyContainerCssSelector parameter
@@ -276,6 +354,7 @@ export function getStickyContainerCssSelector(this: IExecuteFunctions, i: number
 	return stickyContainerCssSelector;
 }
 
+
 /**
  * Get htmlTransformer parameter
  */
@@ -283,6 +362,7 @@ export function getHtmlTransformer(this: IExecuteFunctions, i: number): string {
 	const htmlTransformer = this.getNodeParameter('htmlTransformer', i) as string;
 	return htmlTransformer;
 }
+
 
 /**
  * Get readableTextCharThreshold parameter
@@ -292,6 +372,7 @@ export function getReadableTextCharThreshold(this: IExecuteFunctions, i: number)
 	return readableTextCharThreshold;
 }
 
+
 /**
  * Get aggressivePrune parameter
  */
@@ -299,6 +380,7 @@ export function getAggressivePrune(this: IExecuteFunctions, i: number): boolean 
 	const aggressivePrune = this.getNodeParameter('aggressivePrune', i) as boolean;
 	return aggressivePrune;
 }
+
 
 /**
  * Get debugMode parameter
@@ -308,6 +390,7 @@ export function getDebugMode(this: IExecuteFunctions, i: number): boolean {
 	return debugMode;
 }
 
+
 /**
  * Get storeSkippedUrls parameter
  */
@@ -315,6 +398,7 @@ export function getStoreSkippedUrls(this: IExecuteFunctions, i: number): boolean
 	const storeSkippedUrls = this.getNodeParameter('storeSkippedUrls', i) as boolean;
 	return storeSkippedUrls;
 }
+
 
 /**
  * Get debugLog parameter
@@ -324,6 +408,7 @@ export function getDebugLog(this: IExecuteFunctions, i: number): boolean {
 	return debugLog;
 }
 
+
 /**
  * Get saveHtml parameter
  */
@@ -331,6 +416,7 @@ export function getSaveHtml(this: IExecuteFunctions, i: number): boolean {
 	const saveHtml = this.getNodeParameter('saveHtml', i) as boolean;
 	return saveHtml;
 }
+
 
 /**
  * Get saveHtmlAsFile parameter
@@ -340,6 +426,7 @@ export function getSaveHtmlAsFile(this: IExecuteFunctions, i: number): boolean {
 	return saveHtmlAsFile;
 }
 
+
 /**
  * Get saveMarkdown parameter
  */
@@ -347,6 +434,7 @@ export function getSaveMarkdown(this: IExecuteFunctions, i: number): boolean {
 	const saveMarkdown = this.getNodeParameter('saveMarkdown', i) as boolean;
 	return saveMarkdown;
 }
+
 
 /**
  * Get saveFiles parameter
@@ -356,6 +444,7 @@ export function getSaveFiles(this: IExecuteFunctions, i: number): boolean {
 	return saveFiles;
 }
 
+
 /**
  * Get saveScreenshots parameter
  */
@@ -363,6 +452,7 @@ export function getSaveScreenshots(this: IExecuteFunctions, i: number): boolean 
 	const saveScreenshots = this.getNodeParameter('saveScreenshots', i) as boolean;
 	return saveScreenshots;
 }
+
 
 /**
  * Get maxResults parameter
@@ -372,6 +462,7 @@ export function getMaxResults(this: IExecuteFunctions, i: number): number {
 	return maxResults;
 }
 
+
 /**
  * Get textExtractor parameter
  */
@@ -379,6 +470,7 @@ export function getTextExtractor(this: IExecuteFunctions, i: number): string {
 	const textExtractor = this.getNodeParameter('textExtractor', i) as string;
 	return textExtractor;
 }
+
 
 /**
  * Get clientSideMinChangePercentage parameter
@@ -388,6 +480,7 @@ export function getClientSideMinChangePercentage(this: IExecuteFunctions, i: num
 	return clientSideMinChangePercentage;
 }
 
+
 /**
  * Get renderingTypeDetectionPercentage parameter
  */
@@ -395,3 +488,4 @@ export function getRenderingTypeDetectionPercentage(this: IExecuteFunctions, i: 
 	const renderingTypeDetectionPercentage = this.getNodeParameter('renderingTypeDetectionPercentage', i) as number;
 	return renderingTypeDetectionPercentage;
 }
+

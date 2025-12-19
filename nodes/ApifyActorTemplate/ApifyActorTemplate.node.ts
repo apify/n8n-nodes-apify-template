@@ -31,8 +31,8 @@ export class ApifyActorTemplate implements INodeType {
 
 		// SNIPPET 2: Adjust the icon of your app
 		icon: {
-			light: 'file:apify.svg',
-			dark: 'file:apifyDark.svg'
+			light: 'file:./logo/apify.svg',
+			dark: 'file:./logo/apifyDark.svg'
 		},
 		group: ['transform'],
 		// Mismatched version and defaultVersion as a minor hack to hide "Custom API Call" resource

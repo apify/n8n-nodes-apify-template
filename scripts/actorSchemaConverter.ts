@@ -1,10 +1,8 @@
 // @ts-nocheck
 import chalk from 'chalk';
-import path from 'path';
 import { type ApifyInputField, type ApifyInputSchema } from './types.ts';
 import type { INodeProperties } from 'n8n-workflow';
 import type { Actor, ApifyClient } from 'apify-client';
-import fs from 'fs';
 
 
 export async function createActorAppSchemaForN8n(client: ApifyClient, actor: Actor) {
@@ -202,89 +200,3 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
     }
 }
 
-/**
- * Build parameter assignments for buildActorInput function in properties.ts template
- */
-function buildParameterAssignments(properties: INodeProperties[]): {
-    paramAssignments: string[];
-    specialCases: string[];
-} {
-    const paramAssignments: string[] = [];
-    const specialCases: string[] = [];
-
-    for (const prop of properties) {
-        if (prop.type === 'fixedCollection') {
-            // Generate inline logic for fixedCollection types
-            for (const option of prop.options ?? []) {
-                paramAssignments.push(`
-		...((() => {
-			const ${prop.name} = context.getNodeParameter('${prop.name}', itemIndex, {}) as { ${option.name}?: { value: string }[] };
-			return ${prop.name}?.${option.name}?.length ? { ${prop.name}: ${prop.name}.${option.name}.map(e => e.value) } : {};
-		})()),`);
-            }
-        } else if (prop.type === 'json') {
-            // Generate inline logic for JSON types with error handling
-            paramAssignments.push(`
-		...((() => {
-			try {
-				const rawValue = context.getNodeParameter("${prop.name}", itemIndex);
-				return { ${prop.name}: typeof rawValue === "string" ? JSON.parse(rawValue) : rawValue };
-			} catch (error) {
-				throw new Error(\`Invalid JSON in parameter "${prop.name}": \${(error as Error).message}\`);
-			}
-		})()),`);
-        } else {
-            // Simple property assignment
-            paramAssignments.push(
-                `		${prop.name}: context.getNodeParameter('${prop.name}', itemIndex),`
-            );
-        }
-    }
-
-    return { paramAssignments, specialCases };
-}
-
-
-/**
- * Generate and write n8n integration files (properties.ts & execute.ts)
- */
-export async function generateActorResources(
-    client: ApifyClient,
-    actor: Actor,
-    actorId: string,
-    propertiesPaths: string[],
-    executePaths: string[],
-    TARGET_CLASS_NAME: string
-) {
-    console.log('⚙️  Fetching properties from actor input schema...');
-    const properties = (await createActorAppSchemaForN8n(client, actor)) as INodeProperties[];
-
-    // --- Load templates ---
-    const templatesDir = path.resolve('./scripts/functionTemplates');
-    const propertiesTemplate = fs.readFileSync(path.join(templatesDir, 'properties.ts.tpl'), 'utf-8');
-    const executeTemplate = fs.readFileSync(path.join(templatesDir, 'execute.ts.tpl'), 'utf-8');
-
-    // --- Generate parameter assignments ---
-    const { paramAssignments } = buildParameterAssignments(properties);
-
-    // --- Generate properties.ts ---
-    const propsWithDisplayOptions = properties.map((prop) => ({ ...prop }));
-    const propsJson = JSON.stringify(propsWithDisplayOptions, null, 2);
-    const newPropsContent = propertiesTemplate
-        .replace('{{PROPERTIES_JSON}}', propsJson)
-        .replace('{{PARAM_ASSIGNMENTS}}', paramAssignments.join('\n'));
-
-    for (const filePath of propertiesPaths) {
-        fs.writeFileSync(filePath, newPropsContent, 'utf-8');
-        console.log(`✅ Updated properties in ${filePath}`);
-    }
-
-    // --- Generate execute.ts ---
-    const newExecuteContent = executeTemplate
-        .replace(/{{TARGET_CLASS_NAME}}/g, TARGET_CLASS_NAME);
-
-    for (const filePath of executePaths) {
-        fs.writeFileSync(filePath, newExecuteContent, 'utf-8');
-        console.log(`✅ Updated execute function in ${filePath}`);
-    }
-}

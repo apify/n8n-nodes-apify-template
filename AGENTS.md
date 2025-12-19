@@ -35,28 +35,29 @@ These files serve as the blueprint for all generated nodes:
   - Contains `execute()` method that runs the Actor
   - Uses placeholders like `$$ACTOR_ID`, `$$CLASS_NAME` that get replaced
 
-### Properties
-- **`ApifyActorTemplate.properties.ts`** - UI field definitions
-  - Gets **completely regenerated** during setup (not copied as-is)
-  - Defines what fields users see in n8n UI
+### Resources
+- **`resources/`** - Contains operation definitions and routing logic
+  - **`resources/resources.ts`** - Router file that handles operation selection
+  - **`resources/properties/operation*.ts`** - Individual operation files with their properties and execute functions
+  - Gets **completely regenerated** during setup based on operation count
 
 ### Helpers
-- **`helpers/executeActor.ts`** - Actor execution logic
-  - `getDefaultBuild()` - Fetch Actor metadata
-  - `getDefaultInputsFromBuild()` - Extract default values
-  - `runActor()` - Execute Actor and return results
+- **`helpers/executeActor.ts`** - Actor build and execution utilities
+  - `getDefaultBuild()` - Fetch Actor's default build metadata
+  - `getDefaultInputsFromBuild()` - Extract prefill values from build definition
+  - `runActorApi()` - Execute Actor API call with input
 
-- **`helpers/genericFunctions.ts`** - API utilities
+- **`helpers/genericFunctions.ts`** - API utilities and common execution logic
   - `apiRequest()` - Make authenticated calls to Apify API
   - `pollRunStatus()` - Poll every 1s until Actor completes
   - `getResults()` - Fetch dataset items
   - `isUsedAsAiTool()` - Detect if used by AI agents
+  - `executeActorRun()` - Common execution pattern used by all operations (merges input with defaults, runs actor, waits for results)
 
 - **`helpers/hooks.ts`** - n8n lifecycle hooks
 
 ### Metadata
 - **`ApifyActorTemplate.node.json`** - Node categories and aliases
-- **`properties.json`** - Cached generated properties
 
 ### Icons
 - **`apify.svg`** / **`apifyDark.svg`** - Node icons (light/dark themes)
@@ -69,9 +70,9 @@ Location: `scripts/`
 
 ### Main Flow
 **`setupProject.ts`** - Orchestrates the entire generation process:
-1. Prompts user for Actor ID
+1. Prompts user for Actor ID and operation count
 2. Calls `setConfig()` to create placeholder values
-3. Calls `generateActorResources()` to convert schema
+3. Calls `generateOperationsStructure()` to create resources/operations structure
 4. Calls `refactorProject()` to rename files/folders
 
 ### Key Scripts
@@ -82,6 +83,12 @@ Location: `scripts/`
 - `$$DISPLAY_NAME` → `Apify Instagram Scraper`
 - `$$PACKAGE_NAME` → `n8n-nodes-apify-instagram-scraper`
 - `$$X_PLATFORM_APP_HEADER_ID` → `instagram-scraper-app`
+
+**`generateOperations.ts`** - Generates resources/operations structure:
+- Creates `resources/` directory with operation files
+- Generates `resources/resources.ts` router file
+- Creates individual operation files in `resources/properties/`
+- Each operation has its own properties and execute function
 
 **`actorSchemaConverter.ts`** - Converts Apify schema → n8n properties:
 
@@ -98,7 +105,7 @@ Location: `scripts/`
 
 **`refactorProject.ts`** - Renames files and updates imports:
 - Renames `ApifyActorTemplate/` → `ApifyActorName/`
-- Updates all class names and imports
+- Updates all class names and imports in resources files
 - Updates `package.json` name
 
 **`createActorApp.ts`** - Fetches Actor metadata from Apify API
@@ -114,11 +121,13 @@ User runs: npm run create-actor-app
       ↓
 Prompt for Actor ID (e.g., "apify/instagram-scraper")
       ↓
+Prompt for operation count (1-10, default 2)
+      ↓
 Fetch Actor metadata via ApifyClient
       ↓
 setConfig() → Generate placeholder values
       ↓
-generateActorResources() → Convert Apify schema to n8n properties
+generateOperationsStructure() → Create resources/operations structure
       ↓
 refactorProject() → Rename ApifyActorTemplate → ApifyInstagramScraper
       ↓

@@ -8,6 +8,7 @@ import {
 	type IHttpRequestOptions,
 } from 'n8n-workflow';
 import { ClassNameCamel, X_PLATFORM_APP_HEADER_ID, X_PLATFORM_HEADER_ID } from '../ApifyActorTemplate.node';
+import { getDefaultBuild, getDefaultInputsFromBuild, runActorApi } from './executeActor';
 
 /**
  * Extended request options for Apify API calls
@@ -137,64 +138,6 @@ export async function getResults(this: IExecuteFunctions, datasetId: string): Pr
 	}
 
 	return this.helpers.returnJsonArray(results);
-}
-
-/**
- * Get the default build for an actor
- */
-export async function getDefaultBuild(
-	this: IExecuteFunctions,
-	actorId: string,
-): Promise<any> {
-	const defaultBuildResp = await apiRequest.call(this, {
-		method: 'GET',
-		uri: `/v2/acts/${actorId}/builds/default`,
-	});
-	if (!defaultBuildResp?.data) {
-		throw new NodeApiError(this.getNode(), {
-			message: `Could not fetch default build for actor ${actorId}`,
-		});
-	}
-	return defaultBuildResp.data;
-}
-
-/**
- * Extract default input values from actor build definition
- */
-export function getDefaultInputsFromBuild(build: any): Record<string, any> {
-	const buildInputProperties = build?.actorDefinition?.input?.properties;
-	const defaultInput: Record<string, any> = {};
-	if (buildInputProperties && typeof buildInputProperties === 'object') {
-		for (const [key, property] of Object.entries(buildInputProperties)) {
-			if (
-				property &&
-				typeof property === 'object' &&
-				'prefill' in property &&
-				(property as any).prefill !== undefined &&
-				(property as any).prefill !== null
-			) {
-				defaultInput[key] = (property as any).prefill;
-			}
-		}
-	}
-	return defaultInput;
-}
-
-/**
- * Run an actor with the given input
- */
-export async function runActorApi(
-	this: IExecuteFunctions,
-	actorId: string,
-	mergedInput: Record<string, any>,
-	qs: Record<string, any>,
-): Promise<any> {
-	return await apiRequest.call(this, {
-		method: 'POST',
-		uri: `/v2/acts/${actorId}/runs`,
-		body: mergedInput,
-		qs,
-	});
 }
 
 /**

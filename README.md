@@ -102,8 +102,8 @@ The default configuration uses the Apify logo:
 
 ```typescript
 icon: {
-  light: 'file:apify.svg',
-  dark: 'file:apifyDark.svg'
+  light: 'file:/logo/apify.svg',
+  dark: 'file:/logo/apifyDark.svg'
 }
 ```
 

@@ -1,5 +1,8 @@
 import fs from 'fs';
 import path from 'path';
+import type { ApifyClient, Actor } from 'apify-client';
+import type { INodeProperties } from 'n8n-workflow';
+import { createActorAppSchemaForN8n } from './actorSchemaConverter.ts';
 
 interface OperationTemplate {
 	name: string;
@@ -15,6 +18,8 @@ export async function generateOperationsStructure(
 	TARGET_CLASS_NAME: string,
 	newClassName: string,
 	displayName: string,
+	client: ApifyClient,
+	actor: Actor,
 ): Promise<void> {
 	const nodeDir = path.join('./nodes', TARGET_CLASS_NAME);
 	const resourcesDir = path.join(nodeDir, 'resources');
@@ -28,6 +33,10 @@ export async function generateOperationsStructure(
 		fs.mkdirSync(propertiesDir, { recursive: true });
 	}
 
+	// Fetch Actor schema and convert to n8n properties
+	console.log('⚙️  Fetching properties from actor input schema...');
+	const actorProperties = (await createActorAppSchemaForN8n(client, actor)) as INodeProperties[];
+
 	// Generate operation files
 	const operations: OperationTemplate[] = [];
 	for (let i = 1; i <= operationCount; i++) {
@@ -40,7 +49,7 @@ export async function generateOperationsStructure(
 
 	// Generate each operation file
 	for (const op of operations) {
-		await generateOperationFile(propertiesDir, op, TARGET_CLASS_NAME);
+		await generateOperationFile(propertiesDir, op, TARGET_CLASS_NAME, actorProperties);
 	}
 
 	// Generate resources.ts
@@ -56,9 +65,51 @@ async function generateOperationFile(
 	propertiesDir: string,
 	operation: OperationTemplate,
 	TARGET_CLASS_NAME: string,
+	actorProperties: INodeProperties[],
 ): Promise<void> {
 	const fileName = `operation${operation.index}.ts`;
 	const filePath = path.join(propertiesDir, fileName);
+
+	// Add displayOptions to each property to show only for this operation
+	const propertiesWithDisplayOptions = actorProperties.map((prop) => ({
+		...prop,
+		displayOptions: {
+			show: {
+				resource: ['RESOURCE_NAME'],
+				operation: [`OPERATION_${operation.index}_NAME`],
+			},
+		},
+	}));
+
+	// Generate properties as JSON string
+	const propertiesJson = JSON.stringify(propertiesWithDisplayOptions, null, 2)
+		.replace(/"RESOURCE_NAME"/g, 'RESOURCE_NAME')
+		.replace(/"OPERATION_(\d+)_NAME"/g, 'OPERATION_$1_NAME');
+
+	// Generate parameter retrieval code
+	const paramAssignments = actorProperties.map((prop) => {
+		if (prop.type === 'fixedCollection') {
+			// Handle fixedCollection types (arrays)
+			const optionName = prop.options?.[0]?.name || 'items';
+			return `		...((() => {
+			const ${prop.name} = this.getNodeParameter('${prop.name}', i, {}) as { ${optionName}?: { value: string }[] };
+			return ${prop.name}?.${optionName}?.length ? { ${prop.name}: ${prop.name}.${optionName}.map(e => e.value) } : {};
+		})()),`;
+		} else if (prop.type === 'json') {
+			// Handle JSON types with parsing
+			return `		...((() => {
+			try {
+				const rawValue = this.getNodeParameter('${prop.name}', i);
+				return { ${prop.name}: typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue };
+			} catch (error) {
+				throw new Error(\`Invalid JSON in parameter "${prop.name}": \${(error as Error).message}\`);
+			}
+		})()),`;
+		} else {
+			// Simple property assignment
+			return `		${prop.name}: this.getNodeParameter('${prop.name}', i),`;
+		}
+	}).join('\n');
 
 	const content = `import { IExecuteFunctions, INodeExecutionData, INodeProperties, INodePropertyOptions } from 'n8n-workflow';
 import { executeActorRun } from '../../helpers/genericFunctions';
@@ -74,59 +125,11 @@ export const option: INodePropertyOptions = {
 	description: 'Description for operation ${operation.index}',
 };
 
-export const properties: INodeProperties[] = [
-	{
-		displayName: 'Parameter 1',
-		name: 'param1',
-		type: 'string',
-		default: '',
-		description: 'First parameter for this operation',
-		placeholder: 'Enter value',
-		displayOptions: {
-			show: {
-				resource: [RESOURCE_NAME],
-				operation: [OPERATION_${operation.index}_NAME],
-			},
-		},
-	},
-	{
-		displayName: 'Parameter 2',
-		name: 'param2',
-		type: 'string',
-		default: '',
-		description: 'Second parameter for this operation',
-		placeholder: 'Enter value',
-		displayOptions: {
-			show: {
-				resource: [RESOURCE_NAME],
-				operation: [OPERATION_${operation.index}_NAME],
-			},
-		},
-	},
-	{
-		displayName: 'Parameter 3',
-		name: 'param3',
-		type: 'number',
-		default: 0,
-		description: 'Third parameter for this operation',
-		displayOptions: {
-			show: {
-				resource: [RESOURCE_NAME],
-				operation: [OPERATION_${operation.index}_NAME],
-			},
-		},
-	},
-];
+export const properties: INodeProperties[] = ${propertiesJson};
 
 export async function execute(this: IExecuteFunctions, i: number): Promise<INodeExecutionData> {
-	const param1 = this.getNodeParameter('param1', i) as string;
-	const param2 = this.getNodeParameter('param2', i) as string;
-	const param3 = this.getNodeParameter('param3', i) as number;
-
 	const actorInput: Record<string, any> = {
-		param1,
-		param2,
-		param3,
+${paramAssignments}
 	};
 
 	return await executeActorRun.call(this, ACTOR_ID, actorInput);

@@ -7,7 +7,6 @@ export function refactorProject(
 	newClass: string,
 	oldPackage: string,
 	newPackage: string,
-	useResourcesPattern?: boolean,
 ) {
 	// Rename folders and files
 	const oldDir = path.join("nodes", oldClass);
@@ -23,11 +22,8 @@ export function refactorProject(
 		console.log(`✅ Renamed folder: nodes/${oldClass} -> nodes/${newClass}`);
 		}
 
-		// Only rename properties.ts if NOT using resources pattern
+		// Rename node files (resources pattern doesn't use properties.ts)
 		const exts = ["methods.ts", "node.json", "node.ts"];
-		if (!useResourcesPattern) {
-			exts.push("properties.ts");
-		}
 
 		for (const ext of exts) {
 		const oldFile = path.join(newDir, `${oldClass}.${ext}`);
@@ -42,12 +38,10 @@ export function refactorProject(
 		}
 		}
 
-		// Handle resources/ folder if using resources pattern
-		if (useResourcesPattern) {
-			const resourcesDir = path.join(newDir, 'resources');
-			if (fs.existsSync(resourcesDir)) {
-				updateResourcesImports(resourcesDir, oldClass, newClass);
-			}
+		// Handle resources/ folder
+		const resourcesDir = path.join(newDir, 'resources');
+		if (fs.existsSync(resourcesDir)) {
+			updateResourcesImports(resourcesDir, oldClass, newClass);
 		}
 
 		console.log(`✅ Renamed files inside nodes/${newClass}`);

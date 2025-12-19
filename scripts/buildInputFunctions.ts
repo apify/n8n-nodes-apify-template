@@ -107,25 +107,29 @@ function generateRegularGetter(prop: INodeProperties): string {
 	const functionName = `get${capitalizeFirst(paramName)}`;
 	const tsType = getTypeScriptType(prop.type);
 
-	// Build simple JSDoc comment (no description to avoid breaking JSDoc with special chars)
-	const jsdoc = `/**\n * Get ${paramName} parameter\n */`;
+	// For JSON types, use JSON template
+	if (prop.type === 'json') {
+		const templatePath = path.join(__dirname, 'fileTemplates', 'functionTemplates', 'jsonGetter.ts.tpl');
+		let template = fs.readFileSync(templatePath, 'utf-8');
+		template = template.replace(/{{PARAM_NAME}}/g, paramName);
+		template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
+		return template;
+	}
 
-	// Build function code
-	const code = [
-		jsdoc,
-		`export function ${functionName}(this: IExecuteFunctions, i: number): ${tsType} {`,
-		`\tconst ${paramName} = this.getNodeParameter('${paramName}', i) as ${tsType};`,
-		`\treturn ${paramName};`,
-		`}`,
-	].join('\n');
-
-	return code;
+	// For regular types, use regular template
+	const templatePath = path.join(__dirname, 'fileTemplates', 'functionTemplates', 'regularGetter.ts.tpl');
+	let template = fs.readFileSync(templatePath, 'utf-8');
+	template = template.replace(/{{PARAM_NAME}}/g, paramName);
+	template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
+	template = template.replace(/{{TS_TYPE}}/g, tsType);
+	return template;
 }
 
 /**
  * Generate getter for fixedCollection (list entries)
  *
  * n8n wraps lists in an object: { items?: { url: string }[] }
+ * This function extracts the array directly for Apify API compatibility
  */
 function generateFixedCollectionGetter(prop: INodeProperties): string {
 	const paramName = prop.name;
@@ -149,21 +153,17 @@ function generateFixedCollectionGetter(prop: INodeProperties): string {
 	});
 
 	const entryType = typeFields.length > 0 ? `{ ${typeFields.join('; ')} }` : 'any';
-	const returnType = `{\n\t${collectionName}?: ${entryType}[];\n}`;
+	const arrayReturnType = `${entryType}[]`;
 
-	// Build simple JSDoc comment
-	const jsdoc = `/**\n * Get ${paramName} parameter (list)\n */`;
-
-	// Build function code
-	const code = [
-		jsdoc,
-		`export function ${functionName}(this: IExecuteFunctions, i: number): ${returnType} {`,
-		`\tconst ${paramName} = this.getNodeParameter('${paramName}', i, {}) as ${returnType};`,
-		`\treturn ${paramName};`,
-		`}`,
-	].join('\n');
-
-	return code;
+	// Use template
+	const templatePath = path.join(__dirname, 'fileTemplates', 'functionTemplates', 'fixedCollectionGetter.ts.tpl');
+	let template = fs.readFileSync(templatePath, 'utf-8');
+	template = template.replace(/{{PARAM_NAME}}/g, paramName);
+	template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
+	template = template.replace(/{{COLLECTION_NAME}}/g, collectionName);
+	template = template.replace(/{{ENTRY_TYPE}}/g, entryType);
+	template = template.replace(/{{ARRAY_RETURN_TYPE}}/g, arrayReturnType);
+	return template;
 }
 
 /**

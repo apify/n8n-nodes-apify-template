@@ -2,220 +2,200 @@
 
 ## Overview
 
-This is a **generator repository** that creates n8n community nodes from Apify Actors. It has two main components:
+This is a **generator repository** that creates n8n community nodes from Apify Actors. It consists of:
 
 1. **Template Files** (`nodes/ApifyActorTemplate/`) - Blueprint for generated nodes
 2. **Generator Scripts** (`scripts/`) - Code that creates new nodes from the template
+3. **Build Optimization** (`scripts/pre-build/`, `scripts/post-build/`) - Trims unused functions
 
-**Key Concept**: This is NOT a static codebase. When you run `npm run create-actor-app`, the scripts copy the template, fetch an Actor's schema from Apify, and generate a new node with proper naming and properties.
+**Key Concept**: When you run `npm run init-actor-app`, the scripts copy the template, fetch an Actor's schema from Apify, and generate a new node with proper resource/operation structure.
 
 ---
 
 ## Quick Commands
 
 ```bash
-npm run init-actor-app       # Initialize a new Actor app from scratch
-npm run add-actor-resource   # Add a new resource to existing Actor (WIP)
-npm run add-actor-operation  # Add a new operation to existing resource (WIP)
-npm run build                # Compile TypeScript + copy icons
+npm run init-actor-app       # Initialize a new Actor app
+npm run add-actor-resource   # Add a new resource (WIP)
+npm run add-actor-operation  # Add an operation to resource (WIP)
+npm run build                # Pre-build → TypeScript compile → Post-build
 npm run dev                  # Run n8n locally with hot reload
-npm test                     # Run tests (none exist yet)
-npm run lint                 # Check code quality
+npm run pre-build            # Trim unused functions (automatic)
+npm run post-build           # Restore original files (automatic)
 ```
 
 ---
 
-## Part 1: Template Files (What Gets Copied)
+## Architecture
 
-Location: `nodes/ApifyActorTemplate/`
-
-These files serve as the blueprint for all generated nodes:
-
-### Node Definition
-- **`ApifyActorTemplate.node.ts`** - Main node class implementing `INodeType`
-  - Defines node metadata (name, icon, credentials)
-  - Contains `execute()` method that runs the Actor
-  - Uses placeholders like `$$ACTOR_ID`, `$$CLASS_NAME` that get replaced
-
-### Resources
-- **`resources/`** - Contains resource and operation definitions with routing logic
-  - **`resources/router.ts`** - Main router that merges all resources and delegates to resource-specific routers
-  - **`resources/resource_one/`** - Individual resource folder (supports multiple resources)
-    - **Note**: `resource_one` is a **dynamically generated name** based on user input during script execution
-    - **`resource.ts`** - Resource-level file that merges operations and routes to operation handlers
-    - **`operations/`** - Folder containing operation files
-      - **`operation_one.ts`** - Individual operation with properties and execute function (name generated from user input)
-      - **`operation_two.ts`** - Individual operation with properties and execute function (name generated from user input)
-  - Gets **completely regenerated** during setup based on resource and operation count
-  - **All folder/file names with underscores** (e.g., `resource_one`, `operation_one`) are **custom-named by the generator script** based on user input
-
-### Helpers
-- **`helpers/executeActor.ts`** - Actor build and execution utilities
-  - `getDefaultBuild()` - Fetch Actor's default build metadata
-  - `getDefaultInputsFromBuild()` - Extract prefill values from build definition
-  - `runActorApi()` - Execute Actor API call with input
-
-- **`helpers/genericFunctions.ts`** - API utilities and common execution logic
-  - `apiRequest()` - Make authenticated calls to Apify API
-  - `pollRunStatus()` - Poll every 1s until Actor completes
-  - `getResults()` - Fetch dataset items
-  - `isUsedAsAiTool()` - Detect if used by AI agents
-  - `executeActorRun()` - Common execution pattern used by all operations (merges input with defaults, runs actor, waits for results)
-
-- **`helpers/hooks.ts`** - n8n lifecycle hooks
-
-### Metadata
-- **`ApifyActorTemplate.node.json`** - Node categories and aliases
-
-### Icons
-- **`apify.svg`** / **`apifyDark.svg`** - Node icons (light/dark themes)
-
----
-
-## Part 2: Generator Scripts (What Creates New Nodes)
-
-Location: `scripts/`
-
-### Script Structure
-
-The scripts are organized into three command folders:
+### Resource & Operation Structure
 
 ```
-scripts/
-├── cli.ts                      # Main router that handles command routing
-├── utils.ts                    # Shared utilities and user input functions
-├── types.ts                    # Shared TypeScript types
-├── init-actor-app/            # Initialize new Actor app
-│   ├── setupProject.ts        # Main orchestrator
-│   ├── actorConfig.ts         # Placeholder generation
-│   ├── actorSchemaConverter.ts # Schema conversion
-│   ├── createActorApp.ts      # Actor metadata fetching
-│   ├── generateOperations.ts  # Operations structure generation
-│   └── refactorProject.ts     # File renaming
-├── add-actor-resource/        # Add new resource (WIP)
-│   └── index.ts
-└── add-actor-operation/       # Add new operation (WIP)
-    └── index.ts
+nodes/Apify{ActorName}/
+├── Apify{ActorName}.node.ts        # Main node class
+├── resources/
+│   ├── router.ts                   # Main router merging all resources
+│   └── {resource_name}/            # Resource folder (dynamically named from Actor)
+│       ├── resource.ts             # Resource-level router
+│       └── operations/
+│           └── {operation_name}.ts # Individual operation (user-defined name)
+├── helpers/
+│   ├── executeActor.ts             # Actor execution utilities
+│   ├── genericFunctions.ts         # API utilities
+│   ├── inputFunctions.ts           # Input getter functions (auto-trimmed)
+│   └── propertyFunctions.ts        # Property definitions (auto-trimmed)
+└── logo/                           # Node icons
 ```
 
-**IMPORTANT**: All user input functions MUST be in `utils.ts`. This includes:
-- `askForInput()` - Generic input prompt
-- `askForActorId()` - Ask for Actor ID
-- `askForOperationCount()` - Ask for operation count with validation
-- `packageNameCheck()` - Validate and check npm package availability
-
-Never create readline/input prompts in individual script files. Always use or extend the functions in `utils.ts`.
-
-### Main Flow: init-actor-app
-
-**`setupProject.ts`** - Orchestrates the entire generation process:
-1. Prompts user for Actor ID and operation count (via `utils.ts` functions)
-2. Calls `setConfig()` to create placeholder values
-3. Calls `generateOperationsStructure()` to create resources/operations structure
-4. Calls `refactorProject()` to rename files/folders
-
-### Key Scripts
-
-**`actorConfig.ts`** - Generates placeholder values:
-- `$$ACTOR_ID` → `apify/instagram-scraper`
-- `$$CLASS_NAME` → `ApifyInstagramScraper`
-- `$$DISPLAY_NAME` → `Apify Instagram Scraper`
-- `$$PACKAGE_NAME` → `n8n-nodes-apify-instagram-scraper`
-- `$$X_PLATFORM_APP_HEADER_ID` → `instagram-scraper-app`
-
-**`generateOperations.ts`** - Generates resources/operations structure:
-- Creates `resources/` directory with resource folders
-- Generates `resources/router.ts` main router file
-- Creates individual resource folders with **custom names based on user input** (e.g., `resource_one/` where `resource_one` is dynamically generated)
-- Each resource has its own `resource.ts` file that merges operations
-- Creates `operations/` subfolder within each resource
-- Each operation file is **dynamically named** based on user input (e.g., `operation_one.ts`)
-- Each operation file defines its own operation name constant and contains properties and execute function
-
-**`actorSchemaConverter.ts`** - Converts Apify schema → n8n properties:
-
-| Apify Type | Apify Editor | n8n Type | Notes |
-|------------|-------------|----------|-------|
-| string | (default) | string | Text input |
-| string | textarea | string | Multi-line with `rows: 5` |
-| string | select / enum | options | Dropdown |
-| string | datepicker | dateTime | Date picker |
-| integer | - | number | With min/max |
-| boolean | - | boolean | Toggle |
-| array | - | json or fixedCollection | Depends on items |
-| object | - | json | JSON editor |
-
-**`refactorProject.ts`** - Renames files and updates imports:
-- Renames `ApifyActorTemplate/` → `ApifyActorName/`
-- Updates all class names and imports in resources files
-- Updates `package.json` name
-
-**`createActorApp.ts`** - Fetches Actor metadata from Apify API
-
-**`cli.ts`** - Entry point that calls `setupProject()`
+**Key Points:**
+- Init creates **1 resource** (named after Actor) with **1 operation**
+- Resource name defaults to Actor name (e.g., "Website Content Crawler")
+- Operation name/description are user-defined during setup
+- Helper files contain ALL possible functions initially, then get trimmed during build
 
 ---
 
 ## Generation Flow
 
 ```
-User runs: npm run init-actor-app
-      ↓
-cli.ts routes to 'init' command
-      ↓
-Prompt for Actor ID (e.g., "apify/instagram-scraper") via askForActorId()
-      ↓
-Prompt for operation count (1-10, default 1) via askForOperationCount()
-      ↓
+npm run init-actor-app
+  ↓
+Prompt for Actor ID (e.g., "apify/website-content-crawler")
+  ↓
 Fetch Actor metadata via ApifyClient
-      ↓
-setConfig() → Generate placeholder values
-      ↓
-generateOperationsStructure() → Create resources/operations structure
-      ↓
-refactorProject() → Rename ApifyActorTemplate → ApifyInstagramScraper
-      ↓
-npm run build → Compile TypeScript
-      ↓
-Generated node ready in dist/
+  ↓
+Prompt for operation name & description
+  ↓
+Generate placeholder values (ACTOR_ID, CLASS_NAME, etc.)
+  ↓
+Convert Apify input schema → n8n properties
+  ↓
+Generate inputFunctions.ts (getter for each input)
+  ↓
+Generate propertyFunctions.ts (n8n property for each input)
+  ↓
+Create resource/operation files
+  ↓
+Refactor: Rename ApifyActorTemplate → Apify{ActorName}
+  ↓
+Ready to build!
 ```
 
 ---
 
-## Key Architecture Concepts
+## Build Optimization (NEW)
 
-### n8n Node Structure
-All n8n nodes must implement `INodeType`:
+### Pre-build Script (`scripts/pre-build/index.ts`)
+1. **Backs up** `inputFunctions.ts` and `propertyFunctions.ts` to `.backups/`
+2. **Analyzes** all operation files to find which functions are actually used
+3. **Trims** the helper files to contain only used functions
+4. **Reports** savings (typically 95-99% reduction)
+
+### Post-build Script (`scripts/post-build/index.ts`)
+1. **Restores** original files from `.backups/`
+2. **Cleans up** backup directory
+
+**Example Results:**
+- `inputFunctions.ts`: 346 lines → 18 lines (94.8% smaller)
+- `propertyFunctions.ts`: 18,342 lines → 79 lines (99.6% smaller)
+
+This happens automatically during `npm run build`.
+
+---
+
+## Key Scripts
+
+### `scripts/init-actor-app/index.ts`
+Main orchestrator that:
+- Collects user inputs (Actor ID, operation name, description)
+- Generates placeholder values
+- Creates resource and operation structure
+- Refactors template to match Actor name
+
+### `scripts/utils/actorSchemaConverter.ts`
+Converts Apify schema → n8n properties:
+
+| Apify Type | Apify Editor | n8n Type | Notes |
+|------------|-------------|----------|-------|
+| string | (default) | string | Text input |
+| string | textarea | string | Multi-line with rows |
+| string | select/enum | options | Dropdown |
+| integer | - | number | With min/max |
+| boolean | - | boolean | Toggle |
+| array | - | fixedCollection | Depending on items |
+| object | - | json | JSON editor |
+
+### `scripts/utils/codeGenerators.ts`
+Generates:
+- `inputFunctions.ts` - Getter functions for each input parameter
+- `propertyFunctions.ts` - n8n property definitions for each input
+
+### `scripts/utils/apifyUtils.ts`
+- `generatePlaceholderValues()` - Creates $$ACTOR_ID, $$CLASS_NAME, etc.
+- `fetchActorInputSchema()` - Gets Actor input schema from Apify API
+
+### `scripts/utils/refactorProject.ts`
+- Renames `ApifyActorTemplate` → `Apify{ActorName}` across all files
+- Updates imports and class names
+- Updates `package.json` name
+
+---
+
+## Template Files
+
+### Main Node (`nodes/ApifyActorTemplate/ApifyActorTemplate.node.ts`)
+- Implements `INodeType` interface
+- Contains `execute()` method that delegates to operations
+- Uses placeholders: `$$ACTOR_ID`, `$$CLASS_NAME`, `$$DISPLAY_NAME`
+
+### Resources (`nodes/ApifyActorTemplate/resources/`)
+- **`router.ts`** - Main router that merges all resources and delegates to resource-specific routers
+- **`{resource_name}/resource.ts`** - Resource router that merges operations and routes to operation handlers
+- **`{resource_name}/operations/{operation_name}.ts`** - Individual operation with properties and execute function
+
+### Helpers (`nodes/ApifyActorTemplate/helpers/`)
+- **`executeActor.ts`** - `getDefaultBuild()`, `runActorApi()`, `getDefaultInputsFromBuild()`
+- **`genericFunctions.ts`** - `apiRequest()`, `pollRunStatus()`, `getResults()`, `executeActorRun()`
+- **`inputFunctions.ts`** - Auto-generated getter functions (e.g., `getSearchStringsArray()`)
+- **`propertyFunctions.ts`** - Auto-generated n8n properties (e.g., `getSearchStringsArrayProperty()`)
+
+---
+
+## Important Patterns
+
+### Input Functions
 ```typescript
-export class ApifyActorName implements INodeType {
-  description: INodeTypeDescription = { ... };
-  async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
-    // Run Actor and return results
-  }
+export function getSearchStringsArray(this: IExecuteFunctions, i: number): string[] {
+  const value = this.getNodeParameter('searchStringsArray', i, {}) as { values?: { value: string }[] };
+  return value.values?.map(item => item.value) || [];
 }
 ```
 
-### Resource and Operation Structure
-The new multi-resource architecture supports multiple resources per node:
-
+### Property Functions
+```typescript
+export function getSearchStringsArrayProperty(resourceName: string, operationName: string): INodeProperties {
+  return {
+    displayName: "Search terms",
+    name: "searchStringsArray",
+    type: "fixedCollection",
+    displayOptions: { show: { resource: [resourceName], operation: [operationName] } },
+    // ...
+  };
+}
 ```
-resources/
-├── router.ts                    # Main router - merges all resources
-└── resource_one/                # Dynamically named based on user input
-    ├── resource.ts              # Resource router - merges operations
-    └── operations/
-        ├── operation_one.ts     # Dynamically named - Defines OPERATION_1_NAME constant
-        └── operation_two.ts     # Dynamically named - Defines OPERATION_2_NAME constant
+
+### Operation Execute Pattern
+```typescript
+export async function execute(this: IExecuteFunctions, i: number): Promise<INodeExecutionData> {
+  const searchStringsArray = inputFunctions.getSearchStringsArray.call(this, i);
+  const actorInput: Record<string, any> = { searchStringsArray };
+  return await executeActorRun.call(this, ACTOR_ID, actorInput);
+}
 ```
 
-**Key Design Principles:**
-- **Dynamic naming**: All folder/file names with underscores (e.g., `resource_one`, `operation_one`) are **generated by the script based on user input** during node generation
-- **Single RESOURCE_NAME variable**: Each resource defines one `RESOURCE_NAME` constant used throughout that resource
-- **Operation names in operation files**: Each operation file exports its own `OPERATION_X_NAME` constant
-- **Resource-level routing**: Each `resource.ts` imports operation names and routes to the correct operation handler
-- **Top-level routing**: `router.ts` re-exports constants and delegates to resource-specific routers
+---
 
-### Apify Actor Execution Flow
+## Actor Execution Flow
 1. `getDefaultBuild()` → GET `/v2/acts/{actorId}/builds/default`
 2. `getDefaultInputsFromBuild()` → Extract prefill values
 3. `runActorApi()` → POST `/v2/acts/{actorId}/runs` (non-blocking)
@@ -223,27 +203,21 @@ resources/
 5. `getResults()` → GET `/v2/datasets/{datasetId}/items`
 6. Return formatted results to n8n
 
-### Authentication
-Two methods supported:
-- **API Key** (`credentials/ApifyApi.credentials.ts`) - Bearer token
-- **OAuth2** (`credentials/ApifyOAuth2Api.credentials.ts`) - PKCE flow
-
-### AI Tool Support
-- Nodes marked with `usableAsTool: true`
-- `isUsedAsAiTool()` detects AI context
-- Can filter results to reduce LLM token usage (SNIPPET 5)
-
 ---
 
-## 5 Customization SNIPPETs
+## Adding Resources/Operations (WIP)
 
-Search for `SNIPPET` in generated code to find these:
+**Add Resource:**
+```bash
+npm run add-actor-resource  # Creates new resource folder with operation
+```
 
-1. **SNIPPET 1**: Actor constants (ACTOR_ID, CLASS_NAME, etc.)
-2. **SNIPPET 2**: Node icon paths
-3. **SNIPPET 3**: Node subtitle text
-4. **SNIPPET 4**: Node description
-5. **SNIPPET 5**: AI tool result filtering
+**Add Operation:**
+```bash
+npm run add-actor-operation  # Adds operation to existing resource
+```
+
+These commands create the files, update routers, and regenerate helper functions.
 
 ---
 
@@ -251,23 +225,16 @@ Search for `SNIPPET` in generated code to find these:
 
 | File | Purpose |
 |------|---------|
+| `scripts/init-actor-app/index.ts` | Main initialization orchestrator |
+| `scripts/utils/actorSchemaConverter.ts` | Apify → n8n schema conversion |
+| `scripts/utils/codeGenerators.ts` | Generate input/property functions |
+| `scripts/utils/refactorProject.ts` | Rename template → Actor name |
+| `scripts/pre-build/index.ts` | Trim unused functions before build |
+| `scripts/post-build/index.ts` | Restore original files after build |
 | `nodes/ApifyActorTemplate/ApifyActorTemplate.node.ts` | Main node template |
-| `nodes/ApifyActorTemplate/resources/router.ts` | Main router merging all resources |
-| `nodes/ApifyActorTemplate/resources/resource_one/resource.ts` | Resource router merging operations (folder/file dynamically named) |
-| `nodes/ApifyActorTemplate/resources/resource_one/operations/operation_one.ts` | Individual operation file (dynamically named) |
-| `nodes/ApifyActorTemplate/helpers/executeActor.ts` | Actor execution logic |
+| `nodes/ApifyActorTemplate/resources/router.ts` | Main resource router |
 | `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` | API utilities |
-| `scripts/cli.ts` | Main router for all commands |
-| `scripts/utils.ts` | Shared utilities & user input functions |
-| `scripts/types.ts` | Shared TypeScript types |
-| `scripts/init-actor-app/setupProject.ts` | Main orchestrator for init command |
-| `scripts/init-actor-app/actorSchemaConverter.ts` | Schema conversion |
-| `scripts/init-actor-app/actorConfig.ts` | Placeholder generation |
-| `scripts/init-actor-app/refactorProject.ts` | File renaming |
-| `credentials/ApifyApi.credentials.ts` | API key auth |
-| `package.json` | Dependencies & n8n node registration |
-
-**Note**: Files/folders with underscore naming (e.g., `resource_one`, `operation_one`) are dynamically generated based on user input during script execution.
+| `nodes/ApifyActorTemplate/helpers/executeActor.ts` | Actor execution logic |
 
 ---
 
@@ -275,59 +242,26 @@ Search for `SNIPPET` in generated code to find these:
 
 ### Generate a New Node
 ```bash
-npm run create-actor-app
-# Enter Actor ID when prompted
-npm run build
+npm run init-actor-app  # Prompts for Actor ID, operation name
+npm run build           # Optimizes and compiles
+npm run dev             # Test in n8n
 ```
 
 ### Modify Template Behavior
-Edit files in `nodes/ApifyActorTemplate/` - changes will apply to all future generated nodes.
+Edit files in `nodes/ApifyActorTemplate/` - changes apply to all future generated nodes.
 
 ### Change Schema Conversion Logic
-Edit `scripts/actorSchemaConverter.ts` → modify `getPropsForTypeN8n()` function.
+Edit `scripts/utils/actorSchemaConverter.ts` → modify type mappings.
 
-### Modify Polling Behavior
-Edit `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` → modify `pollRunStatus()` function.
-
-### Add Custom API Headers
-Edit `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` → add headers in `apiRequest()` function.
-
----
-
-## Important Notes
-
-### What Gets Regenerated vs. Copied
-
-**Regenerated (not direct copies):**
-- `resources/router.ts` - Main router merging all resources
-- `resources/resource_*/resource.ts` - Resource routers merging operations (folders/files dynamically named)
-- `resources/resource_*/operations/*.ts` - Individual operation files with properties (dynamically named)
-- Generated completely from Actor's input schema and operation count
-- **Note**: The `*` in paths represents dynamically generated names based on user input (e.g., `resource_one`, `operation_one`)
-
-**Copied & modified (placeholders replaced):**
-- `ApifyActorTemplate.node.ts` - Class names and constants updated
-- All helper files - Names and imports updated
-- `ApifyActorTemplate.node.json` - Display name updated
-
-### Template vs. Script Separation
-
-- **Template files** define HOW nodes work (execution logic, API calls, polling)
-- **Generator scripts** create NEW nodes by copying template and customizing it
-- **Never edit generated nodes directly** - edit the template instead, then regenerate
-
-### Testing
-- Test infrastructure exists (Jest + ts-jest) but **no tests written yet**
-- Create tests in `nodes/**/__tests__/**/*.spec.ts`
-- Run with `npm test`
+### Modify Polling/Execution
+Edit `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` → modify `pollRunStatus()` or `executeActorRun()`.
 
 ---
 
 ## Environment
 
-- **Node.js**: v23.11.1 (see `.nvmrc`)
+- **Node.js**: v23.11.1+ (see `.nvmrc`)
 - **Platform**: macOS Darwin 24.6.0
-- **Current Branch**: `feat/repo-simplification`
 - **Working Directory**: `/Users/gokdenizkaymak/apify/n8n-nodes-apify-template`
 
 ---
@@ -339,38 +273,5 @@ Edit `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` → add headers in `
 | n8n-workflow | n8n SDK (INodeType, IExecuteFunctions, etc.) |
 | apify-client | Apify API client for fetching actors |
 | typescript | Compiles .ts → .js |
-| jest + ts-jest | Test framework (no tests yet) |
-| @n8n/node-cli | Dev tooling (`npm run dev`, `npm run lint`) |
-| gulp | Copies icons to dist/ |
-
----
-
-## Troubleshooting
-
-**Generated node doesn't appear in n8n:**
-- Check `package.json` → `n8n.nodes` array includes the compiled path
-- Ensure `npm run build` succeeded
-- Restart n8n
-
-**Actor execution hangs:**
-- Check Actor run status in Apify console
-- Polling interval is 1000ms (1 second)
-- No timeout mechanism exists (known limitation)
-
-**Schema conversion produces wrong properties:**
-- Check Actor's input schema in Apify console
-- Verify type mapping in `scripts/actorSchemaConverter.ts`
-- Add custom handling if needed
-
-**Build fails:**
-- Run `npm install` to update dependencies
-- Check for TypeScript errors in output
-- Verify n8n-workflow version matches
-
----
-
-## Resources
-
-- **n8n Docs**: https://docs.n8n.io/integrations/creating-nodes/
-- **Apify API**: https://docs.apify.com/api/v2
-- **Repository**: https://github.com/apify/n8n-nodes-apify-template
+| chalk | CLI colors |
+| glob | File pattern matching (used in pre-build) |

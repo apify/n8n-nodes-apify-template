@@ -12,6 +12,7 @@ Simply provide an Actor ID, and the script generates a complete n8n community no
 - [Setup](#setup)
   - [Prerequisites](#️-prerequisites)
   - [1. Generate Your Node](#1-generate-your-node)
+  - [Adding More Resources or Operations](#adding-more-resources-or-operations)
   - [2. Customize Your Node](#2-customize-your-node)
     - [Actor schema constants](#actor-schema-constants)
     - [Node icon](#node-icon)
@@ -42,21 +43,35 @@ Install dependencies:
 npm install
 ```
 
-Run the generation script:
+Run the initialization script:
 
 ```bash
-npm run create-actor-app
+npm run init-actor-app
 ```
 
-When prompted, enter your Actor ID. Find this in your Actor's console URL, for example, if your Actor page is `https://console.apify.com/actors/aYG0l9s7dbB7j3gbS/input`, the Actor ID is `aYG0l9s7dbB7j3gbS`.
+When prompted, enter your **Actor ID** - Find this in your Actor's console URL (e.g., if your Actor page is `https://console.apify.com/actors/aYG0l9s7dbB7j3gbS/input`, the Actor ID is `aYG0l9s7dbB7j3gbS`)
 
-The script fetches your Actor's metadata and input schema, generates node files with proper naming, converts Actor input fields into n8n node parameters, and creates all necessary boilerplate code.
+The script will:
+- Fetch your Actor's metadata and input schema from Apify
+- Generate a resource (named after the Actor) with one operation
+- Convert Actor input fields into n8n node properties
+- Create all necessary boilerplate code with proper naming
+- Set up input and property helper functions
 
 Test the generated node:
 
 ```bash
-npm run build
+npm run build  # Automatically optimizes bundle size by including only used functions
 npm run dev
+```
+
+### Adding More Resources or Operations
+
+After initial generation, you can extend your node:
+
+```bash
+npm run add-actor-resource   # Add a new resource (WIP)
+npm run add-actor-operation  # Add an operation to existing resource (WIP)
 ```
 
 ---
@@ -232,6 +247,12 @@ npm run dev
 ```
 
 This launches n8n at `http://localhost:5678` with hot reloading enabled. Changes to your node files automatically refresh.
+
+Build for production:
+
+```bash
+npm run build  # Includes automatic optimization to reduce bundle size
+```
 
 ## Getting help
 

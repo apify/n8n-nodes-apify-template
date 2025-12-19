@@ -48,7 +48,7 @@ function generateRegularGetter(prop: INodeProperties): string {
 
 	// For JSON types, use JSON template
 	if (prop.type === 'json') {
-		const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'jsonGetter.ts.tpl');
+		const templatePath = path.join(__dirname, 'templates', 'functionTemplates', 'jsonGetter.ts.tpl');
 		let template = fs.readFileSync(templatePath, 'utf-8');
 		template = template.replace(/{{PARAM_NAME}}/g, paramName);
 		template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
@@ -56,7 +56,7 @@ function generateRegularGetter(prop: INodeProperties): string {
 	}
 
 	// For regular types, use regular template
-	const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'regularGetter.ts.tpl');
+	const templatePath = path.join(__dirname, 'templates', 'functionTemplates', 'regularGetter.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace(/{{PARAM_NAME}}/g, paramName);
 	template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
@@ -95,7 +95,7 @@ function generateFixedCollectionGetter(prop: INodeProperties): string {
 
 	if (isStringList) {
 		// Use stringList template - extracts string values into simple array
-		const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'stringListGetter.ts.tpl');
+		const templatePath = path.join(__dirname, 'templates', 'functionTemplates', 'stringListGetter.ts.tpl');
 		let template = fs.readFileSync(templatePath, 'utf-8');
 		template = template.replace(/{{PARAM_NAME}}/g, paramName);
 		template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
@@ -115,7 +115,7 @@ function generateFixedCollectionGetter(prop: INodeProperties): string {
 	const arrayReturnType = `${entryType}[]`;
 
 	// Use fixedCollection template - returns array of objects
-	const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'fixedCollectionGetter.ts.tpl');
+	const templatePath = path.join(__dirname, 'templates', 'functionTemplates', 'fixedCollectionGetter.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace(/{{PARAM_NAME}}/g, paramName);
 	template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
@@ -202,7 +202,7 @@ export function generateAllPropertyFunctions(properties: INodeProperties[]): str
 export function generateInputFunctionsFile(nodeDir: string, properties: INodeProperties[]): void {
 	const functionsCode = generateAllGetterFunctions(properties);
 
-	const templatePath = path.join(__dirname, '../templates', 'inputFunctions.ts.tpl');
+	const templatePath = path.join(__dirname, 'templates', 'inputFunctions.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace('{{FUNCTIONS}}', functionsCode);
 
@@ -217,7 +217,7 @@ export function generateInputFunctionsFile(nodeDir: string, properties: INodePro
 export function generatePropertyFunctionsFile(nodeDir: string, properties: INodeProperties[]): void {
 	const functionsCode = generateAllPropertyFunctions(properties);
 
-	const templatePath = path.join(__dirname, '../templates', 'propertyFunctions.ts.tpl');
+	const templatePath = path.join(__dirname, 'templates', 'propertyFunctions.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace('{{FUNCTIONS}}', functionsCode);
 

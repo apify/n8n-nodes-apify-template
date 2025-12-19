@@ -272,7 +272,7 @@ function applyPlaceholders(nodeFilePath: string, values: PlaceholderValues): voi
  * Reset router.ts to empty template
  */
 function resetRouterToTemplate(nodeDir: string): void {
-	const templatePath = path.join(__dirname, '../fileTemplates', 'router.ts.tpl');
+	const templatePath = path.join(__dirname, '../templates', 'router.ts.tpl');
 	const routerPath = path.join(nodeDir, 'resources', 'router.ts');
 
 	const template = fs.readFileSync(templatePath, 'utf-8');
@@ -285,7 +285,7 @@ function resetRouterToTemplate(nodeDir: string): void {
 function generateInputFunctionsFile(nodeDir: string, properties: INodeProperties[]): void {
 	const functionsCode = generateAllGetterFunctions(properties);
 
-	const templatePath = path.join(__dirname, '../fileTemplates', 'inputFunctions.ts.tpl');
+	const templatePath = path.join(__dirname, '../templates', 'inputFunctions.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace('{{FUNCTIONS}}', functionsCode);
 
@@ -300,7 +300,7 @@ function generateInputFunctionsFile(nodeDir: string, properties: INodeProperties
 function generatePropertyFunctionsFile(nodeDir: string, properties: INodeProperties[]): void {
 	const functionsCode = generateAllPropertyFunctions(properties);
 
-	const templatePath = path.join(__dirname, '../fileTemplates', 'propertyFunctions.ts.tpl');
+	const templatePath = path.join(__dirname, '../templates', 'propertyFunctions.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace('{{FUNCTIONS}}', functionsCode);
 
@@ -339,7 +339,7 @@ function generateRegularGetter(prop: INodeProperties): string {
 
 	// For JSON types, use JSON template
 	if (prop.type === 'json') {
-		const templatePath = path.join(__dirname, '../fileTemplates', 'functionTemplates', 'jsonGetter.ts.tpl');
+		const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'jsonGetter.ts.tpl');
 		let template = fs.readFileSync(templatePath, 'utf-8');
 		template = template.replace(/{{PARAM_NAME}}/g, paramName);
 		template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
@@ -347,7 +347,7 @@ function generateRegularGetter(prop: INodeProperties): string {
 	}
 
 	// For regular types, use regular template
-	const templatePath = path.join(__dirname, '../fileTemplates', 'functionTemplates', 'regularGetter.ts.tpl');
+	const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'regularGetter.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace(/{{PARAM_NAME}}/g, paramName);
 	template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
@@ -377,7 +377,7 @@ function generateFixedCollectionGetter(prop: INodeProperties): string {
 	const arrayReturnType = `${entryType}[]`;
 
 	// Use template
-	const templatePath = path.join(__dirname, '../fileTemplates', 'functionTemplates', 'fixedCollectionGetter.ts.tpl');
+	const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'fixedCollectionGetter.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace(/{{PARAM_NAME}}/g, paramName);
 	template = template.replace(/{{FUNCTION_NAME}}/g, functionName);

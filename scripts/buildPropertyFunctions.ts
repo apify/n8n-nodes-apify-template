@@ -48,7 +48,7 @@ export async function generatePropertyFunctions(actorId: string): Promise<void> 
 	const functionsCode = generateAllPropertyFunctions(n8nProperties);
 
 	// Read template and replace placeholder
-	const templatePath = path.join(__dirname, 'fileTemplates', 'propertyFunctions.ts.tpl');
+	const templatePath = path.join(__dirname, 'templates', 'propertyFunctions.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 	template = template.replace('{{FUNCTIONS}}', functionsCode);
 

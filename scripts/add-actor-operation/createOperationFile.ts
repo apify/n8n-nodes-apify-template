@@ -128,7 +128,7 @@ export async function createOperationFile(
 	console.log(chalk.cyan('📝 Creating operation file...'));
 
 	// Read the template
-	const templatePath = path.join(__dirname, '../fileTemplates', 'operation.ts.tpl');
+	const templatePath = path.join(__dirname, '../templates', 'operation.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 
 	// Parse input functions from the helpers directory

@@ -1,8 +1,7 @@
 import { IExecuteFunctions, INodeExecutionData, INodeProperties, INodePropertyOptions } from 'n8n-workflow';
 import { executeActorRun } from '../../../helpers/genericFunctions';
 import { ACTOR_ID } from '../../../ApifyActorTemplate.node';
-import * as inputFunctions from '../../../helpers/inputFunctions';
-{{PROPERTY_FUNCTION_IMPORTS}}
+{{INPUT_FUNCTIONS_IMPORT}}{{PROPERTY_FUNCTION_IMPORTS}}
 
 export const {{OPERATION_NAME_CONST}} = '{{OPERATION_NAME}}';
 export const name = {{OPERATION_NAME_CONST}};

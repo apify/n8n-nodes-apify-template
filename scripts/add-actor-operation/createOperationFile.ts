@@ -75,8 +75,15 @@ function generatePropertyFunctions(
 	const n8nProperties = convertApifyToN8n(inputSchema);
 
 	// Filter to only required properties
-	const requiredProperties = n8nProperties.filter(prop => prop.required === true);
+	let requiredProperties = n8nProperties.filter(prop => prop.required === true);
 	const optionalProperties = n8nProperties.filter(prop => !prop.required);
+
+	// If no required properties, include at least the first 3 optional properties
+	if (requiredProperties.length === 0 && optionalProperties.length > 0) {
+		const minPropertiesToInclude = Math.min(3, optionalProperties.length);
+		requiredProperties = optionalProperties.slice(0, minPropertiesToInclude);
+		console.log(chalk.yellow(`   ⚠️  No required properties found. Including first ${minPropertiesToInclude} optional properties.`));
+	}
 
 	// Get the names of required properties
 	const requiredPropertyNames = requiredProperties.map(prop => prop.name);
@@ -151,12 +158,18 @@ export async function createOperationFile(
 	const inputFunctionCalls = generateInputFunctionCalls(functionNames, requiredPropertyNames);
 	const actorInputProperties = generateActorInputProperties(functionNames, requiredPropertyNames);
 
+	// Only include inputFunctions import if there are properties to get
+	const inputFunctionsImport = requiredPropertyNames.length > 0
+		? "import * as inputFunctions from '../../../helpers/inputFunctions';\n"
+		: '';
+
 	// Replace all placeholders
 	template = template
 		.replace(/\{\{OPERATION_NAME_CONST\}\}/g, operationConstName)
 		.replace(/\{\{OPERATION_NAME\}\}/g, operationName)
 		.replace(/\{\{OPERATION_ACTION\}\}/g, operationName)
 		.replace(/\{\{OPERATION_DESCRIPTION\}\}/g, operationDescription)
+		.replace(/\{\{INPUT_FUNCTIONS_IMPORT\}\}/g, inputFunctionsImport)
 		.replace(/\{\{PROPERTY_FUNCTION_IMPORTS\}\}/g, propertyFunctionImports)
 		.replace(/\{\{PROPERTY_FUNCTION_CALLS\}\}/g, propertyFunctionCalls)
 		.replace(/\{\{INPUT_FUNCTION_CALLS\}\}/g, inputFunctionCalls)

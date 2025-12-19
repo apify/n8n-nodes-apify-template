@@ -1,6 +1,6 @@
 import fs from 'fs';
 import type { Actor } from 'apify-client';
-import { PACKAGE_NAME_PREFIX, packageNameCheck } from './utils.ts';
+import { PACKAGE_NAME_PREFIX, packageNameCheck } from '../utils.ts';
 
 export interface PlaceholderValues {
     PACKAGE_NAME: string;

@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { ApifyClient } from 'apify-client';
 import { convertApifyToN8n } from './actorSchemaConverter.ts';
-import { type ApifyInputSchema } from './types.ts';
+import { type ApifyInputSchema } from '../types.ts';
 import type { INodeProperties } from 'n8n-workflow';
 
 

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import chalk from 'chalk';
-import { type ApifyInputField, type ApifyInputSchema } from './types.ts';
+import { type ApifyInputField, type ApifyInputSchema } from '../types.ts';
 import type { INodeProperties } from 'n8n-workflow';
 import type { Actor, ApifyClient } from 'apify-client';
 

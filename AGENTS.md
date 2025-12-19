@@ -14,11 +14,13 @@ This is a **generator repository** that creates n8n community nodes from Apify A
 ## Quick Commands
 
 ```bash
-npm run create-actor-app  # Generate a new node from an Actor ID
-npm run build             # Compile TypeScript + copy icons
-npm run dev               # Run n8n locally with hot reload
-npm test                  # Run tests (none exist yet)
-npm run lint              # Check code quality
+npm run init-actor-app       # Initialize a new Actor app from scratch
+npm run add-actor-resource   # Add a new resource to existing Actor (WIP)
+npm run add-actor-operation  # Add a new operation to existing resource (WIP)
+npm run build                # Compile TypeScript + copy icons
+npm run dev                  # Run n8n locally with hot reload
+npm test                     # Run tests (none exist yet)
+npm run lint                 # Check code quality
 ```
 
 ---
@@ -74,9 +76,40 @@ These files serve as the blueprint for all generated nodes:
 
 Location: `scripts/`
 
-### Main Flow
+### Script Structure
+
+The scripts are organized into three command folders:
+
+```
+scripts/
+├── cli.ts                      # Main router that handles command routing
+├── utils.ts                    # Shared utilities and user input functions
+├── types.ts                    # Shared TypeScript types
+├── init-actor-app/            # Initialize new Actor app
+│   ├── setupProject.ts        # Main orchestrator
+│   ├── actorConfig.ts         # Placeholder generation
+│   ├── actorSchemaConverter.ts # Schema conversion
+│   ├── createActorApp.ts      # Actor metadata fetching
+│   ├── generateOperations.ts  # Operations structure generation
+│   └── refactorProject.ts     # File renaming
+├── add-actor-resource/        # Add new resource (WIP)
+│   └── index.ts
+└── add-actor-operation/       # Add new operation (WIP)
+    └── index.ts
+```
+
+**IMPORTANT**: All user input functions MUST be in `utils.ts`. This includes:
+- `askForInput()` - Generic input prompt
+- `askForActorId()` - Ask for Actor ID
+- `askForOperationCount()` - Ask for operation count with validation
+- `packageNameCheck()` - Validate and check npm package availability
+
+Never create readline/input prompts in individual script files. Always use or extend the functions in `utils.ts`.
+
+### Main Flow: init-actor-app
+
 **`setupProject.ts`** - Orchestrates the entire generation process:
-1. Prompts user for Actor ID and operation count
+1. Prompts user for Actor ID and operation count (via `utils.ts` functions)
 2. Calls `setConfig()` to create placeholder values
 3. Calls `generateOperationsStructure()` to create resources/operations structure
 4. Calls `refactorProject()` to rename files/folders
@@ -126,11 +159,13 @@ Location: `scripts/`
 ## Generation Flow
 
 ```
-User runs: npm run create-actor-app
+User runs: npm run init-actor-app
       ↓
-Prompt for Actor ID (e.g., "apify/instagram-scraper")
+cli.ts routes to 'init' command
       ↓
-Prompt for operation count (1-10, default 2)
+Prompt for Actor ID (e.g., "apify/instagram-scraper") via askForActorId()
+      ↓
+Prompt for operation count (1-10, default 1) via askForOperationCount()
       ↓
 Fetch Actor metadata via ApifyClient
       ↓
@@ -222,10 +257,13 @@ Search for `SNIPPET` in generated code to find these:
 | `nodes/ApifyActorTemplate/resources/resource_one/operations/operation_one.ts` | Individual operation file (dynamically named) |
 | `nodes/ApifyActorTemplate/helpers/executeActor.ts` | Actor execution logic |
 | `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` | API utilities |
-| `scripts/setupProject.ts` | Main orchestrator |
-| `scripts/actorSchemaConverter.ts` | Schema conversion |
-| `scripts/actorConfig.ts` | Placeholder generation |
-| `scripts/refactorProject.ts` | File renaming |
+| `scripts/cli.ts` | Main router for all commands |
+| `scripts/utils.ts` | Shared utilities & user input functions |
+| `scripts/types.ts` | Shared TypeScript types |
+| `scripts/init-actor-app/setupProject.ts` | Main orchestrator for init command |
+| `scripts/init-actor-app/actorSchemaConverter.ts` | Schema conversion |
+| `scripts/init-actor-app/actorConfig.ts` | Placeholder generation |
+| `scripts/init-actor-app/refactorProject.ts` | File renaming |
 | `credentials/ApifyApi.credentials.ts` | API key auth |
 | `package.json` | Dependencies & n8n node registration |
 

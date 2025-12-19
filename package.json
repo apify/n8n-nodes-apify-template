@@ -31,7 +31,9 @@
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
 		"merge:api": "npx openapi-merge-cli --config ./openapi.config.json",
-		"create-actor-app": "npx tsx scripts/cli.ts"
+		"init-actor-app": "npx tsx scripts/cli.ts init",
+		"add-actor-resource": "npx tsx scripts/cli.ts add-resource",
+		"add-actor-operation": "npx tsx scripts/cli.ts add-operation"
 	},
 	"files": [
 		"dist"

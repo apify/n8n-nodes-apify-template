@@ -1,7 +1,7 @@
 import { ApifyClient } from 'apify-client';
 import { refactorProject } from './refactorProject.ts';
 import { setConfig } from './actorConfig.ts';
-import * as readline from 'readline';
+import { askForActorId, askForOperationCount } from '../utils.ts';
 
 // Targets (old names)
 const TARGET_CLASS_NAME = 'ApifyActorTemplate';
@@ -12,45 +12,6 @@ const X_PLATFORM_HEADER_ID = 'n8n';
 
 // Path where constants should be replaced
 const NODE_FILE_PATH = `./nodes/${TARGET_CLASS_NAME}/${TARGET_CLASS_NAME}.node.ts`;
-
-function askForActorId(): Promise<string> {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
-    return new Promise((resolve) => {
-        rl.question('👉 Please enter the ACTOR_ID: ', (answer) => {
-            rl.close();
-            resolve(answer.trim());
-        });
-    });
-}
-
-function askForOperationCount(): Promise<number> {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-
-    return new Promise((resolve) => {
-        rl.question('👉 How many operations? (1-10, default 1): ', (answer) => {
-            rl.close();
-            const trimmed = answer.trim();
-            if (!trimmed) {
-                resolve(1); // Default to 1
-                return;
-            }
-            const count = parseInt(trimmed, 10);
-            if (isNaN(count) || count < 1 || count > 10) {
-                console.log('⚠️  Invalid number. Defaulting to 1.');
-                resolve(1);
-            } else {
-                resolve(count);
-            }
-        });
-    });
-}
 
 export async function setupProject() {
     // Ask user for ACTOR_ID

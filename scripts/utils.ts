@@ -1,6 +1,50 @@
-import prompts from 'prompts';
+import * as readline from 'readline';
 
 export const PACKAGE_NAME_PREFIX = "n8n-nodes-apify"
+
+/**
+ * Generic function to ask for user input
+ */
+export function askForInput(question: string): Promise<string> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    return new Promise((resolve) => {
+        rl.question(question, (answer) => {
+            rl.close();
+            resolve(answer.trim());
+        });
+    });
+}
+
+/**
+ * Ask user for Actor ID
+ */
+export async function askForActorId(): Promise<string> {
+    return askForInput('👉 Please enter the ACTOR_ID: ');
+}
+
+/**
+ * Ask user for operation count with validation
+ */
+export async function askForOperationCount(defaultValue: number = 1): Promise<number> {
+    const answer = await askForInput(`👉 How many operations? (1-10, default ${defaultValue}): `);
+
+    const trimmed = answer.trim();
+    if (!trimmed) {
+        return defaultValue;
+    }
+
+    const count = parseInt(trimmed, 10);
+    if (isNaN(count) || count < 1 || count > 10) {
+        console.log(`⚠️  Invalid number. Defaulting to ${defaultValue}.`);
+        return defaultValue;
+    }
+
+    return count;
+}
 
 export async function packageNameCheck(initialName: string): Promise<string> {
     let packageName = initialName;
@@ -21,23 +65,22 @@ export async function packageNameCheck(initialName: string): Promise<string> {
         }
 
         // 3. Ask for another suffix (make prefix clear)
-        const response = await prompts({
-            type: 'text',
-            name: 'userValue',
-            message: `Choose a new package name. ${PACKAGE_NAME_PREFIX}-`,
-            format: (value) => `${PACKAGE_NAME_PREFIX}-${value}`,
-            validate: (value) => {
-                const candidate = `${PACKAGE_NAME_PREFIX}-${value}`;
-                return validatePackageName(candidate) || 'Invalid package name format';
-            },
-        });
+        const userValue = await askForInput(`Choose a new package name suffix (${PACKAGE_NAME_PREFIX}-): `);
 
-        // Handle CTRL + C
-        if (!response.userValue) {
-            process.exit(0);
+        // Handle empty input or CTRL + C
+        if (!userValue) {
+            console.log('⚠️  Package name is required.');
+            continue;
         }
 
-        packageName = response.userValue; // already formatted with prefix
+        packageName = `${PACKAGE_NAME_PREFIX}-${userValue}`;
+
+        // Validate the new package name format
+        if (!validatePackageName(packageName)) {
+            console.log(`❌ "${packageName}" is not a valid npm package name format.`);
+            continue;
+        }
+
         console.log(`👉 Trying package name: ${packageName}`);
     }
 }

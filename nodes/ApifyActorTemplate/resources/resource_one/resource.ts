@@ -17,12 +17,36 @@ import {
 	properties as operation2Properties,
 	execute as executeOperation2,
 } from './operations/operation_two';
+import {
+	OPERATION_ANANZAAAAA_NAME,
+	option as ananzaaaaaOption,
+	properties as ananzaaaaaProperties,
+	execute as executeAnanzaaaaa,
+} from './operations/ananzaaaaa';
+import {
+	OPERATION_XS_NAME,
+	option as xsOption,
+	properties as xsProperties,
+	execute as executeXs,
+} from './operations/xs';
+import {
+	OPERATION_AKLSDL_NAME,
+	option as aklsdlOption,
+	properties as aklsdlProperties,
+	execute as executeAklsdl,
+} from './operations/aklsdl';
+import {
+	OPERATION_SX_NAME,
+	option as sxOption,
+	properties as sxProperties,
+	execute as executeSx,
+} from './operations/sx';
 
 // Resource name constant
 export const RESOURCE_NAME = '$$RESOURCE_NAME';
 
 // Collect all operations for this resource
-const operations: INodePropertyOptions[] = [operation1Option, operation2Option];
+const operations: INodePropertyOptions[] = [operation1Option, operation2Option, ananzaaaaaOption, xsOption, aklsdlOption, sxOption];
 
 // Resource option for the resource selector
 export const resourceOption: INodePropertyOptions = {
@@ -50,6 +74,10 @@ export const properties: INodeProperties[] = [
 	operationSelect,
 	...operation1Properties,
 	...operation2Properties,
+	...ananzaaaaaProperties,
+	...xsProperties,
+	...aklsdlProperties,
+	...sxProperties,
 ];
 
 // Router for this resource
@@ -64,6 +92,14 @@ export async function router(
 			return await executeOperation1.call(this, i);
 		case OPERATION_2_NAME:
 			return await executeOperation2.call(this, i);
+				case OPERATION_ANANZAAAAA_NAME:
+			return await executeAnanzaaaaa.call(this, i);
+				case OPERATION_XS_NAME:
+			return await executeXs.call(this, i);
+				case OPERATION_AKLSDL_NAME:
+			return await executeAklsdl.call(this, i);
+				case OPERATION_SX_NAME:
+			return await executeSx.call(this, i);
 		default:
 			throw new NodeOperationError(
 				this.getNode(),

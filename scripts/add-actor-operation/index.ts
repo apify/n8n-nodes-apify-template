@@ -3,11 +3,13 @@ import * as path from 'path';
 import {
 	getActorIdFromPackageJson,
 	askForOperationName,
+	askForOperationDescription,
 	getResourcesList,
 	askForResourceSelection,
 } from '../utils.ts';
 import { fetchActorInputSchema } from '../buildInputFunctions.ts';
 import type { ApifyInputSchema } from '../types.ts';
+import { createOperationFile, updateResourceFile } from './createOperationFile.ts';
 
 export async function addActorOperation() {
 	console.log(chalk.cyan.bold('\n🔧 Add Actor Operation\n'));
@@ -53,22 +55,47 @@ export async function addActorOperation() {
 	// Step 4: Ask for operation name with validation
 	console.log(chalk.cyan('✏️  Step 4: Operation details...'));
 	const { name: operationName, key: operationKey } = await askForOperationName(nodeDir);
-
 	console.log(chalk.green(`✔ Operation name: ${chalk.bold(operationName)} (${operationKey})\n`));
 
-	// Step 5: Use all properties
+	// Step 5: Ask for operation description
+	const operationDescription = await askForOperationDescription();
+	console.log(chalk.green(`✔ Description: ${chalk.bold(operationDescription)}\n`));
+
+	// Step 6: Use all properties
 	const selectedProperties = Object.keys(inputSchema.properties);
-	console.log(chalk.cyan(`📋 Step 5: Using all ${selectedProperties.length} properties from Actor schema\n`));
+	console.log(chalk.cyan(`📋 Step 6: Using all ${selectedProperties.length} properties from Actor schema\n`));
 
-	// Success summary
-	console.log(chalk.green.bold('\n✅ Configuration complete!\n'));
-	console.log(chalk.cyan('Summary:'));
-	console.log(chalk.gray(`   Actor ID: ${actorId}`));
-	console.log(chalk.gray(`   Operation: ${operationName} (${operationKey})`));
-	console.log(chalk.gray(`   Resource: ${selectedResource}`));
-	console.log(chalk.gray(`   Properties: ${selectedProperties.length} selected`));
-	console.log('');
+	// Step 7: Generate operation file
+	console.log(chalk.cyan('🚀 Step 7: Generating operation files...\n'));
 
-	// TODO: Generate operation file
-	console.log(chalk.yellow('🚧 Next step: Generate operation file (coming soon)...\n'));
+	try {
+		const resourcePath = path.join(nodeDir, 'resources', selectedResource);
+
+		// Create the operation file
+		await createOperationFile(
+			resourcePath,
+			operationName,
+			operationKey,
+			operationDescription,
+			inputSchema,
+			nodeDir,
+		);
+
+		// Update the resource.ts file
+		await updateResourceFile(resourcePath, operationName, operationKey);
+
+		// Success summary
+		console.log(chalk.green.bold('\n✅ Operation added successfully!\n'));
+		console.log(chalk.cyan('Summary:'));
+		console.log(chalk.gray(`   Actor ID: ${actorId}`));
+		console.log(chalk.gray(`   Operation: ${operationName} (${operationKey})`));
+		console.log(chalk.gray(`   Resource: ${selectedResource}`));
+		console.log(chalk.gray(`   Description: ${operationDescription}`));
+		console.log(chalk.gray(`   Properties: ${selectedProperties.length} from Actor schema`));
+		console.log(chalk.gray(`   File: nodes/ApifyActorTemplate/resources/${selectedResource}/operations/${operationKey}.ts`));
+		console.log('');
+	} catch (err) {
+		console.log(chalk.red('\n❌ Failed to generate operation files:'), err);
+		process.exit(1);
+	}
 }

@@ -262,6 +262,14 @@ export async function askForOperationName(nodeDir: string): Promise<{ name: stri
 }
 
 /**
+ * Ask user for operation description
+ */
+export async function askForOperationDescription(): Promise<string> {
+    const description = await askForInput('👉 Enter operation description (optional, press Enter to skip): ');
+    return description.trim() || 'Execute this operation';
+}
+
+/**
  * Get list of available resources by scanning the resources folder
  */
 export function getResourcesList(nodeDir: string): string[] {

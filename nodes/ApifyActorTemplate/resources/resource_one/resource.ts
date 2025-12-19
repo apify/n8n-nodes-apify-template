@@ -10,7 +10,7 @@ import {
 	option as operation1Option,
 	properties as operation1Properties,
 	execute as executeOperation1,
-} from './operations/operation_one';
+} from './operations/operationOne';
 import {
 	OPERATION_2_NAME,
 	option as operation2Option,

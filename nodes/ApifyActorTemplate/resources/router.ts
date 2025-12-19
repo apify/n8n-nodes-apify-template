@@ -13,7 +13,7 @@ import {
 
 // Re-export resource and operation names for backward compatibility
 export const RESOURCE_NAME = RESOURCE_1_NAME;
-export { OPERATION_1_NAME } from './resource_one/operations/operation_one';
+export { OPERATION_1_NAME } from './resource_one/operations/operationOne';
 export { OPERATION_2_NAME } from './resource_one/operations/operation_two'
 
 // Resource selector with all resources

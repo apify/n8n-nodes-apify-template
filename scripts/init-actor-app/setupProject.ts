@@ -2,6 +2,8 @@ import { ApifyClient } from 'apify-client';
 import { refactorProject } from './refactorProject.ts';
 import { setConfig } from './actorConfig.ts';
 import { askForActorId, askForOperationCount } from '../utils.ts';
+import * as fs from 'fs';
+import * as path from 'path';
 
 // Targets (old names)
 const TARGET_CLASS_NAME = 'ApifyActorTemplate';
@@ -56,6 +58,14 @@ export async function setupProject() {
         TARGET_PACKAGE_NAME,
         values.PACKAGE_NAME,
     );
+
+    // Step 4: Save Actor ID to package.json
+    const packageJsonPath = path.join(process.cwd(), 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+    packageJson.apify = {
+        actorId: actorId,
+    };
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, '\t') + '\n', 'utf-8');
 
     console.log('🎉 Project setup complete!');
 }

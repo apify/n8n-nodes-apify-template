@@ -7,26 +7,43 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /**
+ * Fetch Actor input schema from Apify API
+ * This is a reusable utility function to avoid duplicating fetch logic
+ */
+export async function fetchActorInputSchema(actorId: string): Promise<ApifyInputSchema> {
+	const client = new ApifyClient();
+
+	// Fetch Actor
+	const actor = await client.actor(actorId).get();
+	if (!actor) {
+		throw new Error(`Actor with ID ${actorId} not found`);
+	}
+
+	// Get default build
+	const defaultBuild = actor.defaultRunOptions?.build || 'latest';
+	const buildId = actor.taggedBuilds?.[defaultBuild]?.buildId;
+	if (!buildId) {
+		throw new Error(`Build not found for Actor ${actorId}`);
+	}
+
+	// Fetch build
+	const build = await client.build(buildId).get();
+	if (!build?.actorDefinition?.input) {
+		throw new Error('No input schema found in build');
+	}
+
+	return build.actorDefinition.input as ApifyInputSchema;
+}
+
+/**
  * Generate TypeScript getter functions for n8n node parameters from an Actor ID
  */
 export async function generateInputFunctions(actorId: string): Promise<void> {
 	console.log(chalk.cyan('🧪 Input Functions Generator'));
 	console.log(`${chalk.blue('Actor ID:')} ${actorId}\n`);
 
-	const client = new ApifyClient();
-
-	// Fetch Actor and build
-	const actor = await client.actor(actorId).get();
-	if (!actor) throw new Error(`Actor with ID ${actorId} not found`);
-
-	const defaultBuild = actor.defaultRunOptions?.build || 'latest';
-	const buildId = actor.taggedBuilds?.[defaultBuild]?.buildId;
-	if (!buildId) throw new Error(`Build not found`);
-
-	const build = await client.build(buildId).get();
-	if (!build?.actorDefinition?.input) throw new Error('No input schema found');
-
-	const inputSchema = build.actorDefinition.input as ApifyInputSchema;
+	// Fetch Actor input schema using shared utility
+	const inputSchema = await fetchActorInputSchema(actorId);
 	const n8nProperties = convertApifyToN8n(inputSchema);
 
 	console.log(`${chalk.green('✔')} Found ${n8nProperties.length} parameters`);

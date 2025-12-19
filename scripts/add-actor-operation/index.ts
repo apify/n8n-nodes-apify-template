@@ -1,7 +1,74 @@
 import chalk from 'chalk';
+import * as path from 'path';
+import {
+	getActorIdFromPackageJson,
+	askForOperationName,
+	getResourcesList,
+	askForResourceSelection,
+} from '../utils.ts';
+import { fetchActorInputSchema } from '../buildInputFunctions.ts';
+import type { ApifyInputSchema } from '../types.ts';
 
 export async function addActorOperation() {
-	console.log(chalk.cyan('🔧 Add Actor Operation'));
-	console.log(chalk.yellow('This command will allow you to add a new operation to an existing resource.'));
-	console.log(chalk.gray('Implementation coming soon...'));
+	console.log(chalk.cyan.bold('\n🔧 Add Actor Operation\n'));
+
+	// Step 1: Get Actor ID from package.json
+	console.log(chalk.cyan('📦 Step 1: Reading Actor ID from package.json...'));
+	const actorId = getActorIdFromPackageJson();
+
+	if (!actorId) {
+		console.log(chalk.red('❌ No Actor ID found in package.json.'));
+		console.log(chalk.yellow('   Please run "npm run init-actor-app" first to initialize an Actor app.\n'));
+		process.exit(1);
+	}
+
+	console.log(chalk.green(`✔ Found Actor ID: ${chalk.bold(actorId)}\n`));
+
+	// Step 2: Fetch Actor schema from Apify API
+	console.log(chalk.cyan('🌐 Step 2: Fetching Actor input schema from Apify...'));
+
+	let inputSchema: ApifyInputSchema;
+	try {
+		inputSchema = await fetchActorInputSchema(actorId);
+		console.log(chalk.green(`✔ Fetched input schema with ${Object.keys(inputSchema.properties).length} properties\n`));
+	} catch (err) {
+		console.log(chalk.red('❌ Failed to fetch Actor schema:'), err);
+		process.exit(1);
+	}
+
+	// Step 3: Select resource
+	console.log(chalk.cyan('📁 Step 3: Selecting target resource...'));
+	const nodeDir = path.join(process.cwd(), 'nodes', 'ApifyActorTemplate');
+	const resources = getResourcesList(nodeDir);
+
+	if (resources.length === 0) {
+		console.log(chalk.red('❌ No resources found.'));
+		console.log(chalk.yellow('   Please run "npm run init-actor-app" first to initialize an Actor app.\n'));
+		process.exit(1);
+	}
+
+	const selectedResource = await askForResourceSelection(resources);
+	console.log(chalk.green(`✔ Selected resource: ${chalk.bold(selectedResource)}\n`));
+
+	// Step 4: Ask for operation name with validation
+	console.log(chalk.cyan('✏️  Step 4: Operation details...'));
+	const { name: operationName, key: operationKey } = await askForOperationName(nodeDir);
+
+	console.log(chalk.green(`✔ Operation name: ${chalk.bold(operationName)} (${operationKey})\n`));
+
+	// Step 5: Use all properties
+	const selectedProperties = Object.keys(inputSchema.properties);
+	console.log(chalk.cyan(`📋 Step 5: Using all ${selectedProperties.length} properties from Actor schema\n`));
+
+	// Success summary
+	console.log(chalk.green.bold('\n✅ Configuration complete!\n'));
+	console.log(chalk.cyan('Summary:'));
+	console.log(chalk.gray(`   Actor ID: ${actorId}`));
+	console.log(chalk.gray(`   Operation: ${operationName} (${operationKey})`));
+	console.log(chalk.gray(`   Resource: ${selectedResource}`));
+	console.log(chalk.gray(`   Properties: ${selectedProperties.length} selected`));
+	console.log('');
+
+	// TODO: Generate operation file
+	console.log(chalk.yellow('🚧 Next step: Generate operation file (coming soon)...\n'));
 }

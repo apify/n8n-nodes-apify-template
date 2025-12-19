@@ -91,10 +91,10 @@ function generatePropertyFunctions(
 		? `import {\n\t${importFunctions.join(',\n\t')}\n} from '../../../helpers/propertyFunctions';`
 		: '';
 
-	// Generate function calls
+	// Generate function calls (with resourceName parameter instead of RESOURCE_NAME constant)
 	const propertyFunctionCalls = requiredProperties.map(prop => {
 		const functionName = `get${capitalizeFirst(prop.name)}Property`;
-		return `\t${functionName}(RESOURCE_NAME, ${operationConstName}),`;
+		return `\t\t${functionName}(resourceName, ${operationConstName}),`;
 	}).join('\n');
 
 	return {
@@ -195,14 +195,15 @@ export async function updateResourceFile(
 	// 1. Add import statement after the last operation import
 	const lastImportRegex = /import \{[^}]+\} from '\.\/operations\/[^']+';/g;
 	const imports = content.match(lastImportRegex);
+	const capitalizedOperationKey = operationKey.charAt(0).toUpperCase() + operationKey.slice(1);
 
 	if (imports && imports.length > 0) {
 		const lastImport = imports[imports.length - 1];
 		const newImport = `import {
 	${operationConstName},
 	option as ${operationKey}Option,
-	properties as ${operationKey}Properties,
-	execute as execute${operationKey.charAt(0).toUpperCase() + operationKey.slice(1)},
+	getProperties as get${capitalizedOperationKey}Properties,
+	execute as execute${capitalizedOperationKey},
 } from './operations/${operationKey}';`;
 
 		content = content.replace(lastImport, `${lastImport}\n${newImport}`);
@@ -220,14 +221,27 @@ export async function updateResourceFile(
 		content = content.replace(operationsArrayRegex, `const operations: INodePropertyOptions[] = [${newOperations}];`);
 	}
 
-	// 3. Add operation properties to properties array
-	const propertiesArrayRegex = /export const properties: INodeProperties\[\] = \[([\s\S]*?)\];/;
+	// 3. Add getProperties call before the properties array and add to properties array
+	const propertiesArrayRegex = /(\/\/ Get operation properties with resource name injected[\s\S]*?)(\/\/ All properties for this resource[\s\S]*?export const properties: INodeProperties\[\] = \[)([\s\S]*?)(\];)/;
 	const propertiesMatch = content.match(propertiesArrayRegex);
 
 	if (propertiesMatch) {
-		const currentProperties = propertiesMatch[1];
+		const getPropertiesSection = propertiesMatch[1];
+		const propertiesComment = propertiesMatch[2];
+		const currentProperties = propertiesMatch[3];
+		const closingBracket = propertiesMatch[4];
+
+		// Add new getProperties call
+		const newGetPropertiesCall = `const ${operationKey}Properties = get${capitalizedOperationKey}Properties(RESOURCE_NAME);\n`;
+		const updatedGetPropertiesSection = getPropertiesSection + newGetPropertiesCall;
+
+		// Add to properties array
 		const newProperties = `${currentProperties.trimEnd()}\n\t...${operationKey}Properties,`;
-		content = content.replace(propertiesArrayRegex, `export const properties: INodeProperties[] = [${newProperties}\n];`);
+
+		content = content.replace(
+			propertiesArrayRegex,
+			`${updatedGetPropertiesSection}\n${propertiesComment}${newProperties}\n${closingBracket}`
+		);
 	}
 
 	// 4. Add case to switch statement

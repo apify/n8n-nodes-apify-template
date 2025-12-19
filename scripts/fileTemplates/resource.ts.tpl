@@ -8,7 +8,7 @@ import {
 import {
 	{{OPERATION_NAME_CONST}},
 	option as {{OPERATION_KEY}}Option,
-	properties as {{OPERATION_KEY}}Properties,
+	getProperties as get{{OPERATION_KEY_CAPITALIZED}}Properties,
 	execute as execute{{OPERATION_KEY_CAPITALIZED}},
 } from './operations/{{OPERATION_KEY}}';
 
@@ -38,6 +38,9 @@ export const operationSelect: INodeProperties = {
 	default: operations.length > 0 ? operations[0].value : '',
 	options: operations,
 };
+
+// Get operation properties with resource name injected
+const {{OPERATION_KEY}}Properties = get{{OPERATION_KEY_CAPITALIZED}}Properties(RESOURCE_NAME);
 
 // All properties for this resource (operation selector + operation properties)
 export const properties: INodeProperties[] = [

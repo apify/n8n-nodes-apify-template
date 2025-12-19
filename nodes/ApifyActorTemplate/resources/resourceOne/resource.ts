@@ -16,7 +16,7 @@ import {
 	option as operation2Option,
 	properties as operation2Properties,
 	execute as executeOperation2,
-} from './operations/operation_two';
+} from './operations/operationTwo';
 
 // Resource name constant
 export const RESOURCE_NAME = '$$RESOURCE_NAME';

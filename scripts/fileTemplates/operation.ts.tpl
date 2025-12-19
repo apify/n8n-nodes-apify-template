@@ -1,7 +1,6 @@
 import { IExecuteFunctions, INodeExecutionData, INodeProperties, INodePropertyOptions } from 'n8n-workflow';
 import { executeActorRun } from '../../../helpers/genericFunctions';
 import { ACTOR_ID } from '../../../ApifyActorTemplate.node';
-import { RESOURCE_NAME } from '../resource';
 import * as inputFunctions from '../../../helpers/inputFunctions';
 {{PROPERTY_FUNCTION_IMPORTS}}
 
@@ -15,12 +14,11 @@ export const option: INodePropertyOptions = {
 	description: '{{OPERATION_DESCRIPTION}}',
 };
 
-// NOTE: Only required properties are included by default.
-// To add optional properties, import the property function from propertyFunctions.ts
-// and add it to the properties array below.
-export const properties: INodeProperties[] = [
+export function getProperties(resourceName: string): INodeProperties[] {
+	return [
 {{PROPERTY_FUNCTION_CALLS}}
-];
+	];
+}
 
 export async function execute(this: IExecuteFunctions, i: number): Promise<INodeExecutionData> {
 	// Get required input parameters by default

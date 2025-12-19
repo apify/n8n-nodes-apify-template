@@ -98,11 +98,15 @@ function generatePropertyFunction(prop: INodeProperties): string {
 	// Remove any existing displayOptions from the property
 	const { displayOptions, ...propWithoutDisplayOptions } = prop;
 
-	// Serialize the property to JSON and format it
-	const propJson = JSON.stringify(propWithoutDisplayOptions, null, '\t\t')
-		.split('\n')
-		.map((line, index) => index === 0 ? '\t\t' + line : '\t' + line)
-		.join('\n');
+	// Serialize property without displayOptions, with proper indentation
+	const propJson = JSON.stringify(propWithoutDisplayOptions, null, '\t');
+
+	// Remove the outer braces and add proper indentation
+	const lines = propJson.split('\n');
+	// Remove first line (opening brace) and last line (closing brace)
+	const contentLines = lines.slice(1, -1);
+	// Add extra tab for indentation inside return statement
+	const indentedContent = contentLines.map(line => '\t\t' + line).join('\n');
 
 	// Build JSDoc comment
 	const jsdoc = `/**\n * Property definition for ${prop.name}\n */`;
@@ -112,7 +116,7 @@ function generatePropertyFunction(prop: INodeProperties): string {
 		jsdoc,
 		`export function ${functionName}(resourceName: string, operationName: string): INodeProperties {`,
 		`\treturn {`,
-		`${propJson.trim().slice(1, -1)},`, // Remove outer braces from JSON
+		indentedContent + ',',
 		`\t\tdisplayOptions: {`,
 		`\t\t\tshow: {`,
 		`\t\t\t\tresource: [resourceName],`,

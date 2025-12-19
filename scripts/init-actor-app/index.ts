@@ -7,9 +7,9 @@ import { PlaceholderValues } from './actorConfig.ts';
 import { convertApifyToN8n } from './actorSchemaConverter.ts';
 import {
 	askForActorId,
-	askForResourceName,
 	askForOperationName,
 	askForOperationDescription,
+	resourceNameToKey,
 	PACKAGE_NAME_PREFIX,
 	packageNameCheck,
 } from '../utils.ts';
@@ -82,9 +82,10 @@ export async function setupProject() {
 		throw err;
 	}
 
-	// Step 3: Ask for initial resource details
-	console.log(chalk.cyan('✏️  Step 3: Initial resource details...'));
-	const { name: resourceName, key: resourceKey } = await askForResourceName(nodeDir);
+	// Step 3: Use actor's display name as resource name (automatically)
+	console.log(chalk.cyan('✏️  Step 3: Setting resource name from Actor...'));
+	const resourceName = actor.title || actor.name.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+	const resourceKey = resourceNameToKey(resourceName);
 	console.log(chalk.green(`✔ Resource name: ${chalk.bold(resourceName)} (${resourceKey})\n`));
 
 	// Step 4: Ask for initial operation details
@@ -420,10 +421,15 @@ function generatePropertyFunction(prop: INodeProperties): string {
 
 	const { displayOptions, ...propWithoutDisplayOptions } = prop;
 
-	const propJson = JSON.stringify(propWithoutDisplayOptions, null, '\t\t')
-		.split('\n')
-		.map((line, index) => index === 0 ? '\t\t' + line : '\t' + line)
-		.join('\n');
+	// Serialize property without displayOptions, with proper indentation
+	const propJson = JSON.stringify(propWithoutDisplayOptions, null, '\t');
+
+	// Remove the outer braces and add proper indentation
+	const lines = propJson.split('\n');
+	// Remove first line (opening brace) and last line (closing brace)
+	const contentLines = lines.slice(1, -1);
+	// Add extra tab for indentation inside return statement
+	const indentedContent = contentLines.map(line => '\t\t' + line).join('\n');
 
 	const jsdoc = `/**\n * Property definition for ${prop.name}\n */`;
 
@@ -431,7 +437,7 @@ function generatePropertyFunction(prop: INodeProperties): string {
 		jsdoc,
 		`export function ${functionName}(resourceName: string, operationName: string): INodeProperties {`,
 		`\treturn {`,
-		`${propJson.trim().slice(1, -1)},`,
+		indentedContent + ',',
 		`\t\tdisplayOptions: {`,
 		`\t\t\tshow: {`,
 		`\t\t\t\tresource: [resourceName],`,

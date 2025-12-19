@@ -9,12 +9,12 @@ import {
 	resourceOption as resource1Option,
 	properties as resource1Properties,
 	router as resource1Router,
-} from './resource_one/resource';
+} from './resourceOne/resource';
 
 // Re-export resource and operation names for backward compatibility
 export const RESOURCE_NAME = RESOURCE_1_NAME;
-export { OPERATION_1_NAME } from './resource_one/operations/operationOne';
-export { OPERATION_2_NAME } from './resource_one/operations/operation_two'
+export { OPERATION_1_NAME } from './resourceOne/operations/operationOne';
+export { OPERATION_2_NAME } from './resourceOne/operations/operationTwo'
 
 // Resource selector with all resources
 const resourceSelect: INodeProperties[] = [

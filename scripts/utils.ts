@@ -321,3 +321,98 @@ export async function askForResourceSelection(resources: string[]): Promise<stri
     }
 }
 
+/**
+ * Convert resource name to folder key
+ * "Actor Data" -> "actorData"
+ * "actorData" -> "actorData" (preserve if already camelCase)
+ * "actor data" -> "actorData"
+ */
+export function resourceNameToKey(name: string): string {
+    const trimmed = name.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+
+    // If no spaces, check if it's already in camelCase format
+    if (!trimmed.includes(' ')) {
+        // Already a single word or camelCase - return as is (preserve casing)
+        return trimmed;
+    }
+
+    // Has spaces - convert to camelCase
+    return trimmed
+        .split(/\s+/) // Split by spaces
+        .map((word, index) => {
+            word = word.toLowerCase();
+            // Capitalize first letter of all words except the first
+            if (index > 0 && word.length > 0) {
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            }
+            return word;
+        })
+        .join('');
+}
+
+/**
+ * Validate resource name format
+ * Resource names can contain letters, numbers, and spaces
+ */
+function validateResourceNameFormat(name: string): boolean {
+    // Allow letters, numbers, and spaces
+    return /^[a-zA-Z0-9\s]+$/.test(name) && name.trim().length > 0;
+}
+
+/**
+ * Normalize a folder name for duplicate comparison only
+ * Handles snake_case vs camelCase: "resource_one" and "resourceOne" should be detected as duplicates
+ * This does NOT affect the actual folder name - only used for comparison
+ */
+function normalizeForComparison(name: string): string {
+    return name.replace(/_/g, '').toLowerCase();
+}
+
+/**
+ * Ask user for resource name with validation
+ * Accepts spaces for comfort, converts to camelCase for the folder key
+ * Checks for duplicates and validates format
+ */
+export async function askForResourceName(nodeDir: string): Promise<{ name: string; key: string }> {
+    const existingResources = getResourcesList(nodeDir);
+
+    while (true) {
+        const resourceName = await askForInput('👉 Enter resource name (e.g., "Actor Data", "User Tasks"): ');
+
+        if (!resourceName) {
+            console.log(chalk.yellow('⚠️  Resource name is required.'));
+            continue;
+        }
+
+        // Validate format
+        if (!validateResourceNameFormat(resourceName)) {
+            console.log(chalk.red('❌ Invalid resource name format.'));
+            console.log(chalk.gray('   Use letters, numbers, and spaces only.'));
+            console.log(chalk.gray('   Examples: "Actor Data", "User Tasks", "Scraper Results"\n'));
+            continue;
+        }
+
+        // Convert to camelCase key (preserves casing for single words)
+        const resourceKey = resourceNameToKey(resourceName);
+
+        // Check for duplicates - normalize both for comparison to catch snake_case vs camelCase conflicts
+        // e.g., "resourceOne" should conflict with existing "resource_one"
+        const normalizedNewKey = normalizeForComparison(resourceKey);
+        const conflictingResource = existingResources.find(
+            existing => normalizeForComparison(existing) === normalizedNewKey
+        );
+
+        if (conflictingResource) {
+            console.log(chalk.red(`❌ Resource "${resourceKey}" conflicts with existing resource "${conflictingResource}".`));
+            console.log(chalk.gray('   Please choose a different name.\n'));
+            continue;
+        }
+
+        // Show the generated key
+        console.log(chalk.gray(`   Generated folder name: ${resourceKey}`));
+
+        // Name is valid and unique
+        return { name: resourceName, key: resourceKey };
+    }
+}
+

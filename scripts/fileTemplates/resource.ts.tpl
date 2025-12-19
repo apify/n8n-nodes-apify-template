@@ -6,23 +6,17 @@ import {
 	NodeOperationError,
 } from 'n8n-workflow';
 import {
-	OPERATION_1_NAME,
-	option as operation1Option,
-	properties as operation1Properties,
-	execute as executeOperation1,
-} from './operations/operationOne';
-import {
-	OPERATION_2_NAME,
-	option as operation2Option,
-	properties as operation2Properties,
-	execute as executeOperation2,
-} from './operations/operation_two';
+	{{OPERATION_NAME_CONST}},
+	option as {{OPERATION_KEY}}Option,
+	properties as {{OPERATION_KEY}}Properties,
+	execute as execute{{OPERATION_KEY_CAPITALIZED}},
+} from './operations/{{OPERATION_KEY}}';
 
 // Resource name constant
-export const RESOURCE_NAME = '$$RESOURCE_NAME';
+export const RESOURCE_NAME = '{{RESOURCE_NAME}}';
 
 // Collect all operations for this resource
-const operations: INodePropertyOptions[] = [operation1Option, operation2Option];
+const operations: INodePropertyOptions[] = [{{OPERATION_KEY}}Option];
 
 // Resource option for the resource selector
 export const resourceOption: INodePropertyOptions = {
@@ -48,8 +42,7 @@ export const operationSelect: INodeProperties = {
 // All properties for this resource (operation selector + operation properties)
 export const properties: INodeProperties[] = [
 	operationSelect,
-	...operation1Properties,
-	...operation2Properties
+	...{{OPERATION_KEY}}Properties,
 ];
 
 // Router for this resource
@@ -60,10 +53,8 @@ export async function router(
 	const operation = this.getNodeParameter('operation', i);
 
 	switch (operation) {
-		case OPERATION_1_NAME:
-			return await executeOperation1.call(this, i);
-		case OPERATION_2_NAME:
-			return await executeOperation2.call(this, i);
+		case {{OPERATION_NAME_CONST}}:
+			return await execute{{OPERATION_KEY_CAPITALIZED}}.call(this, i);
 		default:
 			throw new NodeOperationError(
 				this.getNode(),

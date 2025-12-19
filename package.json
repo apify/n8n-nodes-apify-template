@@ -23,9 +23,6 @@
 	"engines": {
 		"node": ">=18.10"
 	},
-	"apify": {
-		"actorId": "aYG0l9s7dbB7j3gbS"
-	},
 	"packageManager": "npm@10.8.2",
 	"main": "index.js",
 	"scripts": {

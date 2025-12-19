@@ -192,15 +192,16 @@ export async function setupProject() {
 	);
 	console.log(chalk.green('   ✔ Project files renamed'));
 
-	// Step 11: Save Actor ID to package.json
+	// Step 11: Save Actor ID and node folder name to package.json
 	console.log(chalk.cyan('   Step 11: Saving configuration to package.json...'));
 	const packageJsonPath = path.join(process.cwd(), 'package.json');
 	const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
 	packageJson.apify = {
 		actorId: inputs.actorId,
+		nodeFolderName: inputs.placeholderValues.CLASS_NAME,
 	};
 	fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, '\t') + '\n', 'utf-8');
-	console.log(chalk.green('   ✔ Actor ID saved to package.json'));
+	console.log(chalk.green('   ✔ Actor ID and node folder name saved to package.json'));
 
 	// ============================================
 	// Success summary

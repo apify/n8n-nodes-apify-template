@@ -1,7 +1,9 @@
 import chalk from 'chalk';
 import * as path from 'path';
+import * as fs from 'fs';
 import {
 	getActorIdFromPackageJson,
+	getNodeDirNameFromPackageJson,
 	askForOperationName,
 	askForOperationDescription,
 	getResourcesList,
@@ -14,12 +16,22 @@ import { createOperationFile, updateResourceFile } from './createOperationFile.t
 export async function addActorOperation() {
 	console.log(chalk.cyan.bold('\n🔧 Add Actor Operation\n'));
 
-	// Step 1: Get Actor ID from package.json
-	console.log(chalk.cyan('📦 Step 1: Reading Actor ID from package.json...'));
+	// Step 1: Get Actor ID and node folder name from package.json
+	console.log(chalk.cyan('📦 Step 1: Reading configuration from package.json...'));
 	const actorId = getActorIdFromPackageJson();
+	const nodeDirName = getNodeDirNameFromPackageJson();
 
-	if (!actorId) {
-		console.log(chalk.red('❌ No Actor ID found in package.json.'));
+	if (!actorId || !nodeDirName) {
+		console.log(chalk.red('❌ Project not initialized.'));
+		console.log(chalk.yellow('   Please run "npm run init-actor-app" first to initialize an Actor app.\n'));
+		process.exit(1);
+	}
+
+	const nodeDir = path.join(process.cwd(), 'nodes', nodeDirName);
+
+	// Verify the node directory exists
+	if (!fs.existsSync(nodeDir)) {
+		console.log(chalk.red(`❌ Node directory not found: nodes/${nodeDirName}/`));
 		console.log(chalk.yellow('   Please run "npm run init-actor-app" first to initialize an Actor app.\n'));
 		process.exit(1);
 	}
@@ -40,7 +52,6 @@ export async function addActorOperation() {
 
 	// Step 3: Select resource
 	console.log(chalk.cyan('📁 Step 3: Selecting target resource...'));
-	const nodeDir = path.join(process.cwd(), 'nodes', 'ApifyActorTemplate');
 	const resources = getResourcesList(nodeDir);
 
 	if (resources.length === 0) {
@@ -92,7 +103,7 @@ export async function addActorOperation() {
 		console.log(chalk.gray(`   Resource: ${selectedResource}`));
 		console.log(chalk.gray(`   Description: ${operationDescription}`));
 		console.log(chalk.gray(`   Properties: ${selectedProperties.length} from Actor schema`));
-		console.log(chalk.gray(`   File: nodes/ApifyActorTemplate/resources/${selectedResource}/operations/${operationKey}.ts`));
+		console.log(chalk.gray(`   File: nodes/${nodeDirName}/resources/${selectedResource}/operations/${operationKey}.ts`));
 		console.log('');
 	} catch (err) {
 		console.log(chalk.red('\n❌ Failed to generate operation files:'), err);

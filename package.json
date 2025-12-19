@@ -33,7 +33,8 @@
 		"merge:api": "npx openapi-merge-cli --config ./openapi.config.json",
 		"init-actor-app": "npx tsx scripts/cli.ts init",
 		"add-actor-resource": "npx tsx scripts/cli.ts add-resource",
-		"add-actor-operation": "npx tsx scripts/cli.ts add-operation"
+		"add-actor-operation": "npx tsx scripts/cli.ts add-operation",
+		"test-inputs": "npx tsx scripts/testInputs.ts"
 	},
 	"files": [
 		"dist"

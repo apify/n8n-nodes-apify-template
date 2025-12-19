@@ -19,7 +19,6 @@ export function refactorProject(
 		} catch {
 			fs.renameSync(oldDir, newDir);
 		}
-		console.log(`✅ Renamed folder: nodes/${oldClass} -> nodes/${newClass}`);
 		}
 
 		// Rename node files (resources pattern doesn't use properties.ts)
@@ -34,7 +33,6 @@ export function refactorProject(
 			} catch {
 			fs.renameSync(oldFile, newFile);
 			}
-			console.log(`Renamed: ${oldFile} -> ${newFile}`);
 		}
 		}
 
@@ -44,9 +42,8 @@ export function refactorProject(
 			updateResourcesImports(resourcesDir, oldClass, newClass);
 		}
 
-		console.log(`✅ Renamed files inside nodes/${newClass}`);
 	} else {
-		console.log(`⚠️ Warning: ${oldDir} not found (skipped).`);
+		// Silently skip if old directory doesn't exist
 	}
 
 	// Bulk replace in all files (excluding scripts folder)
@@ -86,7 +83,6 @@ export function refactorProject(
 
 		if (updated !== content) {
 			fs.writeFileSync(file, updated, "utf8");
-			console.log(`Edited: ${file}`);
 		}
 		} catch {
 		// skip binary/unreadable files
@@ -111,7 +107,6 @@ function updateResourcesImports(resourcesDir: string, oldClass: string, newClass
 			let content = fs.readFileSync(file, 'utf-8');
 			content = content.replace(new RegExp(oldClass, 'g'), newClass);
 			fs.writeFileSync(file, content, 'utf-8');
-			console.log(`Updated imports in: ${file}`);
 		}
 	}
 }

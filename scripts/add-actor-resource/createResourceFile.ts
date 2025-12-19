@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import chalk from 'chalk';
 
 /**
  * Capitalize first letter
@@ -28,8 +27,6 @@ export async function createResourceFile(
 	_operationName: string,
 	operationKey: string,
 ): Promise<string> {
-	console.log(chalk.cyan('📝 Creating resource folder and file...'));
-
 	// Read the template
 	const templatePath = path.join(__dirname, '../utils/templates', 'resource.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
@@ -55,9 +52,6 @@ export async function createResourceFile(
 	// Write the resource file
 	const resourceFilePath = path.join(resourcePath, 'resource.ts');
 	fs.writeFileSync(resourceFilePath, template, 'utf-8');
-
-	console.log(chalk.green(`✅ Created resource folder: ${resourceKey}/`));
-	console.log(chalk.green(`✅ Created resource file: ${resourceKey}/resource.ts`));
 
 	return resourcePath;
 }
@@ -96,7 +90,6 @@ export async function updateRouterFile(
 	resourceKey: string,
 	operationKey: string,
 ): Promise<void> {
-	console.log(chalk.cyan('📝 Updating router.ts...'));
 
 	const routerPath = path.join(nodeDir, 'resources', 'router.ts');
 	let content = fs.readFileSync(routerPath, 'utf-8');
@@ -218,5 +211,4 @@ export { ${operationConstName} } from './${resourceKey}/operations/${operationKe
 	// Write updated content
 	fs.writeFileSync(routerPath, content, 'utf-8');
 
-	console.log(chalk.green('✅ Updated router.ts'));
 }

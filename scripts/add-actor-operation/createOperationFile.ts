@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { ApifyInputSchema } from '../utils/types.ts';
 import { convertApifyToN8n } from '../utils/actorSchemaConverter.ts';
-import chalk from 'chalk';
 
 /**
  * Parse inputFunctions.ts to extract all function names
@@ -81,7 +80,6 @@ function generatePropertyFunctions(
 	if (requiredProperties.length === 0 && optionalProperties.length > 0) {
 		const minPropertiesToInclude = Math.min(3, optionalProperties.length);
 		requiredProperties = optionalProperties.slice(0, minPropertiesToInclude);
-		console.log(chalk.yellow(`   ⚠️  No required properties found. Including first ${minPropertiesToInclude} optional properties.`));
 	}
 
 	// Get the names of required properties
@@ -131,8 +129,6 @@ export async function createOperationFile(
 	inputSchema: ApifyInputSchema,
 	nodeDir: string,
 ): Promise<void> {
-	console.log(chalk.cyan('📝 Creating operation file...'));
-
 	// Read the template
 	const templatePath = path.join(__dirname, '../utils/templates', 'operation.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
@@ -145,13 +141,12 @@ export async function createOperationFile(
 	}
 
 	const functionNames = parseInputFunctions(inputFunctionsPath);
-	console.log(chalk.gray(`   Found ${functionNames.length} input functions`));
 
 	// Generate operation constant name (e.g., "OPERATION_SCRAPE_DATA_NAME")
 	const operationConstName = `OPERATION_${operationKey.replace(/([A-Z])/g, '_$1').toUpperCase()}_NAME`;
 
 	// Generate property functions and get required property names
-	const { propertyFunctionImports, propertyFunctionCalls, optionalCount, requiredCount, requiredPropertyNames } = generatePropertyFunctions(inputSchema, operationConstName);
+	const { propertyFunctionImports, propertyFunctionCalls, requiredPropertyNames } = generatePropertyFunctions(inputSchema, operationConstName);
 
 	// Generate the code sections (only for required properties)
 	const inputFunctionCalls = generateInputFunctionCalls(functionNames, requiredPropertyNames);
@@ -186,9 +181,6 @@ export async function createOperationFile(
 
 	const operationFilePath = path.join(operationsDir, `${operationKey}.ts`);
 	fs.writeFileSync(operationFilePath, template, 'utf-8');
-
-	console.log(chalk.green(`✅ Created operation file: ${operationKey}.ts`));
-	console.log(chalk.gray(`   Properties: ${requiredCount} required (${optionalCount} optional properties available but not included)`));
 }
 
 /**
@@ -199,7 +191,6 @@ export async function updateResourceFile(
 	operationName: string,
 	operationKey: string,
 ): Promise<void> {
-	console.log(chalk.cyan('📝 Updating resource.ts...'));
 
 	const resourceFilePath = path.join(resourcePath, 'resource.ts');
 	let content = fs.readFileSync(resourceFilePath, 'utf-8');
@@ -275,5 +266,4 @@ export async function updateResourceFile(
 	// Write updated content
 	fs.writeFileSync(resourceFilePath, content, 'utf-8');
 
-	console.log(chalk.green('✅ Updated resource.ts'));
 }

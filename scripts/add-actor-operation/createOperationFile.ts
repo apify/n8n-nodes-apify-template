@@ -163,6 +163,9 @@ export async function createOperationFile(
 		? "import * as inputFunctions from '../../../helpers/inputFunctions';\n"
 		: '';
 
+	// Extract node folder name from nodeDir path
+	const nodeFolderName = path.basename(nodeDir);
+
 	// Replace all placeholders
 	template = template
 		.replace(/\{\{OPERATION_NAME_CONST\}\}/g, operationConstName)
@@ -173,7 +176,8 @@ export async function createOperationFile(
 		.replace(/\{\{PROPERTY_FUNCTION_IMPORTS\}\}/g, propertyFunctionImports)
 		.replace(/\{\{PROPERTY_FUNCTION_CALLS\}\}/g, propertyFunctionCalls)
 		.replace(/\{\{INPUT_FUNCTION_CALLS\}\}/g, inputFunctionCalls)
-		.replace(/\{\{ACTOR_INPUT_PROPERTIES\}\}/g, actorInputProperties);
+		.replace(/\{\{ACTOR_INPUT_PROPERTIES\}\}/g, actorInputProperties)
+		.replace(/ApifyActorTemplate\.node/g, `${nodeFolderName}.node`);
 
 	// Write the operation file
 	const operationsDir = path.join(resourcePath, 'operations');

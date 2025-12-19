@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { setupProject } from './init-actor-app/setupProject.ts';
+import { setupProject } from './init-actor-app/index.ts';
 import { addActorResource } from './add-actor-resource/index.ts';
 import { addActorOperation } from './add-actor-operation/index.ts';
 

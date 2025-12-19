@@ -71,11 +71,20 @@ function getNextResourceNumber(routerContent: string): number {
 	const matches = [...routerContent.matchAll(resourcePattern)];
 
 	if (matches.length === 0) {
-		return 2; // Start with 2 if no numbered resources (resource_one is often RESOURCE_1_NAME)
+		return 1; // Start with 1 if no numbered resources (empty router)
 	}
 
 	const numbers = matches.map(m => parseInt(m[1], 10));
 	return Math.max(...numbers) + 1;
+}
+
+/**
+ * Check if router is empty (has no resources)
+ */
+function isEmptyRouter(routerContent: string): boolean {
+	// Check if there are any resource imports
+	const resourceImportPattern = /} from '\.\/[^']+\/resource';/;
+	return !resourceImportPattern.test(routerContent);
 }
 
 /**
@@ -100,50 +109,78 @@ export async function updateRouterFile(
 	// Generate operation constant name
 	const operationConstName = generateOperationConstName(operationKey);
 
-	// 1. Add import statement after the last resource import
-	const lastImportRegex = /} from '\.\/[^']+\/resource';/g;
-	const imports = content.match(lastImportRegex);
+	// Check if this is an empty router (first resource)
+	const isEmpty = isEmptyRouter(content);
 
-	if (imports && imports.length > 0) {
-		const lastImport = imports[imports.length - 1];
+	if (isEmpty) {
+		// For empty router, add import after the n8n-workflow import
 		const newImport = `import {
+	RESOURCE_NAME as ${resourceConstName},
+	resourceOption as ${resourceVarName}Option,
+	properties as ${resourceVarName}Properties,
+	router as ${resourceVarName}Router,
+} from './${resourceKey}/resource';
+
+// Re-export resource and operation names for backward compatibility
+export const RESOURCE_NAME = ${resourceConstName};
+export { ${operationConstName} } from './${resourceKey}/operations/${operationKey}';`;
+
+		// Insert after the n8n-workflow import
+		content = content.replace(
+			/} from 'n8n-workflow';/,
+			`} from 'n8n-workflow';\n${newImport}`
+		);
+	} else {
+		// For non-empty router, add import after the last resource import
+		const lastImportRegex = /} from '\.\/[^']+\/resource';/g;
+		const imports = content.match(lastImportRegex);
+
+		if (imports && imports.length > 0) {
+			const lastImport = imports[imports.length - 1];
+			const newImport = `import {
 	RESOURCE_NAME as ${resourceConstName},
 	resourceOption as ${resourceVarName}Option,
 	properties as ${resourceVarName}Properties,
 	router as ${resourceVarName}Router,
 } from './${resourceKey}/resource';`;
 
-		content = content.replace(lastImport, `${lastImport}\n${newImport}`);
+			content = content.replace(lastImport, `${lastImport}\n${newImport}`);
+		}
+
+		// Add operation export after last operation export
+		const lastOperationExportRegex = /export \{ [A-Z_0-9]+ \} from '\.\/[^']+\/operations\/[^']+'/g;
+		const operationExports = content.match(lastOperationExportRegex);
+
+		if (operationExports && operationExports.length > 0) {
+			const lastExport = operationExports[operationExports.length - 1];
+			const newExport = `export { ${operationConstName} } from './${resourceKey}/operations/${operationKey}'`;
+			content = content.replace(lastExport, `${lastExport}\n${newExport}`);
+		}
 	}
 
-	// 2. Add operation export
-	const lastOperationExportRegex = /export \{ [A-Z_0-9]+ \} from '\.\/[^']+\/operations\/[^']+'/g;
-	const operationExports = content.match(lastOperationExportRegex);
-
-	if (operationExports && operationExports.length > 0) {
-		const lastExport = operationExports[operationExports.length - 1];
-		const newExport = `export { ${operationConstName} } from './${resourceKey}/operations/${operationKey}'`;
-		content = content.replace(lastExport, `${lastExport}\n${newExport}`);
-	}
-
-	// 3. Add resource to options array
-	const resourceOptionsRegex = /options: \[([\s\S]*?)\],\s*default:/;
+	// 3. Add resource to options array and update default
+	const resourceOptionsRegex = /options: \[([\s\S]*?)\],\s*default:\s*([^,\n}]+)/;
 	const optionsMatch = content.match(resourceOptionsRegex);
 
 	if (optionsMatch) {
 		const currentOptions = optionsMatch[1].trim();
+		const currentDefault = optionsMatch[2].trim();
+
+		// Determine new default (use first resource if empty)
+		const newDefault = isEmpty ? resourceConstName : currentDefault;
+
 		// Check if there's a comment at the end
 		if (currentOptions.includes('// Add more resource options')) {
 			const newOptions = currentOptions.replace(
 				'// Add more resource options here as you create them',
 				`${resourceVarName}Option,\n\t\t\t// Add more resource options here as you create them`
 			);
-			content = content.replace(resourceOptionsRegex, `options: [\n\t\t\t${newOptions}\n\t\t],\n\t\tdefault:`);
+			content = content.replace(resourceOptionsRegex, `options: [\n\t\t\t${newOptions}\n\t\t],\n\t\tdefault: ${newDefault}`);
 		} else {
 			const newOptions = currentOptions.endsWith(',')
 				? `${currentOptions}\n\t\t\t${resourceVarName}Option,`
 				: `${currentOptions},\n\t\t\t${resourceVarName}Option,`;
-			content = content.replace(resourceOptionsRegex, `options: [\n\t\t\t${newOptions}\n\t\t],\n\t\tdefault:`);
+			content = content.replace(resourceOptionsRegex, `options: [\n\t\t\t${newOptions}\n\t\t],\n\t\tdefault: ${newDefault}`);
 		}
 	}
 
@@ -171,7 +208,6 @@ export async function updateRouterFile(
 	const switchMatch = content.match(switchRegex);
 
 	if (switchMatch) {
-		const hasComment = switchMatch[2].includes('// Add more');
 		const newCase = `case ${resourceConstName}:
 			return await ${resourceVarName}Router.call(this, i);
 		`;

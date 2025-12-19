@@ -26,7 +26,9 @@
 	"packageManager": "npm@10.8.2",
 	"main": "index.js",
 	"scripts": {
-		"build": "n8n-node build",
+		"pre-build": "npx tsx scripts/pre-build/index.ts",
+		"post-build": "npx tsx scripts/post-build/index.ts",
+		"build": "npm run pre-build && n8n-node build && npm run post-build",
 		"dev": "n8n-node dev",
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",

@@ -44,15 +44,25 @@ export function convertApifyToN8n(apifySchema: ApifyInputSchema): INodePropertie
     for (const [key, field] of Object.entries(apifySchema.properties || {})) {
         const typeProps = getPropsForTypeN8n(field);
 
+        // Handle default/prefill values based on type
+        let defaultValue;
+        if (typeProps.type === 'json') {
+            // For JSON types, stringify the value
+            defaultValue = field.default ? JSON.stringify(field.default) : field.prefill ?? '';
+        } else if (typeProps.type === 'fixedCollection') {
+            // For fixedCollection, transform array prefill to wrapped format
+            defaultValue = transformPrefillForFixedCollection(field, typeProps);
+        } else {
+            // For other types, use as-is
+            defaultValue = field.default ?? field.prefill ?? '';
+        }
+
         const n8nField: INodeProperties = {
             displayName: field.title || key,
             name: key,
             description: field.description || '',
             required: requiredFields.includes(key),
-            // prefer explicit default from schema, else prefill, else ''
-            default: typeProps.type === 'json'
-                ? (field.default ? JSON.stringify(field.default) : field.prefill ?? '')
-                : field.default ?? field.prefill ?? '',
+            default: defaultValue,
             ...typeProps,
         };
 
@@ -60,6 +70,41 @@ export function convertApifyToN8n(apifySchema: ApifyInputSchema): INodePropertie
     }
 
     return n8nParameters;
+}
+
+/**
+ * Transform Apify prefill array into n8n fixedCollection format
+ * Example: [{ url: "..." }] → { items: [{ url: "..." }] }
+ */
+function transformPrefillForFixedCollection(field: ApifyInputField, typeProps: any): any {
+    const prefillValue = field.prefill || field.default;
+
+    // If no prefill, return empty object
+    if (!prefillValue || !Array.isArray(prefillValue) || prefillValue.length === 0) {
+        return {};
+    }
+
+    // Get the collection name from typeProps.options
+    const collectionName = typeProps.options?.[0]?.name;
+    if (!collectionName) {
+        return {};
+    }
+
+    // Check if this is a stringList (needs value extraction)
+    const fields = typeProps.options?.[0]?.values || [];
+    const isStringList = fields.length === 1 && fields[0].name === 'value' && fields[0].type === 'string';
+
+    if (isStringList) {
+        // For stringList: ["value1", "value2"] → { values: [{ value: "value1" }, { value: "value2" }] }
+        return {
+            [collectionName]: prefillValue.map((item: any) => ({ value: item }))
+        };
+    }
+
+    // For requestListSources and other object lists: [{ url: "..." }] → { items: [{ url: "..." }] }
+    return {
+        [collectionName]: prefillValue
+    };
 }
 
 function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & { type: INodeProperties['type'] } {
@@ -107,7 +152,7 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
                 return {
                     type: 'fixedCollection',
                     typeOptions: { multipleValues: true },
-                    default: {},
+                    // Don't set default here - it will be calculated in convertApifyToN8n
                     options: [
                         {
                             name: 'items',
@@ -127,7 +172,7 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
             if (field.editor === 'stringList') {
                 return {
                     type: 'fixedCollection',
-                    default: {},
+                    // Don't set default here - it will be calculated in convertApifyToN8n
                     typeOptions: { multipleValues: true },
                     options: [
                         {
@@ -162,7 +207,7 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
             if (field.editor === 'keyValue') {
                 return {
                     type: 'fixedCollection',
-                    default: {},
+                    // Don't set default here - it will be calculated in convertApifyToN8n
                     typeOptions: { multipleValues: true },
                     options: [
                         {

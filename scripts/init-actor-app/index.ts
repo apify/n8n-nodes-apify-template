@@ -2,21 +2,19 @@ import { ApifyClient, Actor } from 'apify-client';
 import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
-import { refactorProject } from './refactorProject.ts';
-import { PlaceholderValues } from './actorConfig.ts';
-import { convertApifyToN8n } from './actorSchemaConverter.ts';
+import { refactorProject } from '../utils/refactorProject.ts';
+import { type PlaceholderValues, generatePlaceholderValues, fetchActorInputSchema } from '../utils/apifyUtils.ts';
+import { convertApifyToN8n } from '../utils/actorSchemaConverter.ts';
 import {
 	askForActorId,
 	askForOperationName,
 	askForOperationDescription,
 	resourceNameToKey,
-	PACKAGE_NAME_PREFIX,
-	packageNameCheck,
-} from '../utils.ts';
-import { fetchActorInputSchema } from '../buildInputFunctions.ts';
+} from '../utils/inputPrompts.ts';
+import { generateInputFunctionsFile, generatePropertyFunctionsFile } from '../utils/codeGenerators.ts';
 import { createResourceFile, updateRouterFile } from '../add-actor-resource/createResourceFile.ts';
 import { createOperationFile } from '../add-actor-operation/createOperationFile.ts';
-import type { ApifyInputSchema } from '../types.ts';
+import type { ApifyInputSchema } from '../utils/types.ts';
 import type { INodeProperties } from 'n8n-workflow';
 
 // Targets (old names)
@@ -100,7 +98,7 @@ export async function setupProject() {
 
 	// Step 6: Generate placeholder values (includes package name check)
 	console.log(chalk.cyan('⚙️  Step 6: Generating configuration values...'));
-	const placeholderValues = await generatePlaceholderValues(actor);
+	const placeholderValues = await generatePlaceholderValues(actor, X_PLATFORM_HEADER_ID);
 	console.log(chalk.green('✔ Configuration values ready\n'));
 
 	// ============================================
@@ -225,39 +223,6 @@ export async function setupProject() {
 // ============================================
 
 /**
- * Generate placeholder values from actor (without modifying files)
- */
-async function generatePlaceholderValues(actor: Actor): Promise<PlaceholderValues> {
-	const rawName = actor.name;
-	const rawNameProcessed = rawName
-		.split('-')
-		.map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-		.join(' ');
-
-	const className = 'Apify' + rawName
-		.split('-')
-		.map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
-		.join('');
-	const displayName = 'Apify ' + `${actor.title ? actor.title : rawNameProcessed}`;
-
-	const values: PlaceholderValues = {
-		PACKAGE_NAME: `${PACKAGE_NAME_PREFIX}-${rawName}`,
-		CLASS_NAME: className,
-		ACTOR_ID: actor.id,
-		X_PLATFORM_HEADER_ID: X_PLATFORM_HEADER_ID,
-		X_PLATFORM_APP_HEADER_ID: `${rawName}-app`,
-		DISPLAY_NAME: displayName,
-		DESCRIPTION: actor.description || '',
-		RESOURCE_NAME: actor.title || displayName,
-	};
-
-	// Check for package name availability on npm registry
-	values.PACKAGE_NAME = await packageNameCheck(values.PACKAGE_NAME);
-
-	return values;
-}
-
-/**
  * Apply placeholders to node file
  */
 function applyPlaceholders(nodeFilePath: string, values: PlaceholderValues): void {
@@ -273,199 +238,9 @@ function applyPlaceholders(nodeFilePath: string, values: PlaceholderValues): voi
  * Reset router.ts to empty template
  */
 function resetRouterToTemplate(nodeDir: string): void {
-	const templatePath = path.join(__dirname, '../templates', 'router.ts.tpl');
+	const templatePath = path.join(__dirname, '../utils/templates', 'router.ts.tpl');
 	const routerPath = path.join(nodeDir, 'resources', 'router.ts');
 
 	const template = fs.readFileSync(templatePath, 'utf-8');
 	fs.writeFileSync(routerPath, template, 'utf-8');
-}
-
-/**
- * Generate inputFunctions.ts file
- */
-function generateInputFunctionsFile(nodeDir: string, properties: INodeProperties[]): void {
-	const functionsCode = generateAllGetterFunctions(properties);
-
-	const templatePath = path.join(__dirname, '../templates', 'inputFunctions.ts.tpl');
-	let template = fs.readFileSync(templatePath, 'utf-8');
-	template = template.replace('{{FUNCTIONS}}', functionsCode);
-
-	const outputPath = path.join(nodeDir, 'helpers', 'inputFunctions.ts');
-	fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-	fs.writeFileSync(outputPath, template, 'utf-8');
-}
-
-/**
- * Generate propertyFunctions.ts file
- */
-function generatePropertyFunctionsFile(nodeDir: string, properties: INodeProperties[]): void {
-	const functionsCode = generateAllPropertyFunctions(properties);
-
-	const templatePath = path.join(__dirname, '../templates', 'propertyFunctions.ts.tpl');
-	let template = fs.readFileSync(templatePath, 'utf-8');
-	template = template.replace('{{FUNCTIONS}}', functionsCode);
-
-	const outputPath = path.join(nodeDir, 'helpers', 'propertyFunctions.ts');
-	fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-	fs.writeFileSync(outputPath, template, 'utf-8');
-}
-
-// ============================================
-// Code Generation Functions
-// ============================================
-
-function capitalizeFirst(str: string): string {
-	if (!str) return '';
-	return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-function generateAllGetterFunctions(properties: INodeProperties[]): string {
-	const functions: string[] = [];
-
-	for (const prop of properties) {
-		if (prop.type === 'fixedCollection') {
-			functions.push(generateFixedCollectionGetter(prop));
-		} else {
-			functions.push(generateRegularGetter(prop));
-		}
-	}
-
-	return functions.join('\n\n');
-}
-
-function generateRegularGetter(prop: INodeProperties): string {
-	const paramName = prop.name;
-	const functionName = `get${capitalizeFirst(paramName)}`;
-	const tsType = getTypeScriptType(prop.type as string);
-
-	// For JSON types, use JSON template
-	if (prop.type === 'json') {
-		const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'jsonGetter.ts.tpl');
-		let template = fs.readFileSync(templatePath, 'utf-8');
-		template = template.replace(/{{PARAM_NAME}}/g, paramName);
-		template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
-		return template;
-	}
-
-	// For regular types, use regular template
-	const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'regularGetter.ts.tpl');
-	let template = fs.readFileSync(templatePath, 'utf-8');
-	template = template.replace(/{{PARAM_NAME}}/g, paramName);
-	template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
-	template = template.replace(/{{TS_TYPE}}/g, tsType);
-	return template;
-}
-
-function generateFixedCollectionGetter(prop: INodeProperties): string {
-	const paramName = prop.name;
-	const functionName = `get${capitalizeFirst(paramName)}`;
-
-	const options = prop.options as any[];
-
-	if (!options || options.length === 0) {
-		return generateRegularGetter({ ...prop, type: 'json' });
-	}
-
-	const collectionName = options[0].name;
-	const fields = options[0].values || [];
-
-	// Check if this is a stringList (single field named 'value')
-	const isStringList = fields.length === 1 && fields[0].name === 'value' && fields[0].type === 'string';
-
-	if (isStringList) {
-		// Use stringList template - extracts string values into simple array
-		const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'stringListGetter.ts.tpl');
-		let template = fs.readFileSync(templatePath, 'utf-8');
-		template = template.replace(/{{PARAM_NAME}}/g, paramName);
-		template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
-		template = template.replace(/{{COLLECTION_NAME}}/g, collectionName);
-		template = template.replace(/{{FIELD_NAME}}/g, 'value');
-		return template;
-	}
-
-	// For requestListSources, keyValue, and other object lists
-	const typeFields = fields.map((field: any) => {
-		const fieldType = mapFieldType(field.type);
-		return `${field.name}: ${fieldType}`;
-	});
-
-	const entryType = typeFields.length > 0 ? `{ ${typeFields.join('; ')} }` : 'any';
-	const arrayReturnType = `${entryType}[]`;
-
-	// Use fixedCollection template - returns array of objects
-	const templatePath = path.join(__dirname, '../templates', 'functionTemplates', 'fixedCollectionGetter.ts.tpl');
-	let template = fs.readFileSync(templatePath, 'utf-8');
-	template = template.replace(/{{PARAM_NAME}}/g, paramName);
-	template = template.replace(/{{FUNCTION_NAME}}/g, functionName);
-	template = template.replace(/{{COLLECTION_NAME}}/g, collectionName);
-	template = template.replace(/{{ENTRY_TYPE}}/g, entryType);
-	template = template.replace(/{{ARRAY_RETURN_TYPE}}/g, arrayReturnType);
-	return template;
-}
-
-function mapFieldType(n8nType: string): string {
-	if (n8nType === 'string') return 'string';
-	if (n8nType === 'number') return 'number';
-	if (n8nType === 'boolean') return 'boolean';
-	return 'any';
-}
-
-function getTypeScriptType(n8nType: string): string {
-	const typeMap: Record<string, string> = {
-		'string': 'string',
-		'number': 'number',
-		'boolean': 'boolean',
-		'dateTime': 'string',
-		'json': 'object | string',
-		'options': 'string',
-		'multiOptions': 'string[]',
-		'collection': 'object',
-	};
-
-	return typeMap[n8nType] || 'any';
-}
-
-function generateAllPropertyFunctions(properties: INodeProperties[]): string {
-	const functions: string[] = [];
-
-	for (const prop of properties) {
-		functions.push(generatePropertyFunction(prop));
-	}
-
-	return functions.join('\n\n');
-}
-
-function generatePropertyFunction(prop: INodeProperties): string {
-	const functionName = `get${capitalizeFirst(prop.name)}Property`;
-
-	const { displayOptions, ...propWithoutDisplayOptions } = prop;
-
-	// Serialize property without displayOptions, with proper indentation
-	const propJson = JSON.stringify(propWithoutDisplayOptions, null, '\t');
-
-	// Remove the outer braces and add proper indentation
-	const lines = propJson.split('\n');
-	// Remove first line (opening brace) and last line (closing brace)
-	const contentLines = lines.slice(1, -1);
-	// Add extra tab for indentation inside return statement
-	const indentedContent = contentLines.map(line => '\t\t' + line).join('\n');
-
-	const jsdoc = `/**\n * Property definition for ${prop.name}\n */`;
-
-	const code = [
-		jsdoc,
-		`export function ${functionName}(resourceName: string, operationName: string): INodeProperties {`,
-		`\treturn {`,
-		indentedContent + ',',
-		`\t\tdisplayOptions: {`,
-		`\t\t\tshow: {`,
-		`\t\t\t\tresource: [resourceName],`,
-		`\t\t\t\toperation: [operationName],`,
-		`\t\t\t},`,
-		`\t\t},`,
-		`\t};`,
-		`}`,
-	].join('\n');
-
-	return code;
 }

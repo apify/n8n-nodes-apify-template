@@ -1,7 +1,7 @@
 import * as readline from 'readline';
+import chalk from 'chalk';
 import * as fs from 'fs';
 import * as path from 'path';
-import chalk from 'chalk';
 
 export const PACKAGE_NAME_PREFIX = "n8n-nodes-apify"
 
@@ -49,6 +49,39 @@ export async function askForOperationCount(defaultValue: number = 1): Promise<nu
     return count;
 }
 
+/**
+ * Validate package name format
+ */
+function validatePackageName(name: string): boolean {
+    // Basic npm rules: lowercase, no spaces, <= 214 chars
+    const valid =
+        typeof name === 'string' &&
+        name.length > 0 &&
+        name.length <= 214 &&
+        /^[a-z0-9-_]+$/.test(name);
+
+    return valid;
+}
+
+/**
+ * Check if package is available on npm registry
+ */
+async function isPackageAvailable(name: string): Promise<boolean> {
+    try {
+        const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(name)}`, {
+            method: 'GET',
+        });
+        return res.status === 404; // 404 = not found = available
+    } catch (err) {
+        console.error(`⚠️ Failed to check availability for "${name}":`, err);
+        // Fail-safe: assume not available if error
+        return false;
+    }
+}
+
+/**
+ * Check package name availability and prompt for alternatives if taken
+ */
 export async function packageNameCheck(initialName: string): Promise<string> {
     let packageName = initialName;
 
@@ -88,116 +121,6 @@ export async function packageNameCheck(initialName: string): Promise<string> {
     }
 }
 
-
-function validatePackageName(name: string): boolean {
-    // Basic npm rules: lowercase, no spaces, <= 214 chars
-    const valid =
-        typeof name === 'string' &&
-        name.length > 0 &&
-        name.length <= 214 &&
-        /^[a-z0-9-_]+$/.test(name);
-
-    return valid;
-}
-
-async function isPackageAvailable(name: string): Promise<boolean> {
-    try {
-        const res = await fetch(`https://registry.npmjs.org/${encodeURIComponent(name)}`, {
-            method: 'GET',
-        });
-        return res.status === 404; // 404 = not found = available
-    } catch (err) {
-        console.error(`⚠️ Failed to check availability for "${name}":`, err);
-        // Fail-safe: assume not available if error
-        return false;
-    }
-}
-
-/**
- * Get Actor ID from package.json
- */
-export function getActorIdFromPackageJson(): string | null {
-    try {
-        const packageJsonPath = path.join(process.cwd(), 'package.json');
-        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-
-        if (packageJson.apify?.actorId) {
-            return packageJson.apify.actorId;
-        }
-
-        return null;
-    } catch (err) {
-        console.error(chalk.red('❌ Failed to read package.json:'), err);
-        return null;
-    }
-}
-
-/**
- * Get the actual node directory name from package.json
- * After init-actor-app runs, ApifyActorTemplate is renamed to the actual Actor name
- * This function reads the node folder name stored in apify.nodeFolderName
- *
- * @returns The node directory name (e.g., "ApifyWebsiteContentCrawler") or null if not found
- */
-export function getNodeDirNameFromPackageJson(): string | null {
-    try {
-        const packageJsonPath = path.join(process.cwd(), 'package.json');
-        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
-
-        // Get the node folder name from apify.nodeFolderName
-        // This is set by init-actor-app during initialization
-        if (packageJson.apify?.nodeFolderName) {
-            return packageJson.apify.nodeFolderName;
-        }
-
-        return null;
-    } catch (err) {
-        console.error(chalk.red('❌ Failed to read package.json:'), err);
-        return null;
-    }
-}
-
-/**
- * Get all existing operations across all resources
- * Returns a map of resource names to their operation names
- */
-export function getExistingOperations(nodeDir: string): Map<string, string[]> {
-    const operationsMap = new Map<string, string[]>();
-
-    try {
-        const resourcesPath = path.join(nodeDir, 'resources');
-
-        if (!fs.existsSync(resourcesPath)) {
-            return operationsMap;
-        }
-
-        const resourceEntries = fs.readdirSync(resourcesPath, { withFileTypes: true });
-
-        // Scan each resource directory
-        for (const resourceEntry of resourceEntries) {
-            if (!resourceEntry.isDirectory()) continue;
-
-            const resourceName = resourceEntry.name;
-            const operationsPath = path.join(resourcesPath, resourceName, 'operations');
-
-            if (!fs.existsSync(operationsPath)) continue;
-
-            const operationFiles = fs.readdirSync(operationsPath)
-                .filter(file => file.endsWith('.ts'))
-                .map(file => file.replace('.ts', ''));
-
-            if (operationFiles.length > 0) {
-                operationsMap.set(resourceName, operationFiles);
-            }
-        }
-
-        return operationsMap;
-    } catch (err) {
-        console.error(chalk.red('❌ Failed to scan operations:'), err);
-        return operationsMap;
-    }
-}
-
 /**
  * Convert operation name to camelCase key
  * "Get Data Items" -> "getDataItems"
@@ -234,6 +157,47 @@ function operationNameToKey(name: string): string {
 function validateOperationNameFormat(name: string): boolean {
     // Allow letters, numbers, and spaces
     return /^[a-zA-Z0-9\s]+$/.test(name) && name.trim().length > 0;
+}
+
+/**
+ * Get all existing operations across all resources
+ * Returns a map of resource names to their operation names
+ */
+function getExistingOperations(nodeDir: string): Map<string, string[]> {
+    const operationsMap = new Map<string, string[]>();
+
+    try {
+        const resourcesPath = path.join(nodeDir, 'resources');
+
+        if (!fs.existsSync(resourcesPath)) {
+            return operationsMap;
+        }
+
+        const resourceEntries = fs.readdirSync(resourcesPath, { withFileTypes: true });
+
+        // Scan each resource directory
+        for (const resourceEntry of resourceEntries) {
+            if (!resourceEntry.isDirectory()) continue;
+
+            const resourceName = resourceEntry.name;
+            const operationsPath = path.join(resourcesPath, resourceName, 'operations');
+
+            if (!fs.existsSync(operationsPath)) continue;
+
+            const operationFiles = fs.readdirSync(operationsPath)
+                .filter(file => file.endsWith('.ts'))
+                .map(file => file.replace('.ts', ''));
+
+            if (operationFiles.length > 0) {
+                operationsMap.set(resourceName, operationFiles);
+            }
+        }
+
+        return operationsMap;
+    } catch (err) {
+        console.error(chalk.red('❌ Failed to scan operations:'), err);
+        return operationsMap;
+    }
 }
 
 /**
@@ -440,4 +404,3 @@ export async function askForResourceName(nodeDir: string): Promise<{ name: strin
         return { name: resourceName, key: resourceKey };
     }
 }
-

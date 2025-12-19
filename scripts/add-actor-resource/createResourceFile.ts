@@ -31,7 +31,7 @@ export async function createResourceFile(
 	console.log(chalk.cyan('📝 Creating resource folder and file...'));
 
 	// Read the template
-	const templatePath = path.join(__dirname, '../templates', 'resource.ts.tpl');
+	const templatePath = path.join(__dirname, '../utils/templates', 'resource.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 
 	// Generate operation constant name

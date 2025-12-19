@@ -2,15 +2,14 @@ import chalk from 'chalk';
 import * as path from 'path';
 import * as fs from 'fs';
 import {
-	getActorIdFromPackageJson,
-	getNodeDirNameFromPackageJson,
 	askForOperationName,
 	askForOperationDescription,
 	getResourcesList,
 	askForResourceSelection,
-} from '../utils.ts';
-import { fetchActorInputSchema } from '../buildInputFunctions.ts';
-import type { ApifyInputSchema } from '../types.ts';
+} from '../utils/inputPrompts.ts';
+import { getActorIdFromPackageJson, getNodeDirNameFromPackageJson } from '../utils/packageUtils.ts';
+import { fetchActorInputSchema } from '../utils/apifyUtils.ts';
+import type { ApifyInputSchema } from '../utils/types.ts';
 import { createOperationFile, updateResourceFile } from './createOperationFile.ts';
 
 export async function addActorOperation() {

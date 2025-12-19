@@ -1,8 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { INodeProperties } from 'n8n-workflow';
-import type { ApifyInputSchema } from '../types.ts';
-import { convertApifyToN8n } from '../init-actor-app/actorSchemaConverter.ts';
+import type { ApifyInputSchema } from '../utils/types.ts';
+import { convertApifyToN8n } from '../utils/actorSchemaConverter.ts';
 import chalk from 'chalk';
 
 /**
@@ -135,7 +134,7 @@ export async function createOperationFile(
 	console.log(chalk.cyan('📝 Creating operation file...'));
 
 	// Read the template
-	const templatePath = path.join(__dirname, '../templates', 'operation.ts.tpl');
+	const templatePath = path.join(__dirname, '../utils/templates', 'operation.ts.tpl');
 	let template = fs.readFileSync(templatePath, 'utf-8');
 
 	// Parse input functions from the helpers directory

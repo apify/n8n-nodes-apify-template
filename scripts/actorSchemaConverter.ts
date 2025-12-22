@@ -213,10 +213,13 @@ function buildParameterAssignments(properties: INodeProperties[]): {
     const specialCases: string[] = [];
 
     for (const prop of properties) {
+        const displayName = prop.displayName || prop.name;
+        const comment = `		// ${displayName} (${prop.name})`;
+
         if (prop.type === 'fixedCollection') {
             // Generate inline logic for fixedCollection types
             for (const option of prop.options ?? []) {
-                paramAssignments.push(`
+                paramAssignments.push(`${comment}
 		...((() => {
 			const ${prop.name} = context.getNodeParameter('${prop.name}', itemIndex, {}) as { ${option.name}?: { value: string }[] };
 			return ${prop.name}?.${option.name}?.length ? { ${prop.name}: ${prop.name}.${option.name}.map(e => e.value) } : {};
@@ -224,7 +227,7 @@ function buildParameterAssignments(properties: INodeProperties[]): {
             }
         } else if (prop.type === 'json') {
             // Generate inline logic for JSON types with error handling
-            paramAssignments.push(`
+            paramAssignments.push(`${comment}
 		...((() => {
 			try {
 				const rawValue = context.getNodeParameter("${prop.name}", itemIndex);
@@ -236,7 +239,7 @@ function buildParameterAssignments(properties: INodeProperties[]): {
         } else {
             // Simple property assignment
             paramAssignments.push(
-                `		${prop.name}: context.getNodeParameter('${prop.name}', itemIndex),`
+                `${comment}\n		${prop.name}: context.getNodeParameter('${prop.name}', itemIndex),`
             );
         }
     }
@@ -264,7 +267,7 @@ export async function generateActorResources(
     const propertiesTemplate = fs.readFileSync(path.join(templatesDir, 'properties.ts.tpl'), 'utf-8');
     const executeTemplate = fs.readFileSync(path.join(templatesDir, 'execute.ts.tpl'), 'utf-8');
 
-    // --- Generate parameter assignments ---
+    // --- Generate parameter assignments (now includes inline comments) ---
     const { paramAssignments } = buildParameterAssignments(properties);
 
     // --- Generate properties.ts ---

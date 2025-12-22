@@ -18,9 +18,7 @@ Simply provide an Actor ID, and the script generates a complete n8n community no
     - [Subtitle](#subtitle)
     - [Node description](#node-description)
     - [AI tool result filtering](#ai-tool-result-filtering)
-    - [Additional customization](#additional-customization)
-    - [API utilities](#api-utilities)
-    - [Node metadata](#node-metadata)
+    - [Node discoverability](#node-discoverability)
     - [README template](#readme-template)
 - [Development](#development)
 - [Getting help](#getting-help)
@@ -101,10 +99,7 @@ Location: `nodes/Apify{YourActorName}/Apify{YourActorName}.node.ts`
 The default configuration uses the Apify logo:
 
 ```typescript
-icon: {
-  light: 'file:apify.svg',
-  dark: 'file:apifyDark.svg'
-}
+icon: 'file:logo.svg'
 ```
 
 Replace the SVG files in the node directory with your own branding.
@@ -155,7 +150,7 @@ AI agents perform better with clean, focused data that takes up less context.
 
 ---
 
-#### Additional customization
+#### Node discoverability
 
 The `Apify{YourActorName}.node.json` file controls where your node appears in n8n:
 
@@ -169,49 +164,6 @@ The `Apify{YourActorName}.node.json` file controls where your node appears in n8
 Adjust `categories` to match your Actor's purpose and add relevant search keywords to `alias`.
 
 The template includes pre-configured authentication in the `credentials/` directory. Users running n8n locally provide their Apify API token. Users on n8n cloud can authenticate via OAuth2.
-
----
-
-##### API utilities
-
-File: `helpers/genericFunctions.ts`
-
-This file provides helper functions for authenticated Apify API requests. The `apiRequest()` function makes authenticated HTTP requests to the Apify API. The `isUsedAsAiTool()` function detects if the node runs in an AI agent workflow. The `pollRunStatus()` function polls an Actor run until completion. The `getResults()` function fetches dataset items with optional AI tool filtering.
-
-The template adds these headers automatically:
-
-```typescript
-'x-apify-integration-platform': 'n8n'
-'x-apify-integration-app-id': 'website-content-crawler-app'
-'x-apify-integration-ai-tool': 'true' // when used with AI
-```
-
-Add custom request headers, implement retry logic, or filter results for AI tools in this file.
-
----
-
-##### Node metadata
-
-File: `Apify{YourActorName}.node.json`
-
-This file tells n8n where to categorize your node and what keywords to search for:
-
-```json
-{
-  "categories": ["Data & Storage", "Marketing & Content"],
-  "alias": ["apify", "crawler", "scraper", "website", "content"],
-  "resources": {
-    "credentialDocumentation": [
-      { "url": "https://docs.apify.com/platform/integrations/api#api-token" }
-    ],
-    "primaryDocumentation": [
-      { "url": "https://apify.com/apify/website-content-crawler" }
-    ]
-  }
-}
-```
-
-Adjust categories, add search keywords to `alias`, and update documentation links.
 
 ---
 
@@ -238,4 +190,7 @@ This launches n8n at `http://localhost:5678` with hot reloading enabled. Changes
 - [Apify API documentation](https://docs.apify.com)
 - [n8n Community Nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
 - [n8n community](https://community.n8n.io/)
-- Template issues - Open an issue in the [GitHub repository](https://github.com/apify/n8n-nodes-apify-instagram-scraper)
+
+---
+
+> **Before publishing:** Update placeholder values in [package.json](package.json) (AUTHOR_NAME, AUTHOR_EMAIL, PACKAGE_DESCRIPTION) with your information.

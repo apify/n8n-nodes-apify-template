@@ -7,6 +7,8 @@
 > Edit this file to customize the documentation that users will see when they install your node from npm or view it on GitHub.
 >
 > **DO NOT confuse this with README.md** - that file contains instructions for using this template repository.
+>
+> **PLACEHOLDERS:** Replace `PACKAGE_NAME` with your actual npm package name (e.g., `n8n-nodes-your-actor-name`) and `GITHUB_ORG/REPO_NAME` with your GitHub repository path before publishing.
 
 ---
 
@@ -221,13 +223,13 @@ Regardless of how you create and publish the GitHub Release:
         3.  Build and test processes.
         4.  Update `package.json` and `package-lock.json` to version `X.Y.Z`.
         5.  Commit these version changes back to the branch the release was targeted from with a message like `chore(release): set version to X.Y.Z [skip ci]`.
-        6.  Publish the package `@apify/n8n-nodes-apify-actor-template@X.Y.Z` to npm.
+        6.  Publish the package `PACKAGE_NAME@X.Y.Z` to npm.
 
 2.  Verify the Package on npm:
     After the workflow successfully completes (check the "Actions" tab in your GitHub repository):
     * Verify the new version on npm:
         ```bash
-        npm view @apify/n8n-nodes-apify-actor-template version
+        npm view PACKAGE_NAME version
         ```
         This should print `X.Y.Z`.
 
@@ -257,4 +259,4 @@ Track changes and updates to the node here.
 If you encounter issues:
 1. Check the [Apify API documentation](https://docs.apify.com)
 2. Review the [n8n Community Nodes documentation](https://docs.n8n.io/integrations/community-nodes/)
-3. Open an issue in the [GitHub repository](https://github.com/apify/n8n-nodes-apify-actor-template)
+3. Open an issue in the [GitHub repository](https://github.com/GITHUB_ORG/REPO_NAME/issues)

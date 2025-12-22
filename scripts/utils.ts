@@ -1,6 +1,6 @@
 import prompts from 'prompts';
 
-export const PACKAGE_NAME_PREFIX = "n8n-nodes-apify"
+export const PACKAGE_NAME_PREFIX = "n8n-nodes"
 
 export async function packageNameCheck(initialName: string): Promise<string> {
     let packageName = initialName;

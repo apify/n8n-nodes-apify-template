@@ -1,24 +1,16 @@
 {
-	"name": "@apify/n8n-nodes-apify-actor-template",
+	"name": "n8n-nodes-apify-actor-template",
 	"version": "0.0.0",
-	"description": "n8n nodes for Apify",
+	"description": "PACKAGE_DESCRIPTION",
 	"keywords": [
 		"n8n-community-node-package",
 		"n8n-nodes",
-		"n8n",
-		"apify",
-		"apify-node",
-		"apify-nodes"
+		"n8n"
 	],
 	"license": "MIT",
-	"homepage": "https://github.com/apify/n8n-nodes-apify-actor-template",
 	"author": {
-		"name": "Apify Team",
-		"email": "integrations@apify.com"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/apify/n8n-nodes-apify-actor-template.git"
+		"name": "AUTHOR_NAME",
+		"email": "AUTHOR_EMAIL"
 	},
 	"engines": {
 		"node": ">=18.10"

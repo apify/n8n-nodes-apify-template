@@ -19,7 +19,6 @@ Simply provide an Actor ID, and the script generates a complete n8n community no
     - [Node description](#node-description)
     - [AI tool result filtering](#ai-tool-result-filtering)
     - [Node discoverability](#node-discoverability)
-    - [README template](#readme-template)
 - [Development](#development)
 - [Getting help](#getting-help)
 
@@ -164,14 +163,6 @@ The `Apify{YourActorName}.node.json` file controls where your node appears in n8
 Adjust `categories` to match your Actor's purpose and add relevant search keywords to `alias`.
 
 The template includes pre-configured authentication in the `credentials/` directory. Users running n8n locally provide their Apify API token. Users on n8n cloud can authenticate via OAuth2.
-
----
-
-##### README template
-
-This repository contains two README files. This file (`README.md`) provides instructions for developers using this template to generate n8n nodes from Apify Actors. The `README_TEMPLATE.md` file provides template documentation for the generated node package that you publish to npm.
-
-After running the generation script, uses `README_TEMPLATE.md` as the README for your generated node package.
 
 ---
 

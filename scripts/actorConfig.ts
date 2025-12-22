@@ -44,47 +44,46 @@ async function setupActorIcon(
 	}
 
 	// If PNG or JPEG was downloaded, resize it to 60x60px
+	// Note: n8n only supports PNG and SVG. JPEG will be converted to PNG during resize.
 	if (result.format === 'png' || result.format === 'jpg') {
 		const extension = result.format === 'jpg' ? '.jpg' : '.png';
 		const sourcePath = path.join(targetDir, `actorIcon${extension}`);
-		const resizedPath = path.join(targetDir, 'actorIcon-resized.png');
+		const logoPath = path.join(targetDir, 'logo.png'); // Always output as PNG with logo.png name
 
-		const resizeSuccess = resizeRasterIcon(sourcePath, resizedPath);
+		console.log(result.format === 'jpg' ? '🔄 Converting JPEG to PNG and resizing...' : '🔄 Resizing PNG...');
+		const resizeSuccess = resizeRasterIcon(sourcePath, logoPath);
 
 		if (!resizeSuccess) {
 			// Resize failed, clean up and fall back
 			if (fs.existsSync(sourcePath)) fs.unlinkSync(sourcePath);
-			if (fs.existsSync(resizedPath)) fs.unlinkSync(resizedPath);
+			if (fs.existsSync(logoPath)) fs.unlinkSync(logoPath);
 			console.log('⚠️  Image resize failed - using default Apify icons');
 			return 'fallback';
 		}
 
-		// Copy resized PNG to both light and dark modes
-		const lightPath = path.join(targetDir, 'icon.png');
-		const darkPath = path.join(targetDir, 'iconDark.png');
-
-		fs.copyFileSync(resizedPath, lightPath);
-		fs.copyFileSync(resizedPath, darkPath);
-
-		// Remove temporary files
+		// Remove temporary source file
 		fs.unlinkSync(sourcePath);
-		fs.unlinkSync(resizedPath);
 
-		console.log('✅ Created icon.png and iconDark.png (same PNG for both modes)');
+		// Remove the default logo.svg since we now have logo.png
+		const defaultLogoSvg = path.join(targetDir, 'logo.svg');
+		if (fs.existsSync(defaultLogoSvg)) {
+			fs.unlinkSync(defaultLogoSvg);
+			console.log('🗑️  Removed default logo.svg (using logo.png)');
+		}
+
+		console.log('✅ Created logo.png');
 		return 'png';
 	}
 
-	// If SVG was downloaded, use it for both modes
+	// If SVG was downloaded, rename it to logo.svg
 	if (result.format === 'svg') {
 		const sourcePath = path.join(targetDir, 'actorIcon.svg');
-		const lightPath = path.join(targetDir, 'icon.svg');
-		const darkPath = path.join(targetDir, 'iconDark.svg');
+		const logoPath = path.join(targetDir, 'logo.svg');
 
-		fs.copyFileSync(sourcePath, lightPath);
-		fs.copyFileSync(sourcePath, darkPath);
+		fs.copyFileSync(sourcePath, logoPath);
 		fs.unlinkSync(sourcePath);
 
-		console.log('✅ Created icon.svg and iconDark.svg (same SVG for both modes)');
+		console.log('✅ Created logo.svg');
 		return 'svg';
 	}
 
@@ -136,15 +135,13 @@ export async function setConfig(
     let nodeFile = fs.readFileSync(nodeFilePath, 'utf-8');
 
     if (values.ICON_FORMAT === 'png') {
-        // Replace SVG references with PNG references
-        nodeFile = nodeFile.replace(/light: 'file:apify\.svg'/g, "light: 'file:icon.png'");
-        nodeFile = nodeFile.replace(/dark: 'file:apifyDark\.svg'/g, "dark: 'file:iconDark.png'");
+        // Replace logo.svg reference with logo.png
+        nodeFile = nodeFile.replace(/icon:\s*'file:logo\.svg'/g, "icon: 'file:logo.png'");
     } else if (values.ICON_FORMAT === 'svg') {
-        // Replace default Apify SVG names with custom icon names
-        nodeFile = nodeFile.replace(/light: 'file:apify\.svg'/g, "light: 'file:icon.svg'");
-        nodeFile = nodeFile.replace(/dark: 'file:apifyDark\.svg'/g, "dark: 'file:iconDark.svg'");
+        // Keep logo.svg reference (no change needed)
+        // The template already uses logo.svg
     }
-    // If fallback, keep original apify.svg references (they'll be copied later)
+    // If fallback, keep original logo.svg reference (default icon will be copied as logo.svg)
 
     // Replace other placeholders
     for (const [key, val] of Object.entries(values)) {

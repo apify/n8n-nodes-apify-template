@@ -4,26 +4,26 @@ import { execSync } from 'child_process';
 
 /**
  * Handles icon files after renaming:
- * - If custom icon was downloaded (PNG/SVG), remove default Apify icons
- * - If fallback, keep default Apify icons but don't rename them
+ * - Logs which icon is being used
+ * - Icon cleanup already happened in actorConfig.ts
  */
 function handleIconFiles(nodeDir: string, iconFormat: 'png' | 'svg' | 'fallback'): void {
-	const defaultSvgLight = path.join(nodeDir, 'apify.svg');
-	const defaultSvgDark = path.join(nodeDir, 'apifyDark.svg');
-
-	if (iconFormat === 'png' || iconFormat === 'svg') {
-		// Custom icon was downloaded - remove default Apify icons if they exist
-		if (fs.existsSync(defaultSvgLight)) {
-			fs.unlinkSync(defaultSvgLight);
-			console.log('🗑️  Removed default apify.svg (using custom icon)');
+	if (iconFormat === 'png') {
+		const logoPng = path.join(nodeDir, 'logo.png');
+		if (fs.existsSync(logoPng)) {
+			console.log('✅ Using custom actor icon: logo.png');
 		}
-		if (fs.existsSync(defaultSvgDark)) {
-			fs.unlinkSync(defaultSvgDark);
-			console.log('🗑️  Removed default apifyDark.svg (using custom icon)');
+	} else if (iconFormat === 'svg') {
+		const logoSvg = path.join(nodeDir, 'logo.svg');
+		if (fs.existsSync(logoSvg)) {
+			console.log('✅ Using custom actor icon: logo.svg');
 		}
 	} else {
-		// Fallback - default icons should already be in place
-		console.log('ℹ️  Using default Apify icons (apify.svg and apifyDark.svg)');
+		// Fallback - default logo.svg should already be in place
+		const logoSvg = path.join(nodeDir, 'logo.svg');
+		if (fs.existsSync(logoSvg)) {
+			console.log('ℹ️  Using default Apify icon (logo.svg)');
+		}
 	}
 }
 
@@ -41,7 +41,7 @@ export function refactorProject(
 	if (fs.existsSync(oldDir)) {
 		// List files before rename for debugging
 		const filesBeforeRename = fs.readdirSync(oldDir);
-		console.log(`📁 Files in ${oldDir} before rename:`, filesBeforeRename.filter(f => f.includes('icon') || f.includes('apify')));
+		console.log(`📁 Files in ${oldDir} before rename:`, filesBeforeRename.filter(f => f.includes('logo') || f.includes('icon')));
 
 		if (!fs.existsSync(newDir)) {
 			try {
@@ -53,7 +53,7 @@ export function refactorProject(
 
 			// List files after rename for debugging
 			const filesAfterRename = fs.readdirSync(newDir);
-			console.log(`📁 Files in ${newDir} after rename:`, filesAfterRename.filter(f => f.includes('icon') || f.includes('apify')));
+			console.log(`📁 Files in ${newDir} after rename:`, filesAfterRename.filter(f => f.includes('logo') || f.includes('icon')));
 		}
 
 		const exts = ["methods.ts", "node.json", "node.ts", "properties.ts"];

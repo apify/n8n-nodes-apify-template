@@ -82,12 +82,13 @@ export async function setupProject() {
         TARGET_CLASS_NAME,
     );
 
-    // Step 3: Rename files/folders and necessary code snippets
+    // Step 3: Rename files/folders and handle icons
     refactorProject(
         TARGET_CLASS_NAME,
         values.CLASS_NAME,
         TARGET_PACKAGE_NAME,
         values.PACKAGE_NAME,
+        values.ICON_FORMAT,
     );
 
     console.log('🎉 Project setup complete!');

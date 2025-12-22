@@ -3,6 +3,8 @@ import { refactorProject } from './refactorProject.ts';
 import { generateActorResources } from './actorSchemaConverter.ts';
 import { setConfig } from './actorConfig.ts';
 import * as readline from 'readline';
+import fs from 'fs';
+import path from 'path';
 
 // Targets (old names)
 const TARGET_CLASS_NAME = 'ApifyActorTemplate';
@@ -54,6 +56,17 @@ export async function setupProject() {
     const actor = await client.actor(actorId).get();
     if (!actor) {
         throw new Error(`❌ Actor with id ${actorId} not found.`);
+    }
+
+    // Pre-check: Ensure target folder doesn't exist before we start
+    const targetClassName = actor.name
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('');
+    const newActorDir = path.join('nodes', `Apify${targetClassName}`);
+
+    if (fs.existsSync(newActorDir)) {
+        throw new Error(`❌ Folder ${newActorDir} already exists. Please remove it before running the script again.`);
     }
 
     // Step 1: Fetch actor info & replace placeholders

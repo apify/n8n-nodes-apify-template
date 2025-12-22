@@ -14,26 +14,26 @@ export function refactorProject(
 
 	if (fs.existsSync(oldDir)) {
 		if (!fs.existsSync(newDir)) {
-		try {
-			execSync(`git mv "${oldDir}" "${newDir}"`);
-		} catch {
-			fs.renameSync(oldDir, newDir);
-		}
-		console.log(`✅ Renamed folder: nodes/${oldClass} -> nodes/${newClass}`);
+			try {
+				execSync(`git mv "${oldDir}" "${newDir}"`);
+			} catch {
+				fs.renameSync(oldDir, newDir);
+			}
+			console.log(`✅ Renamed folder: nodes/${oldClass} -> nodes/${newClass}`);
 		}
 
 		const exts = ["methods.ts", "node.json", "node.ts", "properties.ts"];
 		for (const ext of exts) {
-		const oldFile = path.join(newDir, `${oldClass}.${ext}`);
-		const newFile = path.join(newDir, `${newClass}.${ext}`);
-		if (fs.existsSync(oldFile)) {
-			try {
-			execSync(`git mv "${oldFile}" "${newFile}"`);
-			} catch {
-			fs.renameSync(oldFile, newFile);
+			const oldFile = path.join(newDir, `${oldClass}.${ext}`);
+			const newFile = path.join(newDir, `${newClass}.${ext}`);
+			if (fs.existsSync(oldFile)) {
+				try {
+					execSync(`git mv "${oldFile}" "${newFile}"`);
+				} catch {
+					fs.renameSync(oldFile, newFile);
+				}
+				console.log(`Renamed: ${oldFile} -> ${newFile}`);
 			}
-			console.log(`Renamed: ${oldFile} -> ${newFile}`);
-		}
 		}
 		console.log(`✅ Renamed files inside nodes/${newClass}`);
 	} else {

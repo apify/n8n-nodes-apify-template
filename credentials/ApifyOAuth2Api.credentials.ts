@@ -9,10 +9,7 @@ export class ApifyOAuth2Api implements ICredentialType {
 
 	displayName = 'Apify OAuth2 API';
 
-	icon: Icon = {
-		dark: 'file:../nodes/ApifyActorTemplate/apifyDark.svg',
-		light: 'file:../nodes/ApifyActorTemplate/apify.svg'
-	}
+	icon: Icon = "file:../nodes/ApifyActorTemplate/logo.svg"
 
 	// TODO: documentation URL for Apify OAuth2 API missing
 	documentationUrl = 'https://docs.apify.com/api/v2';

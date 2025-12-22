@@ -154,5 +154,26 @@ export async function setConfig(
     fs.writeFileSync(nodeFilePath, nodeFile, 'utf-8');
     console.log(`✅ Updated placeholders in ${nodeFilePath}`);
 
+    // Update credential files icon references
+    const credentialFiles = [
+        path.join('credentials', 'ApifyApi.credentials.ts'),
+        path.join('credentials', 'ApifyOAuth2Api.credentials.ts'),
+    ];
+
+    for (const credFile of credentialFiles) {
+        if (fs.existsSync(credFile)) {
+            let credContent = fs.readFileSync(credFile, 'utf-8');
+
+            if (values.ICON_FORMAT === 'png') {
+                // Replace logo.svg with logo.png in credentials
+                credContent = credContent.replace(/logo\.svg/g, 'logo.png');
+            }
+            // If svg or fallback, keep logo.svg (no change needed)
+
+            fs.writeFileSync(credFile, credContent, 'utf-8');
+            console.log(`✅ Updated icon reference in ${credFile}`);
+        }
+    }
+
     return values;
 }

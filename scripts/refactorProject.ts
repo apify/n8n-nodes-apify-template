@@ -120,4 +120,30 @@ export function refactorProject(
 		// skip binary/unreadable files
 		}
 	}
+
+	// Update credential files separately to fix icon paths
+	const credentialFiles = [
+		path.join("credentials", "ApifyApi.credentials.ts"),
+		path.join("credentials", "ApifyOAuth2Api.credentials.ts"),
+	];
+
+	for (const credFile of credentialFiles) {
+		if (fs.existsSync(credFile)) {
+			try {
+				const content = fs.readFileSync(credFile, "utf8");
+				// Replace the old class name in the icon path
+				const updated = content.replace(
+					new RegExp(`../nodes/${oldClass}/`, "g"),
+					`../nodes/${newClass}/`
+				);
+
+				if (updated !== content) {
+					fs.writeFileSync(credFile, updated, "utf8");
+					console.log(`✅ Updated icon path in ${credFile}`);
+				}
+			} catch (err) {
+				console.error(`⚠️ Failed to update ${credFile}:`, err);
+			}
+		}
+	}
 }

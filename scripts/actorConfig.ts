@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import type { Actor } from 'apify-client';
-import { PACKAGE_NAME_PREFIX, packageNameCheck } from './utils.ts';
-import { downloadActorIcon, resizeRasterIcon } from './iconDownloader.ts';
+import { PACKAGE_NAME_PREFIX, packageNameCheck } from './utils';
+import { downloadActorIcon, resizeRasterIcon } from './iconDownloader';
 
 export interface PlaceholderValues {
     PACKAGE_NAME: string;
@@ -137,11 +137,7 @@ export async function setConfig(
     if (values.ICON_FORMAT === 'png') {
         // Replace logo.svg reference with logo.png
         nodeFile = nodeFile.replace(/icon:\s*'file:logo\.svg'/g, "icon: 'file:logo.png'");
-    } else if (values.ICON_FORMAT === 'svg') {
-        // Keep logo.svg reference (no change needed)
-        // The template already uses logo.svg
     }
-    // If fallback, keep original logo.svg reference (default icon will be copied as logo.svg)
 
     // Replace other placeholders
     for (const [key, val] of Object.entries(values)) {

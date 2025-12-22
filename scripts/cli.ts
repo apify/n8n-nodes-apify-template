@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { setupProject } from './setupProject.ts';
+import { setupProject } from './setupProject';
 
 setupProject()
 	.catch((error) => {

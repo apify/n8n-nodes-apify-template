@@ -1,7 +1,7 @@
 import { ApifyClient } from 'apify-client';
-import { refactorProject } from './refactorProject.ts';
-import { generateActorResources } from './actorSchemaConverter.ts';
-import { setConfig } from './actorConfig.ts';
+import { refactorProject } from './refactorProject';
+import { generateActorResources } from './actorSchemaConverter';
+import { setConfig } from './actorConfig';
 import * as readline from 'readline';
 import fs from 'fs';
 import path from 'path';

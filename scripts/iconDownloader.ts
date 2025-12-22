@@ -203,25 +203,3 @@ export async function resizeRasterIcon(sourcePath: string, targetPath: string): 
 		return false;
 	}
 }
-
-/**
- * Copies default Apify icons to target directory
- * Used as fallback when actor icon download fails
- */
-export function copyDefaultIcons(sourceDir: string, targetDir: string): void {
-	const iconFiles = ['apify.svg', 'apifyDark.svg'];
-
-	if (!fs.existsSync(targetDir)) {
-		fs.mkdirSync(targetDir, { recursive: true });
-	}
-
-	for (const iconFile of iconFiles) {
-		const sourcePath = path.join(sourceDir, iconFile);
-		const targetPath = path.join(targetDir, iconFile);
-
-		if (fs.existsSync(sourcePath)) {
-			fs.copyFileSync(sourcePath, targetPath);
-			console.log(`✅ Copied default icon: ${iconFile}`);
-		}
-	}
-}

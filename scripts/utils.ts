@@ -1,6 +1,20 @@
-import prompts from 'prompts';
+import * as readline from 'readline';
 
 export const PACKAGE_NAME_PREFIX = "n8n-nodes"
+
+async function getUserInput(prompt: string): Promise<string> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+
+    return new Promise((resolve) => {
+        rl.question(prompt, (answer) => {
+            rl.close();
+            resolve(answer.trim());
+        });
+    });
+}
 
 export async function packageNameCheck(initialName: string): Promise<string> {
     let packageName = initialName;
@@ -21,23 +35,21 @@ export async function packageNameCheck(initialName: string): Promise<string> {
         }
 
         // 3. Ask for another suffix (make prefix clear)
-        const response = await prompts({
-            type: 'text',
-            name: 'userValue',
-            message: `Choose a new package name. ${PACKAGE_NAME_PREFIX}-`,
-            format: (value) => `${PACKAGE_NAME_PREFIX}-${value}`,
-            validate: (value) => {
-                const candidate = `${PACKAGE_NAME_PREFIX}-${value}`;
-                return validatePackageName(candidate) || 'Invalid package name format';
-            },
-        });
+        const suffix = await getUserInput(`Choose a new package name. ${PACKAGE_NAME_PREFIX}-`);
 
-        // Handle CTRL + C
-        if (!response.userValue) {
+        // Handle empty input or CTRL + C
+        if (!suffix) {
             process.exit(0);
         }
 
-        packageName = response.userValue; // already formatted with prefix
+        const candidate = `${PACKAGE_NAME_PREFIX}-${suffix}`;
+
+        if (!validatePackageName(candidate)) {
+            console.log('Invalid package name format');
+            continue;
+        }
+
+        packageName = candidate;
         console.log(`👉 Trying package name: ${packageName}`);
     }
 }

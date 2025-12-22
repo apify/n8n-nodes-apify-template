@@ -51,7 +51,7 @@ async function setupActorIcon(
 		const logoPath = path.join(targetDir, 'logo.png'); // Always output as PNG with logo.png name
 
 		console.log(result.format === 'jpg' ? '🔄 Converting JPEG to PNG and resizing...' : '🔄 Resizing PNG...');
-		const resizeSuccess = resizeRasterIcon(sourcePath, logoPath);
+		const resizeSuccess = await resizeRasterIcon(sourcePath, logoPath);
 
 		if (!resizeSuccess) {
 			// Resize failed, clean up and fall back

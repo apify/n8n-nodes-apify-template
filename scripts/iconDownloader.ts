@@ -3,7 +3,7 @@ import path from 'path';
 import https from 'https';
 import http from 'http';
 import { URL } from 'url';
-import { execSync } from 'child_process';
+import sharp from 'sharp';
 
 export interface DownloadResult {
 	success: boolean;
@@ -155,28 +155,32 @@ function downloadFile(
 }
 
 /**
- * Resizes a raster image (PNG/JPEG) from 512x512px to 60x60px using npx sharp-cli
- * sharp-cli supports multiple input formats (PNG, JPEG, WebP, AVIF, TIFF, GIF, etc.)
+ * Resizes a raster image (PNG/JPEG) from 512x512px to 60x60px using sharp
+ * sharp supports multiple input formats (PNG, JPEG, WebP, AVIF, TIFF, GIF, etc.)
  * @param sourcePath - Path to the source image file
  * @param targetPath - Path where the resized image should be saved (will be PNG)
  * @returns true if resize succeeded, false otherwise
  */
-export function resizeRasterIcon(sourcePath: string, targetPath: string): boolean {
+export async function resizeRasterIcon(sourcePath: string, targetPath: string): Promise<boolean> {
 	try {
 		if (!fs.existsSync(sourcePath)) {
 			console.warn(`⚠️ Source file does not exist: ${sourcePath}`);
 			return false;
 		}
 
-		// Use sharp-cli to resize the image
-		// sharp-cli syntax: sharp -i input.png -o output.png resize 60 60
-		const command = `npx --yes sharp-cli@latest -i "${sourcePath}" -o "${targetPath}" resize 60 60 --kernel lanczos3 --fit cover`;
-
 		console.log(`🔄 Resizing icon from 512x512px to 60x60px using sharp...`);
-		execSync(command, { stdio: 'pipe' }); // pipe stdio to suppress sharp output
+
+		// Use sharp to resize the image
+		await sharp(sourcePath)
+			.resize(60, 60, {
+				kernel: sharp.kernel.lanczos3,
+				fit: 'cover',
+			})
+			.png()
+			.toFile(targetPath);
 
 		if (!fs.existsSync(targetPath)) {
-			throw new Error('sharp-cli did not produce output file');
+			throw new Error('sharp did not produce output file');
 		}
 
 		// Verify the output file has content

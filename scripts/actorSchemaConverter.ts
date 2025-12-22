@@ -231,10 +231,20 @@ function buildParameterAssignments(properties: INodeProperties[]): {
 		...((() => {
 			try {
 				const rawValue = context.getNodeParameter("${prop.name}", itemIndex);
+				if (typeof rawValue === "string" && rawValue.trim() === "") {
+					return { ${prop.name}: undefined };
+				}
 				return { ${prop.name}: typeof rawValue === "string" ? JSON.parse(rawValue) : rawValue };
 			} catch (error) {
 				throw new Error(\`Invalid JSON in parameter "${prop.name}": \${(error as Error).message}\`);
 			}
+		})()),`);
+        } else if (prop.type === 'dateTime' || (prop.type === 'string' && !prop.required)) {
+            // For optional dateTime and string fields, only include if not empty
+            paramAssignments.push(`${comment}
+		...((() => {
+			const value = context.getNodeParameter('${prop.name}', itemIndex);
+			return (value !== undefined && value !== null && value !== '') ? { ${prop.name}: value } : {};
 		})()),`);
         } else {
             // Simple property assignment

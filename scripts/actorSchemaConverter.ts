@@ -269,7 +269,7 @@ export async function generateActorResources(
     executePaths: string[],
     TARGET_CLASS_NAME: string
 ) {
-    console.log('⚙️  Fetching properties from actor input schema...');
+    console.log('⚙️  Fetching properties from Actor input schema...');
     const properties = (await createActorAppSchemaForN8n(client, actor)) as INodeProperties[];
 
     // --- Load templates ---

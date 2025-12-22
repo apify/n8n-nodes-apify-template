@@ -16,7 +16,7 @@ export interface PlaceholderValues {
 }
 
 /**
- * Downloads actor icon and sets up icon files in the template directory
+ * Downloads Actor icon and sets up icon files in the template directory
  * @param actor - Actor object from Apify API
  * @param targetDir - Target directory for the node (e.g., nodes/ApifyActorTemplate)
  * @returns Icon format ('png', 'svg', or 'fallback')
@@ -25,7 +25,7 @@ async function setupActorIcon(
 	actor: Actor,
 	targetDir: string,
 ): Promise<'png' | 'svg' | 'fallback'> {
-	// Check if actor has pictureUrl
+	// Check if Actor has pictureUrl
 	const pictureUrl = (actor as any).pictureUrl;
 
 	if (!pictureUrl) {
@@ -33,7 +33,7 @@ async function setupActorIcon(
 		return 'fallback';
 	}
 
-	console.log(`🎨 Downloading actor icon from: ${pictureUrl}`);
+	console.log(`🎨 Downloading Actor icon from: ${pictureUrl}`);
 
 	// Download the icon
 	const result = await downloadActorIcon(pictureUrl, targetDir, 'actorIcon');
@@ -91,7 +91,7 @@ async function setupActorIcon(
 }
 
 /**
- * Uses an existing ApifyClient to fetch actor info,
+ * Uses an existing ApifyClient to fetch Actor info,
  * generates placeholder values, replaces them in the node file,
  * and returns the values.
  */
@@ -127,7 +127,7 @@ export async function setConfig(
     // Check for package name availability on npm registry
     values.PACKAGE_NAME = await packageNameCheck(values.PACKAGE_NAME);
 
-    // Download actor icon
+    // Download Actor icon
     const templateDir = path.dirname(nodeFilePath);
     values.ICON_FORMAT = await setupActorIcon(actor, templateDir);
 

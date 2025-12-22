@@ -69,7 +69,7 @@ export async function setupProject() {
         throw new Error(`❌ Folder ${newActorDir} already exists. Please remove it before running the script again.`);
     }
 
-    // Step 1: Fetch actor info & replace placeholders
+    // Step 1: Fetch Actor info & replace placeholders
     const values = await setConfig(actor, NODE_FILE_PATH, X_PLATFORM_HEADER_ID);
 
     // Step 2: Generate n8n resources based on Actor input schema

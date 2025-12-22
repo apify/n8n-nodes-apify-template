@@ -11,12 +11,12 @@ function handleIconFiles(nodeDir: string, iconFormat: 'png' | 'svg' | 'fallback'
 	if (iconFormat === 'png') {
 		const logoPng = path.join(nodeDir, 'logo.png');
 		if (fs.existsSync(logoPng)) {
-			console.log('✅ Using custom actor icon: logo.png');
+			console.log('✅ Using custom Actor icon: logo.png');
 		}
 	} else if (iconFormat === 'svg') {
 		const logoSvg = path.join(nodeDir, 'logo.svg');
 		if (fs.existsSync(logoSvg)) {
-			console.log('✅ Using custom actor icon: logo.svg');
+			console.log('✅ Using custom Actor icon: logo.svg');
 		}
 	} else {
 		// Fallback - default logo.svg should already be in place

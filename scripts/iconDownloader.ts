@@ -57,7 +57,7 @@ export async function downloadActorIcon(
 			throw new Error('Downloaded file is empty');
 		}
 
-		console.log(`✅ Downloaded actor icon: ${targetPath}`);
+		console.log(`✅ Downloaded Actor icon: ${targetPath}`);
 
 		// Determine format (SVG or raster image that needs resizing)
 		let format: 'png' | 'jpg' | 'svg' | 'fallback';

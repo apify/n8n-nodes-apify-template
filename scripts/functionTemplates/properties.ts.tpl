@@ -1,5 +1,40 @@
 import { IExecuteFunctions, INodeProperties } from 'n8n-workflow';
 
+// Helper functions for parameter extraction
+function getFixedCollectionParam(
+	context: IExecuteFunctions,
+	paramName: string,
+	itemIndex: number,
+	optionName: string,
+	transformType: 'passthrough' | 'mapValues',
+): Record<string, any> {
+	const param = context.getNodeParameter(paramName, itemIndex, {}) as { [key: string]: any[] };
+	if (!param?.[optionName]?.length) return {};
+
+	let result = param[optionName];
+	if (transformType === 'mapValues') {
+		result = result.map((item: any) => item.value);
+	}
+	return { [paramName]: result };
+}
+
+function getJsonParam(context: IExecuteFunctions, paramName: string, itemIndex: number): Record<string, any> {
+	try {
+		const rawValue = context.getNodeParameter(paramName, itemIndex);
+		if (typeof rawValue === 'string' && rawValue.trim() === '') {
+			return {};
+		}
+		return { [paramName]: typeof rawValue === 'string' ? JSON.parse(rawValue) : rawValue };
+	} catch (error) {
+		throw new Error(`Invalid JSON in parameter "${paramName}": ${(error as Error).message}`);
+	}
+}
+
+function getOptionalParam(context: IExecuteFunctions, paramName: string, itemIndex: number): Record<string, any> {
+	const value = context.getNodeParameter(paramName, itemIndex);
+	return value !== undefined && value !== null && value !== '' ? { [paramName]: value } : {};
+}
+
 export function buildActorInput(
 	context: IExecuteFunctions,
 	itemIndex: number,

@@ -221,8 +221,8 @@ function buildParameterAssignments(properties: INodeProperties[]): {
             for (const option of prop.options ?? []) {
                 paramAssignments.push(`${comment}
 		...((() => {
-			const ${prop.name} = context.getNodeParameter('${prop.name}', itemIndex, {}) as { ${option.name}?: { value: string }[] };
-			return ${prop.name}?.${option.name}?.length ? { ${prop.name}: ${prop.name}.${option.name}.map(e => e.value) } : {};
+			const ${prop.name} = context.getNodeParameter('${prop.name}', itemIndex, {}) as { ${option.name}?: { url: string }[] };
+			return ${prop.name}?.${option.name}?.length ? { ${prop.name}: ${prop.name}.${option.name} } : {};
 		})()),`);
             }
         } else if (prop.type === 'json') {

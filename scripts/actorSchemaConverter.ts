@@ -95,6 +95,16 @@ function getPropsForTypeN8n(field: ApifyInputField): Partial<INodeProperties> & 
                 },
             };
 
+        case 'number':
+            return {
+                type: 'number',
+                default: field.default ?? 0,
+                typeOptions: {
+                    ...(field.minimum !== undefined ? { minValue: field.minimum } : {}),
+                    ...(field.maximum !== undefined ? { maxValue: field.maximum } : {}),
+                },
+            };
+
         case 'boolean':
             return {
                 type: 'boolean',
@@ -219,33 +229,30 @@ function buildParameterAssignments(properties: INodeProperties[]): {
         if (prop.type === 'fixedCollection') {
             // Generate inline logic for fixedCollection types
             for (const option of prop.options ?? []) {
+                let transformLogic = `${prop.name}.${option.name}`;
+                // Transform based on the option name (which indicates the type)
+                if (option.name === 'values') {
+                    // stringList: transform [{ value: "..." }] to ["..."]
+                    transformLogic = `${prop.name}.${option.name}.map((item: any) => item.value)`;
+                }
+                // keyValue and requestListSources pass through as-is (as arrays)
+
                 paramAssignments.push(`${comment}
-		...((() => {
-			const ${prop.name} = context.getNodeParameter('${prop.name}', itemIndex, {}) as { ${option.name}?: { value: string }[] };
-			return ${prop.name}?.${option.name}?.length ? { ${prop.name}: ${prop.name}.${option.name}.map(e => e.value) } : {};
-		})()),`);
+		...getFixedCollectionParam(context, '${prop.name}', itemIndex, '${option.name}', '${transformLogic === `${prop.name}.${option.name}` ? 'passthrough' : 'mapValues'}'),`);
             }
         } else if (prop.type === 'json') {
             // Generate inline logic for JSON types with error handling
             paramAssignments.push(`${comment}
-		...((() => {
-			try {
-				const rawValue = context.getNodeParameter("${prop.name}", itemIndex);
-				if (typeof rawValue === "string" && rawValue.trim() === "") {
-					return { ${prop.name}: undefined };
-				}
-				return { ${prop.name}: typeof rawValue === "string" ? JSON.parse(rawValue) : rawValue };
-			} catch (error) {
-				throw new Error(\`Invalid JSON in parameter "${prop.name}": \${(error as Error).message}\`);
-			}
-		})()),`);
+		...getJsonParam(context, '${prop.name}', itemIndex),`);
+        } else if (prop.type === 'number') {
+            // Number types are always directly assigned
+            paramAssignments.push(
+                `${comment}\n		${prop.name}: context.getNodeParameter('${prop.name}', itemIndex),`
+            );
         } else if (prop.type === 'dateTime' || (prop.type === 'string' && !prop.required)) {
             // For optional dateTime and string fields, only include if not empty
             paramAssignments.push(`${comment}
-		...((() => {
-			const value = context.getNodeParameter('${prop.name}', itemIndex);
-			return (value !== undefined && value !== null && value !== '') ? { ${prop.name}: value } : {};
-		})()),`);
+		...getOptionalParam(context, '${prop.name}', itemIndex),`);
         } else {
             // Simple property assignment
             paramAssignments.push(

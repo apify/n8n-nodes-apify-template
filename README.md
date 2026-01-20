@@ -185,3 +185,20 @@ This launches n8n at `http://localhost:5678` with hot reloading enabled. Changes
 ---
 
 > **Before publishing:** Update placeholder values in [package.json](package.json) (AUTHOR_NAME, AUTHOR_EMAIL, PACKAGE_DESCRIPTION) with your information.
+
+---
+
+## Published Nodes
+
+Community nodes built with this template:
+
+| Node | npm Package | Creator |
+|------|-------------|---------|
+| **Facebook Search** | [n8n-nodes-facebook-search-ppr](https://www.npmjs.com/package/n8n-nodes-facebook-search-ppr) | [danek](https://apify.com/danek) |
+| **LinkedIn Profile Enrichment** | [n8n-nodes-linkedin-profile-enrichment](https://www.npmjs.com/package/n8n-nodes-linkedin-profile-enrichment) | [anchor](https://apify.com/anchor) |
+| **Google Ads Scraper** | [n8n-nodes-google-ads-scraper](https://www.npmjs.com/package/n8n-nodes-google-ads-scraper) | [silva95gustavo](https://apify.com/silva95gustavo) |
+| **Skip Trace Scraper** | [n8n-nodes-skip-trace](https://www.npmjs.com/package/n8n-nodes-skip-trace) | [one-api](https://apify.com/one-api) |
+| **Google Search** | [n8n-nodes-google-search-scraper](https://www.npmjs.com/package/n8n-nodes-google-search-scraper) | [compass](https://apify.com/compass) |
+| **Google Maps Scraper** | [n8n-nodes-crawler-google-places](https://www.npmjs.com/package/n8n-nodes-crawler-google-places) | [apify](https://apify.com/apify) |
+
+Built a node with this template? Open a PR to add it to the list!

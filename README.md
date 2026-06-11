@@ -201,7 +201,12 @@ Community nodes built with this template:
 | **Google Search** | [n8n-nodes-google-search-scraper](https://www.npmjs.com/package/n8n-nodes-google-search-scraper) | [compass](https://apify.com/compass) |
 | **Google Maps Scraper** | [n8n-nodes-crawler-google-places](https://www.npmjs.com/package/n8n-nodes-crawler-google-places) | [apify](https://apify.com/apify) |
 | **Hypebridge Actors** | [n8n-nodes-hypebridge-actors](https://www.npmjs.com/package/n8n-nodes-hypebridge-actors) | [hypebridge](https://apify.com/hypebridge) |
+<<<<<<< main
 | **TikTok Scraper Ultimate** | [n8n-nodes-tiktok-scraper-ultimate](https://www.npmjs.com/package/n8n-nodes-tiktok-scraper-ultimate) | [tiktok-scraper-ultimate](https://apify.com/novi/tiktok-scraper-ultimate) |
 | **TikTok User Info API** | [n8n-nodes-tiktok-user-info-api](https://www.npmjs.com/package/n8n-nodes-tiktok-user-info-api) | [tiktok-user-info-api](https://apify.com/novi/tiktok-user-info-api) |
+=======
+| **TikTok Scraper Ultimate** | [n8n-nodes-tiktok-scraper-ultimate](https://www.npmjs.com/package/n8n-nodes-tiktok-scraper-ultimate) | [novi](https://apify.com/novi) |
+| **TheirStack Actor** | [n8n-nodes-theirstack-actor](https://www.npmjs.com/package/n8n-nodes-theirstack-actor) | [ernesta_labs](https://apify.com/ernesta_labs) |
+>>>>>>> main
 
 Built a node with this template? Open a PR to add it to the list!

@@ -203,6 +203,7 @@ Community nodes built with this template:
 | **Hypebridge Actors** | [n8n-nodes-hypebridge-actors](https://www.npmjs.com/package/n8n-nodes-hypebridge-actors) | [hypebridge](https://apify.com/hypebridge) |
 | **TikTok Scraper Ultimate** | [n8n-nodes-tiktok-scraper-ultimate](https://www.npmjs.com/package/n8n-nodes-tiktok-scraper-ultimate) | [novi](https://apify.com/novi) |
 | **TheirStack Actor** | [n8n-nodes-theirstack-actor](https://www.npmjs.com/package/n8n-nodes-theirstack-actor) | [ernesta_labs](https://apify.com/ernesta_labs) |
+| **YouTube Transcripts Actor** | [n8n-nodes-youtube-transcripts-api](https://www.npmjs.com/package/n8n-nodes-youtube-transcripts-api) | [John](https://apify.com/johnvc) |
 | **Apple App Store** | [n8n-nodes-apple-app-store-api](https://www.npmjs.com/package/n8n-nodes-apple-app-store-api) | [johnvc](https://apify.com/johnvc) |
 | **Fuel Prices** | [n8n-nodes-fuel-prices-api](https://www.npmjs.com/package/n8n-nodes-fuel-prices-api) | [johnvc](https://apify.com/johnvc) |
 

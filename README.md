@@ -215,5 +215,6 @@ Community nodes built with this template:
 | **Startup Investors** | [n8n-nodes-startup-investors-api](https://www.npmjs.com/package/n8n-nodes-startup-investors-api) | [johnvc](https://apify.com/johnvc) |
 | **Congress Trades** | [n8n-nodes-congress-trades-api](https://www.npmjs.com/package/n8n-nodes-congress-trades-api) | [johnvc](https://apify.com/johnvc) |
 | **Google AI Overview** | [n8n-nodes-google-ai-overview-api](https://www.npmjs.com/package/n8n-nodes-google-ai-overview-api) | [johnvc](https://apify.com/johnvc) |
+| **Google News** | [n8n-nodes-google-news-api](https://www.npmjs.com/package/n8n-nodes-google-news-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

@@ -229,5 +229,6 @@ Community nodes built with this template:
 | **Yelp** | [n8n-nodes-yelp-api](https://www.npmjs.com/package/n8n-nodes-yelp-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Short Videos** | [n8n-nodes-google-short-videos-api](https://www.npmjs.com/package/n8n-nodes-google-short-videos-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Maps Directions** | [n8n-nodes-google-maps-directions-api](https://www.npmjs.com/package/n8n-nodes-google-maps-directions-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Images** | [n8n-nodes-google-images-api](https://www.npmjs.com/package/n8n-nodes-google-images-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

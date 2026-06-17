@@ -226,5 +226,6 @@ Community nodes built with this template:
 | **Google Maps Places** | [n8n-nodes-google-maps-places-api](https://www.npmjs.com/package/n8n-nodes-google-maps-places-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Scholar** | [n8n-nodes-google-scholar-api](https://www.npmjs.com/package/n8n-nodes-google-scholar-api) | [johnvc](https://apify.com/johnvc) |
 | **OpenTable Reviews** | [n8n-nodes-opentable-reviews-api](https://www.npmjs.com/package/n8n-nodes-opentable-reviews-api) | [johnvc](https://apify.com/johnvc) |
+| **Yelp** | [n8n-nodes-yelp-api](https://www.npmjs.com/package/n8n-nodes-yelp-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

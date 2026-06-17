@@ -236,5 +236,6 @@ Community nodes built with this template:
 | **Google Ads Transparency** | [n8n-nodes-google-ads-transparency-api](https://www.npmjs.com/package/n8n-nodes-google-ads-transparency-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Travel Explore** | [n8n-nodes-google-travel-explore-api](https://www.npmjs.com/package/n8n-nodes-google-travel-explore-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Autocomplete** | [n8n-nodes-google-autocomplete-api](https://www.npmjs.com/package/n8n-nodes-google-autocomplete-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Maps Contributor Reviews** | [n8n-nodes-google-maps-contributor-reviews-api](https://www.npmjs.com/package/n8n-nodes-google-maps-contributor-reviews-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

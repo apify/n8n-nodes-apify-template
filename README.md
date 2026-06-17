@@ -235,5 +235,6 @@ Community nodes built with this template:
 | **Brave AI Mode** | [n8n-nodes-brave-ai-mode-api](https://www.npmjs.com/package/n8n-nodes-brave-ai-mode-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Ads Transparency** | [n8n-nodes-google-ads-transparency-api](https://www.npmjs.com/package/n8n-nodes-google-ads-transparency-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Travel Explore** | [n8n-nodes-google-travel-explore-api](https://www.npmjs.com/package/n8n-nodes-google-travel-explore-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Autocomplete** | [n8n-nodes-google-autocomplete-api](https://www.npmjs.com/package/n8n-nodes-google-autocomplete-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

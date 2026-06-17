@@ -223,5 +223,6 @@ Community nodes built with this template:
 | **Google Finance** | [n8n-nodes-google-finance-api](https://www.npmjs.com/package/n8n-nodes-google-finance-api) | [johnvc](https://apify.com/johnvc) |
 | **Apple Maps** | [n8n-nodes-apple-maps-api](https://www.npmjs.com/package/n8n-nodes-apple-maps-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Patents** | [n8n-nodes-google-patents-api](https://www.npmjs.com/package/n8n-nodes-google-patents-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Maps Places** | [n8n-nodes-google-maps-places-api](https://www.npmjs.com/package/n8n-nodes-google-maps-places-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

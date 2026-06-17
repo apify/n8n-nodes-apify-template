@@ -217,5 +217,6 @@ Community nodes built with this template:
 | **Google AI Overview** | [n8n-nodes-google-ai-overview-api](https://www.npmjs.com/package/n8n-nodes-google-ai-overview-api) | [johnvc](https://apify.com/johnvc) |
 | **Google News** | [n8n-nodes-google-news-api](https://www.npmjs.com/package/n8n-nodes-google-news-api) | [johnvc](https://apify.com/johnvc) |
 | **Baidu Search** | [n8n-nodes-baidu-search-api](https://www.npmjs.com/package/n8n-nodes-baidu-search-api) | [johnvc](https://apify.com/johnvc) |
+| **DuckDuckGo Search** | [n8n-nodes-duckduckgo-search-api](https://www.npmjs.com/package/n8n-nodes-duckduckgo-search-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

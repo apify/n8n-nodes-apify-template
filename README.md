@@ -220,5 +220,6 @@ Community nodes built with this template:
 | **DuckDuckGo Search** | [n8n-nodes-duckduckgo-search-api](https://www.npmjs.com/package/n8n-nodes-duckduckgo-search-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Forums** | [n8n-nodes-google-forums-api](https://www.npmjs.com/package/n8n-nodes-google-forums-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Local** | [n8n-nodes-google-local-api](https://www.npmjs.com/package/n8n-nodes-google-local-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Finance** | [n8n-nodes-google-finance-api](https://www.npmjs.com/package/n8n-nodes-google-finance-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

@@ -233,5 +233,6 @@ Community nodes built with this template:
 | **Naver Search** | [n8n-nodes-naver-search-api](https://www.npmjs.com/package/n8n-nodes-naver-search-api) | [johnvc](https://apify.com/johnvc) |
 | **Naver AI Overview** | [n8n-nodes-naver-ai-overview-api](https://www.npmjs.com/package/n8n-nodes-naver-ai-overview-api) | [johnvc](https://apify.com/johnvc) |
 | **Brave AI Mode** | [n8n-nodes-brave-ai-mode-api](https://www.npmjs.com/package/n8n-nodes-brave-ai-mode-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Ads Transparency** | [n8n-nodes-google-ads-transparency-api](https://www.npmjs.com/package/n8n-nodes-google-ads-transparency-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

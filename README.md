@@ -238,5 +238,6 @@ Community nodes built with this template:
 | **Google Autocomplete** | [n8n-nodes-google-autocomplete-api](https://www.npmjs.com/package/n8n-nodes-google-autocomplete-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Maps Contributor Reviews** | [n8n-nodes-google-maps-contributor-reviews-api](https://www.npmjs.com/package/n8n-nodes-google-maps-contributor-reviews-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Maps Reviewer Geo Profile** | [n8n-nodes-google-maps-reviewer-geo-profile-api](https://www.npmjs.com/package/n8n-nodes-google-maps-reviewer-geo-profile-api) | [johnvc](https://apify.com/johnvc) |
+| **Earnings Call Transcript & SEC Filings** | [n8n-nodes-earnings-call-transcript-api](https://www.npmjs.com/package/n8n-nodes-earnings-call-transcript-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

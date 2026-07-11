@@ -206,5 +206,6 @@ Community nodes built with this template:
 | **YouTube Transcripts Actor** | [n8n-nodes-youtube-transcripts-api](https://www.npmjs.com/package/n8n-nodes-youtube-transcripts-api) | [John](https://apify.com/johnvc) |
 | **Apple App Store** | [n8n-nodes-apple-app-store-api](https://www.npmjs.com/package/n8n-nodes-apple-app-store-api) | [johnvc](https://apify.com/johnvc) |
 | **Fuel Prices** | [n8n-nodes-fuel-prices-api](https://www.npmjs.com/package/n8n-nodes-fuel-prices-api) | [johnvc](https://apify.com/johnvc) |
+| **Bing Copilot AI Answers** | [n8n-nodes-bing-copilot-api](https://www.npmjs.com/package/n8n-nodes-bing-copilot-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

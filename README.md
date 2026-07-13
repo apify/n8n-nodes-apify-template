@@ -206,6 +206,39 @@ Community nodes built with this template:
 | **YouTube Transcripts Actor** | [n8n-nodes-youtube-transcripts-api](https://www.npmjs.com/package/n8n-nodes-youtube-transcripts-api) | [John](https://apify.com/johnvc) |
 | **Apple App Store** | [n8n-nodes-apple-app-store-api](https://www.npmjs.com/package/n8n-nodes-apple-app-store-api) | [johnvc](https://apify.com/johnvc) |
 | **Fuel Prices** | [n8n-nodes-fuel-prices-api](https://www.npmjs.com/package/n8n-nodes-fuel-prices-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Jobs** | [n8n-nodes-google-jobs-api](https://www.npmjs.com/package/n8n-nodes-google-jobs-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Flights** | [n8n-nodes-google-flights-api](https://www.npmjs.com/package/n8n-nodes-google-flights-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Events** | [n8n-nodes-google-events-api](https://www.npmjs.com/package/n8n-nodes-google-events-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Hotels** | [n8n-nodes-google-hotels-api](https://www.npmjs.com/package/n8n-nodes-google-hotels-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Shopping** | [n8n-nodes-google-shopping-api](https://www.npmjs.com/package/n8n-nodes-google-shopping-api) | [johnvc](https://apify.com/johnvc) |
+| **Yandex Search** | [n8n-nodes-yandex-search-api](https://www.npmjs.com/package/n8n-nodes-yandex-search-api) | [johnvc](https://apify.com/johnvc) |
+| **Startup Investors** | [n8n-nodes-startup-investors-api](https://www.npmjs.com/package/n8n-nodes-startup-investors-api) | [johnvc](https://apify.com/johnvc) |
+| **Congress Trades** | [n8n-nodes-congress-trades-api](https://www.npmjs.com/package/n8n-nodes-congress-trades-api) | [johnvc](https://apify.com/johnvc) |
+| **Google AI Overview** | [n8n-nodes-google-ai-overview-api](https://www.npmjs.com/package/n8n-nodes-google-ai-overview-api) | [johnvc](https://apify.com/johnvc) |
+| **Google News** | [n8n-nodes-google-news-api](https://www.npmjs.com/package/n8n-nodes-google-news-api) | [johnvc](https://apify.com/johnvc) |
+| **Baidu Search** | [n8n-nodes-baidu-search-api](https://www.npmjs.com/package/n8n-nodes-baidu-search-api) | [johnvc](https://apify.com/johnvc) |
+| **DuckDuckGo Search** | [n8n-nodes-duckduckgo-search-api](https://www.npmjs.com/package/n8n-nodes-duckduckgo-search-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Forums** | [n8n-nodes-google-forums-api](https://www.npmjs.com/package/n8n-nodes-google-forums-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Local** | [n8n-nodes-google-local-api](https://www.npmjs.com/package/n8n-nodes-google-local-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Finance** | [n8n-nodes-google-finance-api](https://www.npmjs.com/package/n8n-nodes-google-finance-api) | [johnvc](https://apify.com/johnvc) |
+| **Apple Maps** | [n8n-nodes-apple-maps-api](https://www.npmjs.com/package/n8n-nodes-apple-maps-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Patents** | [n8n-nodes-google-patents-api](https://www.npmjs.com/package/n8n-nodes-google-patents-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Maps Places** | [n8n-nodes-google-maps-places-api](https://www.npmjs.com/package/n8n-nodes-google-maps-places-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Scholar** | [n8n-nodes-google-scholar-api](https://www.npmjs.com/package/n8n-nodes-google-scholar-api) | [johnvc](https://apify.com/johnvc) |
+| **OpenTable Reviews** | [n8n-nodes-opentable-reviews-api](https://www.npmjs.com/package/n8n-nodes-opentable-reviews-api) | [johnvc](https://apify.com/johnvc) |
+| **Yelp** | [n8n-nodes-yelp-api](https://www.npmjs.com/package/n8n-nodes-yelp-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Short Videos** | [n8n-nodes-google-short-videos-api](https://www.npmjs.com/package/n8n-nodes-google-short-videos-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Maps Directions** | [n8n-nodes-google-maps-directions-api](https://www.npmjs.com/package/n8n-nodes-google-maps-directions-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Images** | [n8n-nodes-google-images-api](https://www.npmjs.com/package/n8n-nodes-google-images-api) | [johnvc](https://apify.com/johnvc) |
+| **Naver Search** | [n8n-nodes-naver-search-api](https://www.npmjs.com/package/n8n-nodes-naver-search-api) | [johnvc](https://apify.com/johnvc) |
+| **Naver AI Overview** | [n8n-nodes-naver-ai-overview-api](https://www.npmjs.com/package/n8n-nodes-naver-ai-overview-api) | [johnvc](https://apify.com/johnvc) |
+| **Brave AI Mode** | [n8n-nodes-brave-ai-mode-api](https://www.npmjs.com/package/n8n-nodes-brave-ai-mode-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Ads Transparency** | [n8n-nodes-google-ads-transparency-api](https://www.npmjs.com/package/n8n-nodes-google-ads-transparency-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Travel Explore** | [n8n-nodes-google-travel-explore-api](https://www.npmjs.com/package/n8n-nodes-google-travel-explore-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Autocomplete** | [n8n-nodes-google-autocomplete-api](https://www.npmjs.com/package/n8n-nodes-google-autocomplete-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Maps Contributor Reviews** | [n8n-nodes-google-maps-contributor-reviews-api](https://www.npmjs.com/package/n8n-nodes-google-maps-contributor-reviews-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Maps Reviewer Geo Profile** | [n8n-nodes-google-maps-reviewer-geo-profile-api](https://www.npmjs.com/package/n8n-nodes-google-maps-reviewer-geo-profile-api) | [johnvc](https://apify.com/johnvc) |
+| **Earnings Call Transcript & SEC Filings** | [n8n-nodes-earnings-call-transcript-api](https://www.npmjs.com/package/n8n-nodes-earnings-call-transcript-api) | [johnvc](https://apify.com/johnvc) |
 | **Bing Copilot AI Answers** | [n8n-nodes-bing-copilot-api](https://www.npmjs.com/package/n8n-nodes-bing-copilot-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Local Services** | [n8n-nodes-google-local-services-api](https://www.npmjs.com/package/n8n-nodes-google-local-services-api) | [johnvc](https://apify.com/johnvc) |
 

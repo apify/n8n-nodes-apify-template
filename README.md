@@ -241,5 +241,6 @@ Community nodes built with this template:
 | **Earnings Call Transcript & SEC Filings** | [n8n-nodes-earnings-call-transcript-api](https://www.npmjs.com/package/n8n-nodes-earnings-call-transcript-api) | [johnvc](https://apify.com/johnvc) |
 | **Bing Copilot AI Answers** | [n8n-nodes-bing-copilot-api](https://www.npmjs.com/package/n8n-nodes-bing-copilot-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Local Services** | [n8n-nodes-google-local-services-api](https://www.npmjs.com/package/n8n-nodes-google-local-services-api) | [johnvc](https://apify.com/johnvc) |
+| **Workday Jobs Actor** | [n8n-nodes-workday-jobs-api](https://www.npmjs.com/package/n8n-nodes-workday-jobs-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

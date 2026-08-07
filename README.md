@@ -243,5 +243,10 @@ Community nodes built with this template:
 | **Google Local Services** | [n8n-nodes-google-local-services-api](https://www.npmjs.com/package/n8n-nodes-google-local-services-api) | [johnvc](https://apify.com/johnvc) |
 | **Workday Jobs Actor** | [n8n-nodes-workday-jobs-api](https://www.npmjs.com/package/n8n-nodes-workday-jobs-api) | [johnvc](https://apify.com/johnvc) |
 | **Workday Career Sites Actor** | [n8n-nodes-workday-career-sites-api](https://www.npmjs.com/package/n8n-nodes-workday-career-sites-api) | [johnvc](https://apify.com/johnvc) |
+| **Tripadvisor Actor** | [n8n-nodes-tripadvisor-api](https://www.npmjs.com/package/n8n-nodes-tripadvisor-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Lens Actor** | [n8n-nodes-google-lens-api](https://www.npmjs.com/package/n8n-nodes-google-lens-api) | [johnvc](https://apify.com/johnvc) |
+| **Walmart Actor** | [n8n-nodes-walmart-api](https://www.npmjs.com/package/n8n-nodes-walmart-api) | [johnvc](https://apify.com/johnvc) |
+| **Google Play Actor** | [n8n-nodes-google-play-api](https://www.npmjs.com/package/n8n-nodes-google-play-api) | [johnvc](https://apify.com/johnvc) |
+| **Bing Search Actor** | [n8n-nodes-bing-search-api](https://www.npmjs.com/package/n8n-nodes-bing-search-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

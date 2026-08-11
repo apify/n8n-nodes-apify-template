@@ -248,5 +248,6 @@ Community nodes built with this template:
 | **Walmart Actor** | [n8n-nodes-walmart-api](https://www.npmjs.com/package/n8n-nodes-walmart-api) | [johnvc](https://apify.com/johnvc) |
 | **Google Play Actor** | [n8n-nodes-google-play-api](https://www.npmjs.com/package/n8n-nodes-google-play-api) | [johnvc](https://apify.com/johnvc) |
 | **Bing Search Actor** | [n8n-nodes-bing-search-api](https://www.npmjs.com/package/n8n-nodes-bing-search-api) | [johnvc](https://apify.com/johnvc) |
+| **Image Similarity Actor** | [n8n-nodes-image-similarity-api](https://www.npmjs.com/package/n8n-nodes-image-similarity-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

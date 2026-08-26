@@ -249,5 +249,7 @@ Community nodes built with this template:
 | **Google Play Actor** | [n8n-nodes-google-play-api](https://www.npmjs.com/package/n8n-nodes-google-play-api) | [johnvc](https://apify.com/johnvc) |
 | **Bing Search Actor** | [n8n-nodes-bing-search-api](https://www.npmjs.com/package/n8n-nodes-bing-search-api) | [johnvc](https://apify.com/johnvc) |
 | **Image Similarity Actor** | [n8n-nodes-image-similarity-api](https://www.npmjs.com/package/n8n-nodes-image-similarity-api) | [johnvc](https://apify.com/johnvc) |
+| **Wellfound Jobs Actor** | [n8n-nodes-wellfound-jobs-api](https://www.npmjs.com/package/n8n-nodes-wellfound-jobs-api) | [johnvc](https://apify.com/johnvc) |
+| **NFX Signal Investor Actor** | [n8n-nodes-nfx-signal-investor-api](https://www.npmjs.com/package/n8n-nodes-nfx-signal-investor-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

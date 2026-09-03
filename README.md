@@ -251,5 +251,8 @@ Community nodes built with this template:
 | **Image Similarity Actor** | [n8n-nodes-image-similarity-api](https://www.npmjs.com/package/n8n-nodes-image-similarity-api) | [johnvc](https://apify.com/johnvc) |
 | **Wellfound Jobs Actor** | [n8n-nodes-wellfound-jobs-api](https://www.npmjs.com/package/n8n-nodes-wellfound-jobs-api) | [johnvc](https://apify.com/johnvc) |
 | **NFX Signal Investor Actor** | [n8n-nodes-nfx-signal-investor-api](https://www.npmjs.com/package/n8n-nodes-nfx-signal-investor-api) | [johnvc](https://apify.com/johnvc) |
+| **Kleinanzeigen.de Scraper** | [n8n-nodes-kleinanzeigen-scraper](https://www.npmjs.com/package/n8n-nodes-kleinanzeigen-scraper) | [lowlanddata](https://apify.com/lowlanddata) |
+| **Marktplaats Scraper** | [n8n-nodes-marktplaats-scraper](https://www.npmjs.com/package/n8n-nodes-marktplaats-scraper) | [lowlanddata](https://apify.com/lowlanddata) |
+| **2dehands & 2ememain Scraper** | [n8n-nodes-tweedehands-scraper](https://www.npmjs.com/package/n8n-nodes-tweedehands-scraper) | [lowlanddata](https://apify.com/lowlanddata) |
 
 Built a node with this template? Open a PR to add it to the list!

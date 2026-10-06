@@ -256,5 +256,6 @@ Community nodes built with this template:
 | **LinkedIn Company Actor** | [n8n-nodes-linkedin-company-api](https://www.npmjs.com/package/n8n-nodes-linkedin-company-api) | [johnvc](https://apify.com/johnvc) |
 | **LinkedIn Profile Actor** | [n8n-nodes-linkedin-profile-api](https://www.npmjs.com/package/n8n-nodes-linkedin-profile-api) | [johnvc](https://apify.com/johnvc) |
 | **LinkedIn Jobs Actor** | [n8n-nodes-linkedin-jobs-api](https://www.npmjs.com/package/n8n-nodes-linkedin-jobs-api) | [johnvc](https://apify.com/johnvc) |
+| **LinkedIn Posts Actor** | [n8n-nodes-linkedin-posts-api](https://www.npmjs.com/package/n8n-nodes-linkedin-posts-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

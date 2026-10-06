@@ -252,5 +252,6 @@ Community nodes built with this template:
 | **Wellfound Jobs Actor** | [n8n-nodes-wellfound-jobs-api](https://www.npmjs.com/package/n8n-nodes-wellfound-jobs-api) | [johnvc](https://apify.com/johnvc) |
 | **NFX Signal Investor Actor** | [n8n-nodes-nfx-signal-investor-api](https://www.npmjs.com/package/n8n-nodes-nfx-signal-investor-api) | [johnvc](https://apify.com/johnvc) |
 | **YouTube Shorts Actor** | [n8n-nodes-youtube-shorts-api](https://www.npmjs.com/package/n8n-nodes-youtube-shorts-api) | [johnvc](https://apify.com/johnvc) |
+| **LinkedIn Company Employees Actor** | [n8n-nodes-linkedin-company-employees-api](https://www.npmjs.com/package/n8n-nodes-linkedin-company-employees-api) | [johnvc](https://apify.com/johnvc) |
 
 Built a node with this template? Open a PR to add it to the list!

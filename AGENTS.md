@@ -1,8 +1,11 @@
-# AI Agent Context: n8n-nodes-apify-template
+# AGENTS.md
+
+Guidance for coding agents working in this repository. `CLAUDE.md` is only an `@AGENTS.md` pointer,
+so put instructions here and leave the pointer alone.
 
 ## Overview
 
-This is a **generator repository** that creates n8n community nodes from Apify Actors. It has two main components:
+A template and CLI tool for converting [Apify Actors](https://apify.com/store) into [n8n community nodes](https://docs.n8n.io/integrations/community-nodes/). This is a **generator repository** that creates n8n community nodes from Apify Actors. It has two main components:
 
 1. **Template Files** (`nodes/ApifyActorTemplate/`) - Blueprint for generated nodes
 2. **Generator Scripts** (`scripts/`) - Code that creates new nodes from the template
@@ -14,12 +17,15 @@ This is a **generator repository** that creates n8n community nodes from Apify A
 ## Quick Commands
 
 ```bash
+npm install               # Install dependencies
 npm run create-actor-app  # Generate a new node from an Actor ID
 npm run build             # Compile TypeScript + copy icons
-npm run dev               # Run n8n locally with hot reload
-npm test                  # Run tests (none exist yet)
-npm run lint              # Check code quality
+npm run dev               # Run n8n at http://localhost:5678 with hot reload
+npm run lint              # Check code quality (lint:fix to auto-fix)
+npm test                  # Broken: jest.config.js is missing
 ```
+
+CI runs lint → type-check (`tsc --noEmit`) → build on every push/PR to `main`.
 
 ---
 
@@ -52,14 +58,11 @@ These files serve as the blueprint for all generated nodes:
   - `getResults()` - Fetch dataset items
   - `isUsedAsAiTool()` - Detect if used by AI agents
 
-- **`helpers/hooks.ts`** - n8n lifecycle hooks
-
 ### Metadata
 - **`ApifyActorTemplate.node.json`** - Node categories and aliases
-- **`properties.json`** - Cached generated properties
 
 ### Icons
-- **`apify.svg`** / **`apifyDark.svg`** - Node icons (light/dark themes)
+- **`logo.svg`** - Default node icon (replaced by the Actor's icon when it has one)
 
 ---
 
@@ -77,7 +80,7 @@ Location: `scripts/`
 ### Key Scripts
 
 **`actorConfig.ts`** - Generates placeholder values:
-- `$$ACTOR_ID` → `apify/instagram-scraper`
+- `$$ACTOR_ID` → the Actor's ID (e.g. `aYG0l9s7dbB7j3gbS`)
 - `$$CLASS_NAME` → `ApifyInstagramScraper`
 - `$$DISPLAY_NAME` → `Apify Instagram Scraper`
 - `$$PACKAGE_NAME` → `n8n-nodes-apify-instagram-scraper`
@@ -100,8 +103,6 @@ Location: `scripts/`
 - Renames `ApifyActorTemplate/` → `ApifyActorName/`
 - Updates all class names and imports
 - Updates `package.json` name
-
-**`createActorApp.ts`** - Fetches Actor metadata from Apify API
 
 **`cli.ts`** - Entry point that calls `setupProject()`
 
@@ -219,7 +220,6 @@ Edit `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` → add headers in `
 
 **Regenerated (not direct copies):**
 - `ApifyActorTemplate.properties.ts` - Completely rebuilt from Actor's input schema
-- `properties.json` - Generated from converted schema
 
 **Copied & modified (placeholders replaced):**
 - `ApifyActorTemplate.node.ts` - Class names and constants updated
@@ -233,18 +233,11 @@ Edit `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` → add headers in `
 - **Never edit generated nodes directly** - edit the template instead, then regenerate
 
 ### Testing
-- Test infrastructure exists (Jest + ts-jest) but **no tests written yet**
-- Create tests in `nodes/**/__tests__/**/*.spec.ts`
-- Run with `npm test`
+- Jest + ts-jest + nock are installed but **no tests exist**, and `npm test` fails because `jest.config.js` is missing
 
----
-
-## Environment
-
-- **Node.js**: v23.11.1 (see `.nvmrc`)
-- **Platform**: macOS Darwin 24.6.0
-- **Current Branch**: `feat/repo-simplification`
-- **Working Directory**: `/Users/gokdenizkaymak/apify/n8n-nodes-apify-template`
+### Placeholders
+- `nodes/ApifyActorTemplate/` is the **code template**, not a real node. Do not treat it as a finished integration.
+- `package.json` contains literal placeholder strings (`AUTHOR_NAME`, `AUTHOR_EMAIL`, `PACKAGE_DESCRIPTION`); these are intentional and must not be filled in by tooling. Users replace them before publishing.
 
 ---
 

@@ -15,7 +15,8 @@ So the repo holds two things:
 
 - **The node template** — `nodes/ApifyActorTemplate/` and `credentials/`. It is not a real node: the
   constants are `$$PLACEHOLDER` strings and `ApifyActorTemplate.properties.ts` is leftover output
-  from some Actor (a single `categoryUrls` field). It still has to lint, type-check and build, since
+  from some Actor and an older `properties.ts.tpl` (a single `categoryUrls` field, none of the
+  current helper functions). It still has to lint, type-check and build, since
   CI runs on it.
 - **The generator** — `scripts/`, run with `npx tsx`, plus the code templates in
   `scripts/functionTemplates/`.
@@ -72,8 +73,9 @@ Consequences:
 - There is no undo and no second run: once the template folder is renamed the CLI has nothing to
   work on. To test the generator, run it in a scratch clone (or `git stash -u` / `git checkout .`
   and `git clean` afterwards) and never commit its output here.
-- A failure halfway (unknown Actor, missing build tag, no input schema) leaves the template folder
-  partly rewritten. `cli.ts` prints the error and exits with code 0.
+- A failure halfway (missing build tag, no input schema) leaves the template folder partly
+  rewritten: the node file's placeholders and icon are already done. An unknown Actor fails before
+  anything is written. `cli.ts` prints the error and exits with code 0.
 - The string replacement is plain-text and repo-wide, so a new file that mentions
   `ApifyActorTemplate` gets rewritten in every generated package, and a new file under a path
   containing one of the excluded words is silently skipped.
@@ -92,10 +94,12 @@ replacement, so edit it directly.
 
 `getPropsForTypeN8n` maps each Actor input field by `type` and `editor`: strings to `string`
 (5 rows for `textarea`/`javascript`/`python`), `options` (`select` editor or `enum`) or
-`dateTime` (`datepicker`); `integer`/`number` to `number` with min/max; arrays to
-`fixedCollection` (`stringList`, `keyValue`, `requestListSources`), `multiOptions` (`select`) or
+`dateTime` (`datepicker`); `integer`/`number` to `number` with min/max; `boolean` to `boolean`;
+arrays to `fixedCollection` (`stringList`, `keyValue`, `requestListSources`), `multiOptions` (`select`) or
 `json`; objects to `json`. Unknown types fall back to `string` with a warning. The default is the
-schema `default`, else `prefill`, else `''` (JSON-stringified for `json` fields).
+schema `default`, else `prefill`, else `''` (for `json` fields only `default` is JSON-stringified,
+not `prefill`); `number`, `boolean`, `fixedCollection` and `multiOptions` fields override that with
+`default ?? 0`, `default ?? false`, `{}` and `[]`, ignoring `prefill`.
 
 `buildParameterAssignments` emits the body of `buildActorInput`, and its branches have to match
 the helper names in `properties.ts.tpl`: `fixedCollection` goes through `getFixedCollectionParam`
@@ -111,8 +115,8 @@ throws on invalid JSON, drops empty), `dateTime` and optional `string` through `
 timeout**), then GETs the whole default dataset in one request (no pagination).
 
 - The node returns **one n8n item per input item**, not one per dataset row: run metadata spread
-  together with the dataset array, so rows appear under keys `"0"`, `"1"`, … In AI-tool mode the
-  run metadata is left out.
+  together with the dataset array, so rows appear under keys `"0"`, `"1"`, …, each wrapped as
+  `{ json: row }`. In AI-tool mode the run metadata is left out.
 - `apiRequest` (`genericFunctions.ts`) resolves the credentials named by the `authentication`
   parameter and sends `x-apify-integration-platform: n8n`, `x-apify-integration-app-id`, and
   `x-apify-integration-ai-tool: true` when `isUsedAsAiTool()` sees a node type ending in

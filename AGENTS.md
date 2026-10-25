@@ -1,8 +1,8 @@
 # AGENTS.md
 
 Guidance for coding agents working in this repository. `CLAUDE.md` is only an `@AGENTS.md` pointer,
-so put instructions here and leave the pointer alone. `.github/workflows/agents-md-maintenance.yml`
-updates this file inside each PR that changes the code.
+so put instructions here and leave the pointer alone. Nothing updates this file automatically, so
+update it in the same PR as the code it describes.
 
 ## Project
 
@@ -133,6 +133,7 @@ timeout**), then GETs the whole default dataset in one request (no pagination).
   `$$...` constants in `ApifyActorTemplate.node.ts` must stay unfilled. Users or the CLI fill them;
   tooling must not.
 - Everything in this repo ships to every user's clone, including `.github/workflows/` and this
-  file.
+  file. That is why the repo has no `agents-md-maintenance.yml`: in a clone it would only fail
+  for lack of Apify's API key. Don't add workflows that need Apify secrets.
 - The `n8n.nodes` / `n8n.credentials` paths in `package.json` point at `dist/`, so build before
   linking the package into n8n. `dist/` is gitignored.

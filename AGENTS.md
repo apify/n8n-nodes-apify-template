@@ -1,292 +1,139 @@
-# AI Agent Context: n8n-nodes-apify-template
+# AGENTS.md
 
-## Overview
+Guidance for coding agents working in this repository. `CLAUDE.md` is only an `@AGENTS.md` pointer,
+so put instructions here and leave the pointer alone. Nothing updates this file automatically, so
+update it in the same PR as the code it describes.
 
-This is a **generator repository** that creates n8n community nodes from Apify Actors. It has two main components:
+## Project
 
-1. **Template Files** (`nodes/ApifyActorTemplate/`) - Blueprint for generated nodes
-2. **Generator Scripts** (`scripts/`) - Code that creates new nodes from the template
+A generator that turns one Apify Actor into an n8n community node package. Users take a copy of
+the repo, run `npm run create-actor-app`, enter an Actor ID, and the CLI rewrites the clone **in place** into
+`n8n-nodes-<actor-name>` with a node at `nodes/Apify<ActorName>/`, which they then customize and
+publish to npm themselves.
 
-**Key Concept**: This is NOT a static codebase. When you run `npm run create-actor-app`, the scripts copy the template, fetch an Actor's schema from Apify, and generate a new node with proper naming and properties.
+So the repo holds two things:
 
----
+- **The node template** — `nodes/ApifyActorTemplate/` and `credentials/`. It is not a real node: the
+  constants are `$$PLACEHOLDER` strings and `ApifyActorTemplate.properties.ts` is leftover output
+  from some Actor and an older `properties.ts.tpl` (a single `categoryUrls` field, none of the
+  current helper functions). It still has to lint, type-check and build, since
+  CI runs on it.
+- **The generator** — `scripts/`, run with `npx tsx`, plus the code templates in
+  `scripts/functionTemplates/`.
 
-## Quick Commands
+Most PRs to this repo, usually from forks, only add rows to the README's "Published Nodes" table.
+
+## Commands
 
 ```bash
-npm run create-actor-app  # Generate a new node from an Actor ID
-npm run build             # Compile TypeScript + copy icons
-npm run dev               # Run n8n locally with hot reload
-npm test                  # Run tests (none exist yet)
-npm run lint              # Check code quality
+npm install
+npm run create-actor-app   # interactive; set APIFY_TOKEN for private Actors
+npm run build              # n8n-node build -> dist/ (also copies the .svg/.png icons)
+npm run dev                # n8n at http://localhost:5678 with the node linked, hot reload
+npm run lint               # n8n-node lint (ESLint 9); lint:fix to autofix
+npx tsc --noEmit           # type check, same as CI
 ```
 
----
-
-## Part 1: Template Files (What Gets Copied)
-
-Location: `nodes/ApifyActorTemplate/`
-
-These files serve as the blueprint for all generated nodes:
-
-### Node Definition
-- **`ApifyActorTemplate.node.ts`** - Main node class implementing `INodeType`
-  - Defines node metadata (name, icon, credentials)
-  - Contains `execute()` method that runs the Actor
-  - Uses placeholders like `$$ACTOR_ID`, `$$CLASS_NAME` that get replaced
-
-### Properties
-- **`ApifyActorTemplate.properties.ts`** - UI field definitions
-  - Gets **completely regenerated** during setup (not copied as-is)
-  - Defines what fields users see in n8n UI
-
-### Helpers
-- **`helpers/executeActor.ts`** - Actor execution logic
-  - `getDefaultBuild()` - Fetch Actor metadata
-  - `getDefaultInputsFromBuild()` - Extract default values
-  - `runActor()` - Execute Actor and return results
-
-- **`helpers/genericFunctions.ts`** - API utilities
-  - `apiRequest()` - Make authenticated calls to Apify API
-  - `pollRunStatus()` - Poll every 1s until Actor completes
-  - `getResults()` - Fetch dataset items
-  - `isUsedAsAiTool()` - Detect if used by AI agents
-
-- **`helpers/hooks.ts`** - n8n lifecycle hooks
-
-### Metadata
-- **`ApifyActorTemplate.node.json`** - Node categories and aliases
-- **`properties.json`** - Cached generated properties
-
-### Icons
-- **`apify.svg`** / **`apifyDark.svg`** - Node icons (light/dark themes)
-
----
-
-## Part 2: Generator Scripts (What Creates New Nodes)
-
-Location: `scripts/`
-
-### Main Flow
-**`setupProject.ts`** - Orchestrates the entire generation process:
-1. Prompts user for Actor ID
-2. Calls `setConfig()` to create placeholder values
-3. Calls `generateActorResources()` to convert schema
-4. Calls `refactorProject()` to rename files/folders
-
-### Key Scripts
-
-**`actorConfig.ts`** - Generates placeholder values:
-- `$$ACTOR_ID` → `apify/instagram-scraper`
-- `$$CLASS_NAME` → `ApifyInstagramScraper`
-- `$$DISPLAY_NAME` → `Apify Instagram Scraper`
-- `$$PACKAGE_NAME` → `n8n-nodes-apify-instagram-scraper`
-- `$$X_PLATFORM_APP_HEADER_ID` → `instagram-scraper-app`
-
-**`actorSchemaConverter.ts`** - Converts Apify schema → n8n properties:
-
-| Apify Type | Apify Editor | n8n Type | Notes |
-|------------|-------------|----------|-------|
-| string | (default) | string | Text input |
-| string | textarea | string | Multi-line with `rows: 5` |
-| string | select / enum | options | Dropdown |
-| string | datepicker | dateTime | Date picker |
-| integer | - | number | With min/max |
-| boolean | - | boolean | Toggle |
-| array | - | json or fixedCollection | Depends on items |
-| object | - | json | JSON editor |
-
-**`refactorProject.ts`** - Renames files and updates imports:
-- Renames `ApifyActorTemplate/` → `ApifyActorName/`
-- Updates all class names and imports
-- Updates `package.json` name
-
-**`createActorApp.ts`** - Fetches Actor metadata from Apify API
-
-**`cli.ts`** - Entry point that calls `setupProject()`
-
----
-
-## Generation Flow
-
-```
-User runs: npm run create-actor-app
-      ↓
-Prompt for Actor ID (e.g., "apify/instagram-scraper")
-      ↓
-Fetch Actor metadata via ApifyClient
-      ↓
-setConfig() → Generate placeholder values
-      ↓
-generateActorResources() → Convert Apify schema to n8n properties
-      ↓
-refactorProject() → Rename ApifyActorTemplate → ApifyInstagramScraper
-      ↓
-npm run build → Compile TypeScript
-      ↓
-Generated node ready in dist/
-```
-
----
-
-## Key Architecture Concepts
-
-### n8n Node Structure
-All n8n nodes must implement `INodeType`:
-```typescript
-export class ApifyActorName implements INodeType {
-  description: INodeTypeDescription = { ... };
-  async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
-    // Run Actor and return results
-  }
-}
-```
-
-### Apify Actor Execution Flow
-1. `getDefaultBuild()` → GET `/v2/acts/{actorId}/builds/default`
-2. `getDefaultInputsFromBuild()` → Extract prefill values
-3. `runActorApi()` → POST `/v2/acts/{actorId}/runs` (non-blocking)
-4. `pollRunStatus()` → GET `/v2/actor-runs/{runId}` every 1s
-5. `getResults()` → GET `/v2/datasets/{datasetId}/items`
-6. Return formatted results to n8n
-
-### Authentication
-Two methods supported:
-- **API Key** (`credentials/ApifyApi.credentials.ts`) - Bearer token
-- **OAuth2** (`credentials/ApifyOAuth2Api.credentials.ts`) - PKCE flow
-
-### AI Tool Support
-- Nodes marked with `usableAsTool: true`
-- `isUsedAsAiTool()` detects AI context
-- Can filter results to reduce LLM token usage (SNIPPET 5)
-
----
-
-## 5 Customization SNIPPETs
-
-Search for `SNIPPET` in generated code to find these:
-
-1. **SNIPPET 1**: Actor constants (ACTOR_ID, CLASS_NAME, etc.)
-2. **SNIPPET 2**: Node icon paths
-3. **SNIPPET 3**: Node subtitle text
-4. **SNIPPET 4**: Node description
-5. **SNIPPET 5**: AI tool result filtering
-
----
-
-## Critical Files Reference
-
-| File | Purpose |
-|------|---------|
-| `nodes/ApifyActorTemplate/ApifyActorTemplate.node.ts` | Main node template |
-| `nodes/ApifyActorTemplate/helpers/executeActor.ts` | Actor execution logic |
-| `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` | API utilities |
-| `scripts/setupProject.ts` | Main orchestrator |
-| `scripts/actorSchemaConverter.ts` | Schema conversion |
-| `scripts/actorConfig.ts` | Placeholder generation |
-| `scripts/refactorProject.ts` | File renaming |
-| `credentials/ApifyApi.credentials.ts` | API key auth |
-| `package.json` | Dependencies & n8n node registration |
-
----
-
-## Common Tasks
-
-### Generate a New Node
-```bash
-npm run create-actor-app
-# Enter Actor ID when prompted
-npm run build
-```
-
-### Modify Template Behavior
-Edit files in `nodes/ApifyActorTemplate/` - changes will apply to all future generated nodes.
-
-### Change Schema Conversion Logic
-Edit `scripts/actorSchemaConverter.ts` → modify `getPropsForTypeN8n()` function.
-
-### Modify Polling Behavior
-Edit `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` → modify `pollRunStatus()` function.
-
-### Add Custom API Headers
-Edit `nodes/ApifyActorTemplate/helpers/genericFunctions.ts` → add headers in `apiRequest()` function.
-
----
-
-## Important Notes
-
-### What Gets Regenerated vs. Copied
-
-**Regenerated (not direct copies):**
-- `ApifyActorTemplate.properties.ts` - Completely rebuilt from Actor's input schema
-- `properties.json` - Generated from converted schema
-
-**Copied & modified (placeholders replaced):**
-- `ApifyActorTemplate.node.ts` - Class names and constants updated
-- All helper files - Names and imports updated
-- `ApifyActorTemplate.node.json` - Display name updated
-
-### Template vs. Script Separation
-
-- **Template files** define HOW nodes work (execution logic, API calls, polling)
-- **Generator scripts** create NEW nodes by copying template and customizing it
-- **Never edit generated nodes directly** - edit the template instead, then regenerate
-
-### Testing
-- Test infrastructure exists (Jest + ts-jest) but **no tests written yet**
-- Create tests in `nodes/**/__tests__/**/*.spec.ts`
-- Run with `npm test`
-
----
-
-## Environment
-
-- **Node.js**: v23.11.1 (see `.nvmrc`)
-- **Platform**: macOS Darwin 24.6.0
-- **Current Branch**: `feat/repo-simplification`
-- **Working Directory**: `/Users/gokdenizkaymak/apify/n8n-nodes-apify-template`
-
----
-
-## Key Dependencies
-
-| Package | Purpose |
-|---------|---------|
-| n8n-workflow | n8n SDK (INodeType, IExecuteFunctions, etc.) |
-| apify-client | Apify API client for fetching actors |
-| typescript | Compiles .ts → .js |
-| jest + ts-jest | Test framework (no tests yet) |
-| @n8n/node-cli | Dev tooling (`npm run dev`, `npm run lint`) |
-| gulp | Copies icons to dist/ |
-
----
-
-## Troubleshooting
-
-**Generated node doesn't appear in n8n:**
-- Check `package.json` → `n8n.nodes` array includes the compiled path
-- Ensure `npm run build` succeeded
-- Restart n8n
-
-**Actor execution hangs:**
-- Check Actor run status in Apify console
-- Polling interval is 1000ms (1 second)
-- No timeout mechanism exists (known limitation)
-
-**Schema conversion produces wrong properties:**
-- Check Actor's input schema in Apify console
-- Verify type mapping in `scripts/actorSchemaConverter.ts`
-- Add custom handling if needed
-
-**Build fails:**
-- Run `npm install` to update dependencies
-- Check for TypeScript errors in output
-- Verify n8n-workflow version matches
-
----
-
-## Resources
-
-- **n8n Docs**: https://docs.n8n.io/integrations/creating-nodes/
-- **Apify API**: https://docs.apify.com/api/v2
-- **Repository**: https://github.com/apify/n8n-nodes-apify-template
+CI (`ci.yaml`) runs lint → `tsc --noEmit` → build on Node 22.x for pushes and PRs to `main`.
+`.nvmrc` and the README say Node 23.11.1, `package.json` engines say `>=18.10`.
+
+Broken, don't rely on them: `npm test` fails because there is no `jest.config.js` and there are no
+tests; `npm run merge:api` points at a missing `openapi.config.json`. `gulpfile.js` is not used by
+any script. Nothing under `scripts/` is checked: `tsconfig.json` only includes `nodes/`,
+`credentials/` and `package.json`, ESLint ignores `scripts/**`, and `actorSchemaConverter.ts` is
+`// @ts-nocheck`. To exercise the generator you have to run it against a real Actor.
+
+## Architecture
+
+### The generator is a one-shot, in-place rewrite
+
+`scripts/cli.ts` → `setupProject()` fetches the Actor with `apify-client`, then:
+
+1. **`setConfig`** (`actorConfig.ts`) derives the values: class `Apify` + PascalCase of
+   `actor.name` (not the title), display name `Apify <title>`, package `n8n-nodes-<actor.name>`,
+   app-id header `<actor.name>-app`, and `ACTOR_ID` = `actor.id` whatever form the user typed.
+   It checks the package name against the npm registry and keeps prompting for a new suffix while
+   it's taken. It downloads `actor.pictureUrl` into the template folder (PNG/JPEG resized to a 60×60
+   `logo.png` with `sharp`, replacing `logo.svg`; SVG becomes `logo.svg`; otherwise the Apify logo
+   stays) and fixes the `logo.*` references. It fills the `$$` placeholders, but **only in
+   `ApifyActorTemplate.node.ts`**.
+2. **`generateActorResources`** (`actorSchemaConverter.ts`) reads the input schema from the Actor's
+   default build (`defaultRunOptions.build`, else `latest`), converts it to n8n properties, and
+   **overwrites** two template files from `scripts/functionTemplates/`: `properties.ts.tpl` →
+   `ApifyActorTemplate.properties.ts` and `execute.ts.tpl` → `helpers/executeActor.ts`.
+3. **`refactorProject`** (`refactorProject.ts`) `git mv`s the folder and files to the new class
+   name, then string-replaces `ApifyActorTemplate` and `n8n-nodes-apify-actor-template` in every
+   file except paths containing `node_modules`, `dist`, `docs`, `credentials` or `.git` (which also
+   skips `.github/`) and anything under `scripts/`. That is how `package.json` (name, `n8n.nodes`
+   path), `package-lock.json`, `tsconfig.json` and this file get renamed. The credentials get a
+   separate pass that only rewrites their icon path.
+
+Consequences:
+
+- There is no undo and no second run: once the template folder is renamed the CLI has nothing to
+  work on. To test the generator, run it in a scratch clone (or `git stash -u` / `git checkout .`
+  and `git clean` afterwards) and never commit its output here.
+- A failure halfway (missing build tag, no input schema) leaves the template folder partly
+  rewritten: the node file's placeholders and icon are already done. An unknown Actor fails before
+  anything is written. `cli.ts` prints the error and exits with code 0.
+- The string replacement is plain-text and repo-wide, so a new file that mentions
+  `ApifyActorTemplate` gets rewritten in every generated package, and a new file under a path
+  containing one of the excluded words is silently skipped.
+
+### Two files have a twin in `scripts/functionTemplates/`
+
+`helpers/executeActor.ts` and `ApifyActorTemplate.properties.ts` are regenerated, so editing them
+alone changes nothing for users. Change execution logic in `execute.ts.tpl` and mirror it in
+`executeActor.ts` (today they're identical apart from `{{TARGET_CLASS_NAME}}`), so the template
+still compiles and matches what users get. Property helpers and the authentication selector
+belong in `properties.ts.tpl`. Everything else in the node folder — `node.ts`, `node.json`,
+`helpers/genericFunctions.ts`, `logo.svg` — is copied with only placeholder and name
+replacement, so edit it directly.
+
+### Input schema → n8n properties
+
+`getPropsForTypeN8n` maps each Actor input field by `type` and `editor`: strings to `string`
+(5 rows for `textarea`/`javascript`/`python`), `options` (`select` editor or `enum`) or
+`dateTime` (`datepicker`); `integer`/`number` to `number` with min/max; `boolean` to `boolean`;
+arrays to `fixedCollection` (`stringList`, `keyValue`, `requestListSources`), `multiOptions` (`select`) or
+`json`; objects to `json`. Unknown types fall back to `string` with a warning. The default is the
+schema `default`, else `prefill`, else `''` (for `json` fields only `default` is JSON-stringified,
+not `prefill`); `number`, `boolean`, `fixedCollection` and `multiOptions` fields override that with
+`default ?? 0`, `default ?? false`, `{}` and `[]`, ignoring `prefill`.
+
+`buildParameterAssignments` emits the body of `buildActorInput`, and its branches have to match
+the helper names in `properties.ts.tpl`: `fixedCollection` goes through `getFixedCollectionParam`
+(`stringList` rows are mapped to plain strings), `json` through `getJsonParam` (parses strings,
+throws on invalid JSON, drops empty), `dateTime` and optional `string` through `getOptionalParam`
+(dropped when empty), and everything else is sent as is.
+
+### Runtime of a generated node
+
+`runActor` (in `executeActor.ts`) GETs `/v2/acts/{id}/builds/default`, takes each input field's
+`prefill` from that build, layers the node's parameters over it, POSTs the run with
+`waitForFinish=0`, polls `/v2/actor-runs/{id}` every second until a terminal status (**no
+timeout**), then GETs the whole default dataset in one request (no pagination).
+
+- The node returns **one n8n item per input item**, not one per dataset row: run metadata spread
+  together with the dataset array, so rows appear under keys `"0"`, `"1"`, …, each wrapped as
+  `{ json: row }`. In AI-tool mode the run metadata is left out.
+- `apiRequest` (`genericFunctions.ts`) resolves the credentials named by the `authentication`
+  parameter and sends `x-apify-integration-platform: n8n`, `x-apify-integration-app-id`, and
+  `x-apify-integration-ai-tool: true` when `isUsedAsAiTool()` sees a node type ending in
+  `<classNameCamel>Tool` (n8n's tool clone; nodes set `usableAsTool: true`).
+- Credentials: `apifyApi` (Bearer API key, tested against `/v2/me`) and `apifyOAuth2Api` (PKCE,
+  scopes `profile full_api_access`). The README tells users OAuth2 is for n8n cloud.
+
+## Conventions and gotchas
+
+- The five `// SNIPPET n` comments in the template are the documented customization points, and
+  the README's customization section is built around them. Keep them, and update the README if
+  you move or change one.
+- `package.json` keeps the literal `AUTHOR_NAME`, `AUTHOR_EMAIL` and `PACKAGE_DESCRIPTION`, and the
+  `$$...` constants in `ApifyActorTemplate.node.ts` must stay unfilled. Users or the CLI fill them;
+  tooling must not.
+- Everything in this repo ships to every user's clone, including `.github/workflows/` and this
+  file. That is why the repo has no `agents-md-maintenance.yml`: in a clone it would only fail
+  for lack of Apify's API key. Don't add workflows that need Apify secrets.
+- The `n8n.nodes` / `n8n.credentials` paths in `package.json` point at `dist/`, so build before
+  linking the package into n8n. `dist/` is gitignored.
